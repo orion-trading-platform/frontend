@@ -5,7 +5,7 @@ We use a **Monorepo** structure. Code is split between `apps` (websites) and `pa
 ```text
 root/
 ├── apps/
-│   ├── web-client/          <-- 🚨 MOST WORK HAPPENS HERE
+│   ├── web_client/          <-- 🚨 MOST WORK HAPPENS HERE
 │   │   ├── src/
 │   │   │   ├── features/    <-- 📂 YOUR TEAM LIVES HERE, BRANCH OUT AND CREATE A FOLDER
 │   │   │   │   ├── dashboard/  (Team A)
