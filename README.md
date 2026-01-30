@@ -1,4 +1,6 @@
-## 🗺️ Project Structure (Where do I work?)
+## COMP 413 S26 Frontend
+
+### Project Structure
 
 We use a **Monorepo** structure. Code is split between `apps` (websites) and `packages` (shared tools).
 
@@ -73,14 +75,17 @@ Follow these steps to get started on developing:
    ```bash
     npm run start
    ```
-   
+
 8. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) (or your configured port)
 
 ### Contributing
 
 In order to contribute, you can make edits on your own development branch. To do so, create a new branch from your command line:
 
-`git checkout -b my-new-branch`
+   ```bash
+   git checkout -b my-new-branch
+   ```
+
 From here, all your changes should be pushed to this branch, and not main.
 
 When you are done working on your feature, submit a pull request through GitHub where it can be peer reviewed and tested before it is merged with main.
