@@ -1,5 +1,5 @@
 import React from "react";
-import LedgerPage from "./pages/LedgerPage.jsx";
+import LedgerPage from "./features/ledger/pages/ledgerPage";
 
 export default function App() {
   return <LedgerPage />;
