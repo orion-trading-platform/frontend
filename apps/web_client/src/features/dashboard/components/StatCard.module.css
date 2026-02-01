@@ -1,0 +1,64 @@
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Soft shadow like Figma */
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+}
+
+.iconBox {
+  width: 48px;
+  height: 48px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  color: #6b7280; /* Gray text */
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Badges */
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.green {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.red {
+  background-color: #fee2e2;
+  color: #991b1b;
+}

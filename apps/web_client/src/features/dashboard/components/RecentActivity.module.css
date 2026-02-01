@@ -1,0 +1,46 @@
+.card{
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+}
+
+
+.icon{
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.content{
+    background-color: aliceblue;
+}
+.headerRow{
+    background-color: aliceblue;
+}
+.label{
+    background-color: aliceblue;
+}
+.value{
+    font-size: 12px;
+}
+.valuePos{
+    color: rgb(9, 255, 95);
+}
+.valueNeg{
+    color: rgb(0, 0, 0);
+}
+.time{
+    color: rgb(140, 140, 140);
+}
+
+.status{
+    background-color: rgb(195, 203, 207);
+}
