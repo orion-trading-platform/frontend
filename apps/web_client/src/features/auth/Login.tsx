@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 
 const Login: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
   // State to track if user is signing up (true) or logging in (false)
@@ -77,8 +77,7 @@ const Login: React.FC = () => {
   };
 
   const handleForgotPassword = () => {
-    console.log("Forgot password for:", email);
-    alert("Forgot password functionality is not yet implemented.");
+    navigate('/reset-password');
   };
 
   const toggleMode = () => {
