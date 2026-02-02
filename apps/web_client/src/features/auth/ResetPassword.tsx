@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
+import { useNavigate } from 'react-router-dom';
 
 const ResetPassword: React.FC = () => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const navigate = useNavigate();
 
   // State to track the reset flow step
   // 'request': User requests a reset code via email
@@ -111,7 +113,7 @@ const ResetPassword: React.FC = () => {
 
   const handleBackToLogin = () => {
     // TODO: Navigate back to login
-    // navigate('/login');
+    navigate('/');
     console.log("Navigate back to login");
   };
 
