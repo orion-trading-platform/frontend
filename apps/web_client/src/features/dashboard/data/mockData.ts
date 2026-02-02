@@ -4,7 +4,16 @@ export const MOCK_STATS = [
   { label: "Day's P&L", value: "$432.20", change: "+0.8%", isPositive: true, icon: "pulse" },
 ];
 
-export const MOCK_HOLDINGS = [
+export type Holding = {
+  symbol: string;
+  name: string;
+  price: number;
+  change: string;
+  shares: number;
+  value: number;
+};
+
+export const MOCK_HOLDINGS: Holding[] = [
   { symbol: "AAPL", name: "Apple Inc.", price: 178.35, change: "+1.2%", shares: 50, value: 8917.50 },
   { symbol: "TSLA", name: "Tesla Inc.", price: 235.40, change: "-0.8%", shares: 30, value: 7062.00 },
   { symbol: "NVDA", name: "Nvidia Corp.", price: 460.15, change: "+3.5", shares: 15, value: 6902.25 },

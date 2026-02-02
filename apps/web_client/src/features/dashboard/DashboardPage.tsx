@@ -1,10 +1,24 @@
+import { useState, useMemo } from 'react';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
-import { RecentActivity } from './components/RecentActivity';
-import { MOCK_STATS, MOCK_ACTIVITY } from './data/mockData';
 import { PerformanceChart } from './components/PerformanceChart';
+import { SearchBar } from './components/SearchBar';
+import { HoldingsTable } from './components/HoldingsTable';
+import { MOCK_STATS, MOCK_HOLDINGS } from './data/mockData';
 
 export const DashboardPage = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredHoldings = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return MOCK_HOLDINGS;
+    return MOCK_HOLDINGS.filter(
+      (h) =>
+        h.symbol.toLowerCase().includes(q) ||
+        h.name.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
   return (
     <DashboardGrid
       header={<h1>My Dashboard</h1>}
@@ -22,7 +36,12 @@ export const DashboardPage = () => {
           <p>Recent Activity will go here.</p>
         </div>
       }
-      holdings={<div>Holdings Placeholder</div>}
+      holdings={
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          <HoldingsTable holdings={filteredHoldings} />
+        </div>
+      }
     />
   );
 };
