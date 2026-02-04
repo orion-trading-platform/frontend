@@ -1,14 +1,15 @@
 import styles from './RecentActivity.module.css';
 
 interface RecentActivityProps {
-    label: string;
-    time: string;
+    type: string;
+    symbol: string;
+    date: string;
     value: string;
     status: string;
     isPositive: boolean;
 }
 
-export const RecentActivity = ({label, time, value, status, isPositive}: RecentActivityProps) => {
+export const RecentActivity = ({type, symbol, date, value, status, isPositive}: RecentActivityProps) => {
     return (
         <div className = {styles.card}>
 
@@ -18,6 +19,7 @@ export const RecentActivity = ({label, time, value, status, isPositive}: RecentA
             <div className = {styles.content}>
                 <div className = {styles.header}>
                     <span className = {styles.label}>
+                        {type} {symbol}
                         
                     </span>
                     <span className = {`${styles.value} ${isPositive ? styles.valuePos : styles.valueNeg}`}>
@@ -25,6 +27,7 @@ export const RecentActivity = ({label, time, value, status, isPositive}: RecentA
                     </span>
                 </div>
                 <div className = {styles.time}>
+                    {date}
                 
                 </div>
                 <div className = {styles.status}>

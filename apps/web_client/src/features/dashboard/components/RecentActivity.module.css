@@ -8,7 +8,6 @@
     border: 1px solid #e5e7eb;
 }
 
-
 .icon{
     width: 36px;
     height: 36px;
@@ -19,17 +18,29 @@
     justify-content: center;
     font-size: 24px;
 }
-.content{
-    background-color: aliceblue;
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
 }
-.headerRow{
-    background-color: aliceblue;
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.label{
-    background-color: aliceblue;
+
+.label {
+  color: #000000; 
+  font-size: 14px;
+  font-weight: 500;
 }
-.value{
-    font-size: 12px;
+
+.value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
 }
 .valuePos{
     color: rgb(9, 255, 95);
@@ -38,9 +49,15 @@
     color: rgb(0, 0, 0);
 }
 .time{
+    font-size: 8px;
     color: rgb(140, 140, 140);
 }
 
 .status{
-    background-color: rgb(195, 203, 207);
+    border-radius: 5px;
+    background-color: #919191;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
 }

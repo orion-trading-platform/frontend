@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
+import { RecentActivity } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
 import { SearchBar } from './components/SearchBar';
 import { HoldingsTable } from './components/HoldingsTable';
-import { MOCK_STATS, MOCK_HOLDINGS } from './data/mockData';
+import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
 
 export const DashboardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,9 +32,14 @@ export const DashboardPage = () => {
       }
       chart={<PerformanceChart />}
       activity={
-        <div style={{ padding: 20, textAlign: 'center', color: '#888' }}>
-          <h3>Sidebar Placeholder</h3>
-          <p>Recent Activity will go here.</p>
+        <div style={{ padding: 20, textAlign: 'center', color: '#000000' }}>
+          <h3>Recent Activity</h3>
+          <p>Your recent transactions.</p>
+          <>
+            {MOCK_ACTIVITY.map((activity) => (
+              <RecentActivity key={activity.type} {...activity} />
+            ))}
+        </>
         </div>
       }
       holdings={
