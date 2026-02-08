@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
 import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 
@@ -19,6 +20,12 @@ const Login: React.FC = () => {
   // Loading state for the login process
   const [isLoading, setIsLoading] = useState(false);
   
+  // reCAPTCHA token
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  
+  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '';
+
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
@@ -220,9 +227,18 @@ const Login: React.FC = () => {
               </div>
             )}
 
+            {/* reCAPTCHA */}
+            <div className="flex justify-center mt-4">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={siteKey}
+                onChange={(token) => setRecaptchaToken(token)}
+              />
+            </div>
+
             {/* Sign Up/Log In Button */}
             <button
-              className="bg-gray-900 text-white py-3 px-6 w-full border-none rounded-full cursor-pointer text-base font-sans font-medium my-8 transition-colors duration-200 hover:bg-gray-700"
+              className="bg-gray-900 text-white py-3 px-6 w-full border-none rounded-full cursor-pointer text-base font-sans font-medium my-6 transition-colors duration-200 hover:bg-gray-700"
               onClick={handleManualSignupOrLogin}
             >
               {isSignUpMode ? 'SIGN UP' : 'LOG IN'}
