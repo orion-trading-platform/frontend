@@ -1,8 +1,4 @@
 {
-  "name": "root",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "name": "comp413-root",
+  "private": true
 }

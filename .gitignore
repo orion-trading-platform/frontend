@@ -1,3 +1,4 @@
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -6,19 +7,25 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules/
-apps/web_client/node_modules/
-dist/
-apps/web_client/dist/
-apps/web_client/dist-ssr/
+# Dependencies
+node_modules
+.pnp
+.pnp.js
 
+# Testing
+coverage
+
+# Production Build
+dist
+build
+
+# Environment Variables (Keep your secrets secret!)
 .env
-apps/web_client/.env
-.env.local
 .env.*
 !.env.example
 !apps/web_client/.env.example
 
+# IDE Files (Optional but recommended)
 .vscode/
 !.vscode/extensions.json
 .idea/

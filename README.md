@@ -44,10 +44,10 @@ Follow these steps to get started on developing:
 
 **Note:** If prompted for credentials, you may need to use a [GitHub Personal Access Token (classic)](https://github.com/settings/tokens) as your password.
 
-3. CD into the repository
+3. CD into the web app
 
    ```bash
-   cd comp413frontend
+   cd comp413frontend/apps/web_client
    ```
 
 4. Install dependencies
@@ -56,13 +56,7 @@ Follow these steps to get started on developing:
    npm install
    ```
 
-5. CD into the web app
-
-   ```bash
-   cd apps/web_client
-   ```
-
-6. Set up environment variables
+5. Set up environment variables
 
    ```bash
    cp .env.example .env
@@ -70,13 +64,13 @@ Follow these steps to get started on developing:
 
   - Edit `.env` and fill in any required values
 
-7. Start the development server
+6. Start the development server
 
    ```bash
-    npm run start
+    npm run dev
    ```
 
-8. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) (or your configured port)
+7. Open your browser and navigate to [http://localhost:5137](http://localhost:5137) (or your configured port)
 
 ### Contributing
 

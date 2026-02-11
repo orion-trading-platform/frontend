@@ -3,12 +3,12 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import LoginGraphic from '../../assets/login-graphic.svg';
+// import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
   // State to track if user is signing up (true) or logging in (false)
   const [isSignUpMode, setIsSignUpMode] = useState(true);
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   
-  const siteKey = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '';
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
