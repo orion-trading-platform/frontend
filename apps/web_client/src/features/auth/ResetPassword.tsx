@@ -3,6 +3,7 @@ import axios from 'axios';
 import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 import { useNavigate } from 'react-router-dom';
+import AuthRightColumn from './AuthRightColumn';
 
 const ResetPassword: React.FC = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
@@ -278,13 +279,7 @@ const ResetPassword: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN (hidden for medium screens and below ~768px) */}
-        <div className="hidden md:flex md:flex-1 bg-[#1a1a1a] items-center justify-center text-white p-16">
-          <img
-            src={LoginGraphic}
-            alt="Reset password graphic"
-            className="text-center max-w-[480px]"
-          />
-        </div>
+        <AuthRightColumn />
       </div>
     </>
   );
