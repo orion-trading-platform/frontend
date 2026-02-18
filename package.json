@@ -1,5 +1,0 @@
-{
-  "name": "comp413frontend",
-  "private": true,
-  "workspaces": ["apps/*", "packages/*"]
-}
