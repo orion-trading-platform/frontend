@@ -1,26 +1,38 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { getStockBars } from "../api/stocks";
 
-const generateChartData = () => {
-  const data: { time: string; price: number }[] = [];
-  const basePrice = 173.5;
-
-  for (let i = 0; i < 50; i += 1) {
-    const time = `${9 + Math.floor(i / 6)}:${((i * 10) % 60).toString().padStart(2, "0")}`;
-    const variance = Math.random() * 4 - 2;
-    const price = basePrice + variance + i * 0.04;
-    data.push({
-      time,
-      price: Number.parseFloat(price.toFixed(2)),
-    });
-  }
-
-  return data;
+// Maps UI button labels to API timeframe param and how many days back to fetch
+const TIMEFRAME_CONFIG: Record<string, { apiTimeframe: string; daysBack: number }> = {
+  "1D": { apiTimeframe: "1Hour", daysBack: 1 },
+  "1W": { apiTimeframe: "1Hour", daysBack: 7 },
+  "1M": { apiTimeframe: "1Day", daysBack: 30 },
+  "3M": { apiTimeframe: "1Day", daysBack: 90 },
+  "1Y": { apiTimeframe: "1Week", daysBack: 365 },
+  "ALL": { apiTimeframe: "1Month", daysBack: 365 * 5 },
 };
 
-export function StockChart() {
+interface StockChartProps {
+  symbol: string;
+}
+
+export function StockChart({ symbol }: StockChartProps) {
   const [timeframe, setTimeframe] = useState("1D");
-  const data = useMemo(() => generateChartData(), []);
+  const [data, setData] = useState<{ time: string; price: number }[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const { apiTimeframe, daysBack } = TIMEFRAME_CONFIG[timeframe];
+    const start = new Date();
+    start.setDate(start.getDate() - daysBack);
+
+    setIsLoading(true);
+    getStockBars(symbol, apiTimeframe, start.toISOString()).then((bars) => {
+      // Map 'close' to 'price' so the chart dataKey stays consistent
+      setData(bars.map((bar) => ({ time: bar.time, price: bar.close })));
+      setIsLoading(false);
+    });
+  }, [symbol, timeframe]);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6">
@@ -41,33 +53,37 @@ export function StockChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <XAxis
-            dataKey="time"
-            tick={{ fontSize: 12, fill: "#6b7280" }}
-            tickLine={false}
-            axisLine={{ stroke: "#e5e7eb" }}
-          />
-          <YAxis
-            domain={["dataMin - 1", "dataMax + 1"]}
-            tick={{ fontSize: 12, fill: "#6b7280" }}
-            tickLine={false}
-            axisLine={{ stroke: "#e5e7eb" }}
-            tickFormatter={(value) => `$${value}`}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#1f2937",
-              border: "none",
-              borderRadius: "8px",
-              color: "#fff",
-            }}
-            formatter={(value: number) => [`$${value.toFixed(2)}`, "Price"]}
-          />
-          <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} />
-        </LineChart>
-      </ResponsiveContainer>
+      {isLoading ? (
+        <div className="flex h-[300px] items-center justify-center text-gray-400">Loading...</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data}>
+            <XAxis
+              dataKey="time"
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tickLine={false}
+              axisLine={{ stroke: "#e5e7eb" }}
+            />
+            <YAxis
+              domain={["dataMin - 1", "dataMax + 1"]}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tickLine={false}
+              axisLine={{ stroke: "#e5e7eb" }}
+              tickFormatter={(value) => `$${value}`}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#1f2937",
+                border: "none",
+                borderRadius: "8px",
+                color: "#fff",
+              }}
+              formatter={(value: number | undefined) => value !== undefined ? [`$${value.toFixed(2)}`, "Price"] : ["—", "Price"]}
+            />
+            <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 }

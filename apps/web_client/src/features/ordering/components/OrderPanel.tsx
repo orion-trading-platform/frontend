@@ -1,23 +1,27 @@
 import { useState } from "react";
 import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { OrderConfirmation } from "./OrderConfirmation";
+import { placeOrder, type OrderResponse } from "../api/orders";
 
 interface OrderPanelProps {
   symbol: string;
   currentPrice: number;
   buyingPower: number;
+  onOrderPlaced: (result: OrderResponse) => void;
 }
 
 type OrderSide = "buy" | "sell";
 type OrderType = "market" | "limit" | "stop" | "stop_limit";
 
-export function OrderPanel({ symbol, currentPrice, buyingPower }: OrderPanelProps) {
+export function OrderPanel({ symbol, currentPrice, buyingPower, onOrderPlaced }: OrderPanelProps) {
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
   const [orderType, setOrderType] = useState<OrderType>("market");
   const [quantity, setQuantity] = useState<string>("");
   const [limitPrice, setLimitPrice] = useState<string>("");
   const [stopPrice, setStopPrice] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderResult, setOrderResult] = useState<OrderResponse | null>(null);
 
   const shares = Number.parseFloat(quantity) || 0;
   const effectivePrice =
@@ -31,22 +35,54 @@ export function OrderPanel({ symbol, currentPrice, buyingPower }: OrderPanelProp
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (shares > 0 && canAfford) {
+      setOrderResult(null);
       setShowConfirmation(true);
     }
   };
 
-  const handleConfirmOrder = () => {
-    window.alert(`Order placed: ${orderSide.toUpperCase()} ${shares} shares of ${symbol}`);
-    setShowConfirmation(false);
-    setQuantity("");
-    setLimitPrice("");
-    setStopPrice("");
+  const handleConfirmOrder = async () => {
+    setIsSubmitting(true);
+    try {
+      const result = await placeOrder({
+        symbol,
+        side: orderSide.toUpperCase() as "BUY" | "SELL",
+        type: orderType,
+        qty: shares,
+        limit_price: limitPrice ? Number.parseFloat(limitPrice) : undefined,
+        stop_price: stopPrice ? Number.parseFloat(stopPrice) : undefined,
+      });
+      setOrderResult(result);
+      onOrderPlaced(result);
+      setShowConfirmation(false);
+      setQuantity("");
+      setLimitPrice("");
+      setStopPrice("");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h3 className="mb-4 text-lg font-bold">Place Order</h3>
+
+        {orderResult && (
+          <div
+            className={`mb-4 rounded-lg p-3 text-sm ${
+              orderResult.status === "filled"
+                ? "bg-green-50 text-green-800"
+                : "bg-blue-50 text-blue-800"
+            }`}
+          >
+            <div className="font-semibold">
+              Order {orderResult.status === "filled" ? "Filled" : "Pending"}
+            </div>
+            <div className="mt-0.5 text-xs opacity-75">
+              {orderResult.orderId} · {orderResult.qty} shares @ ${orderResult.executedPrice.toFixed(2)}
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
@@ -96,8 +132,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower }: OrderPanelProp
               {orderType === "market" && "Execute immediately at current market price"}
               {orderType === "limit" && "Execute only at specified price or better"}
               {orderType === "stop" && "Trigger market order when price reaches stop price"}
-              {orderType === "stop_limit" &&
-                "Trigger limit order when price reaches stop price"}
+              {orderType === "stop_limit" && "Trigger limit order when price reaches stop price"}
             </p>
           </div>
 
@@ -222,6 +257,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower }: OrderPanelProp
           quantity={shares}
           price={effectivePrice}
           totalAmount={estimatedCost}
+          isSubmitting={isSubmitting}
           onConfirm={handleConfirmOrder}
           onCancel={() => setShowConfirmation(false)}
         />

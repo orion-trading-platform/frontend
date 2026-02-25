@@ -7,6 +7,7 @@ interface OrderConfirmationProps {
   quantity: number;
   price: number;
   totalAmount: number;
+  isSubmitting: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -18,6 +19,7 @@ export function OrderConfirmation({
   quantity,
   price,
   totalAmount,
+  isSubmitting,
   onConfirm,
   onCancel,
 }: OrderConfirmationProps) {
@@ -78,11 +80,12 @@ export function OrderConfirmation({
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 rounded-lg px-4 py-2.5 font-medium text-white transition-colors ${
+            disabled={isSubmitting}
+            className={`flex-1 rounded-lg px-4 py-2.5 font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
               orderSide === "buy" ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
             }`}
           >
-            Confirm Order
+            {isSubmitting ? "Placing Order..." : "Confirm Order"}
           </button>
         </div>
       </div>
