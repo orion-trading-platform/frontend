@@ -165,7 +165,7 @@ const Login: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-row h-screen">
+      <div className="flex flex-row min-h-screen">
         {/* LEFT COLUMN */}
         <div className="relative flex-1 bg-white flex items-center justify-center p-16 md:w-full">
           <div
