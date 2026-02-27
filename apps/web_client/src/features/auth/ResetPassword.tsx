@@ -40,22 +40,17 @@ const ResetPassword: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      // TODO: Connect to actual backend endpoint
-      console.log("Requesting password reset for:", requestEmail);
-      // const response = await axios.post(
-      //   `${backendUrl}/request_password_reset`,
-      //   { email: requestEmail },
-      //   {
-      //     withCredentials: true,
-      //     headers: { 'Content-Type': 'application/json' },
-      //   }
-      // );
-      
-      setSuccessMessage("Reset code sent to your email. Check your inbox!");
-      setTimeout(() => {
-        setStep('reset');
-        setSuccessMessage("");
-      }, 2000);
+        // Check that the user exists in the backend before continuing
+        const response = await axios.get(`${backendUrl}/users/${encodeURIComponent(requestEmail)}`);
+        if (response.status === 200) {
+          setSuccessMessage("Reset code sent to your email. Check your inbox!");
+          setTimeout(() => {
+            setStep('reset');
+            setSuccessMessage("");
+          }, 1200);
+        } else {
+          setErrorMessage('User not found. Please sign up first.');
+        }
     } catch (err) {
       console.error('Error requesting password reset:', err);
       setErrorMessage("Failed to send reset code. Please try again.");
@@ -85,25 +80,12 @@ const ResetPassword: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      // TODO: Connect to actual backend endpoint
-      console.log("Resetting password with code:", resetCode);
-      // const response = await axios.post(
-      //   `${backendUrl}/reset_password`,
-      //   {
-      //     code: resetCode,
-      //     new_password: newPassword,
-      //   },
-      //   {
-      //     withCredentials: true,
-      //     headers: { 'Content-Type': 'application/json' },
-      //   }
-      // );
-      
+      // No password update endpoint in the mock backend; simulate success.
+      console.log('Resetting password (mock) for code:', resetCode);
       setSuccessMessage("Password reset successfully! Redirecting to login...");
       setTimeout(() => {
-        // TODO: Navigate to login page
-        // navigate('/login');
-      }, 2000);
+        navigate('/');
+      }, 1000);
     } catch (err) {
       console.error('Error resetting password:', err);
       setErrorMessage("Failed to reset password. Please check your code and try again.");

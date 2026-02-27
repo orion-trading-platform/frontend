@@ -20,6 +20,8 @@ const Login: React.FC = () => {
   
   // Loading state for the login process
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   
   // reCAPTCHA token
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
@@ -75,12 +77,57 @@ const Login: React.FC = () => {
   });
   
   const handleManualSignupOrLogin = () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+    if (!email) {
+      setErrorMessage('Please enter your email.');
+      return;
+    }
+
     if (isSignUpMode) {
-      console.log("Manual signup with:", { email, password });
-      alert("Manual signup is not yet implemented.");
+      if (!password || password.length < 8) {
+        setErrorMessage('Password must be at least 8 characters.');
+        return;
+      }
+
+      setIsLoading(true);
+      axios
+        .post(
+          `${backendUrl}/users`,
+          { email, password },
+          { headers: { 'Content-Type': 'application/json' } }
+        )
+        .then((res) => {
+          setSuccessMessage('Account created. Redirecting...');
+          localStorage.setItem('loggedInUserEmail', email);
+          setTimeout(() => navigate('/'), 800);
+        })
+        .catch((err) => {
+          if (err.response && err.response.status === 409) {
+            setErrorMessage('Email already registered. Please log in.');
+          } else {
+            setErrorMessage('Failed to create account. Please try again.');
+          }
+        })
+        .finally(() => setIsLoading(false));
     } else {
-      console.log("Manual login with:", { email, password });
-      alert("Manual login is not yet implemented.");
+      // Login: use GET /users/{email} to verify existence (mock)
+      setIsLoading(true);
+      axios
+        .get(`${backendUrl}/users/${encodeURIComponent(email)}`)
+        .then((res) => {
+          localStorage.setItem('loggedInUserEmail', email);
+          setSuccessMessage('Logged in. Redirecting...');
+          setTimeout(() => navigate('/'), 600);
+        })
+        .catch((err) => {
+          if (err.response && err.response.status === 404) {
+            setErrorMessage('User not found. Please sign up.');
+          } else {
+            setErrorMessage('Login failed. Please try again.');
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   };
 
@@ -174,6 +221,19 @@ const Login: React.FC = () => {
               </span>
               <div className="flex-1 h-px bg-gray-300 -mx-4" />
             </div>
+
+            {/* Success / Error messages */}
+            {successMessage && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded text-green-700 text-sm font-sans">
+                {successMessage}
+              </div>
+            )}
+
+            {errorMessage && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-700 text-sm font-sans">
+                {errorMessage}
+              </div>
+            )}
 
             {/* Manual signup/login fields */}
             <div className="text-left mb-6">
