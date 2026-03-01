@@ -76,61 +76,96 @@ const Login: React.FC = () => {
     },
   });
   
-  const handleManualSignupOrLogin = () => {
+  const handleManualSignupOrLogin = async () => {
     setErrorMessage("");
     setSuccessMessage("");
+
     if (!email) {
-      setErrorMessage('Please enter your email.');
+      setErrorMessage("Please enter your email.");
       return;
     }
 
-    if (isSignUpMode) {
-      if (!password || password.length < 8) {
-        setErrorMessage('Password must be at least 8 characters.');
+    if (!password) {
+      setErrorMessage("Please enter your password.");
+      return;
+    }
+
+    // your backend enforces password length at register-time only (via schema/validation),
+    // but keeping this UX guard is fine:
+    if (isSignUpMode && password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (isSignUpMode) {
+        // 1) Register
+        await axios.post(
+          `${backendUrl}/auth/register`,
+          { email, password },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        // 2) Immediately login to receive token pair
+        const loginRes = await axios.post(
+          `${backendUrl}/auth/login`,
+          { email, password },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const { access_token, refresh_token } = loginRes.data || {};
+        if (!access_token || !refresh_token) {
+          throw new Error("Missing tokens from /auth/login response");
+        }
+
+        localStorage.setItem("accessToken", access_token);
+        localStorage.setItem("refreshToken", refresh_token);
+        localStorage.setItem("loggedInUserEmail", email);
+
+        // Optional convenience: set default auth header for future axios calls
+        axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+
+        setSuccessMessage("Account created. Redirecting...");
+        setTimeout(() => navigate("/"), 800);
         return;
       }
 
-      setIsLoading(true);
-      axios
-        .post(
-          `${backendUrl}/users`,
-          { email, password },
-          { headers: { 'Content-Type': 'application/json' } }
-        )
-        .then((res) => {
-          setSuccessMessage('Account created. Redirecting...');
-          localStorage.setItem('loggedInUserEmail', email);
-          setTimeout(() => navigate('/'), 800);
-        })
-        .catch((err) => {
-          if (err.response && err.response.status === 409) {
-            setErrorMessage('Email already registered. Please log in.');
-          } else {
-            setErrorMessage('Failed to create account. Please try again.');
-          }
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      // Login: use GET /users/{email} to verify existence (mock)
-      setIsLoading(true);
-      axios
-        .get(`${backendUrl}/users/${encodeURIComponent(email)}`)
-        .then((res) => {
-          localStorage.setItem('loggedInUserEmail', email);
-          setSuccessMessage('Logged in. Redirecting...');
-          setTimeout(() => navigate('/'), 600);
-        })
-        .catch((err) => {
-          if (err.response && err.response.status === 404) {
-            setErrorMessage('User not found. Please sign up.');
-          } else {
-            setErrorMessage('Login failed. Please try again.');
-          }
-        })
-        .finally(() => setIsLoading(false));
+      // Login
+      const loginRes = await axios.post(
+        `${backendUrl}/auth/login`,
+        { email, password },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      const { access_token, refresh_token } = loginRes.data || {};
+      if (!access_token || !refresh_token) {
+        throw new Error("Missing tokens from /auth/login response");
+      }
+
+      localStorage.setItem("accessToken", access_token);
+      localStorage.setItem("refreshToken", refresh_token);
+      localStorage.setItem("loggedInUserEmail", email);
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+
+      setSuccessMessage("Logged in. Redirecting...");
+      setTimeout(() => navigate("/"), 600);
+    } catch (err: any) {
+      const status = err?.response?.status;
+
+      if (isSignUpMode) {
+        if (status === 409) setErrorMessage("Email already registered. Please log in.");
+        else setErrorMessage("Failed to create account. Please try again.");
+      } else {
+        if (status === 401) setErrorMessage("Incorrect email or password.");
+        else setErrorMessage("Login failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
-
   const handleForgotPassword = () => {
     navigate('/reset-password');
   };

@@ -40,20 +40,21 @@ const ResetPassword: React.FC = () => {
     setSuccessMessage("");
 
     try {
-        // Check that the user exists in the backend before continuing
-        const response = await axios.get(`${backendUrl}/users/${encodeURIComponent(requestEmail)}`);
-        if (response.status === 200) {
-          setSuccessMessage("Reset code sent to your email. Check your inbox!");
-          setTimeout(() => {
-            setStep('reset');
-            setSuccessMessage("");
-          }, 1200);
-        } else {
-          setErrorMessage('User not found. Please sign up first.');
-        }
+      // Backend always returns 202 to prevent user enumeration
+      await axios.post(
+        `${backendUrl}/auth/forgot-password`,
+        { email: requestEmail },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      setSuccessMessage("If an account exists for that email, a reset link/code has been sent.");
+      setTimeout(() => {
+        setStep("reset");
+        setSuccessMessage("");
+      }, 1200);
     } catch (err) {
-      console.error('Error requesting password reset:', err);
-      setErrorMessage("Failed to send reset code. Please try again.");
+      console.error("Error requesting password reset:", err);
+      setErrorMessage("Failed to request password reset. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -80,15 +81,26 @@ const ResetPassword: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      // No password update endpoint in the mock backend; simulate success.
-      console.log('Resetting password (mock) for code:', resetCode);
+      await axios.post(
+        `${backendUrl}/auth/reset-password`,
+        {
+          token: resetCode,          // this is the raw token from email/link
+          new_password: newPassword, // matches your ResetPasswordRequest schema
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
       setSuccessMessage("Password reset successfully! Redirecting to login...");
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-    } catch (err) {
-      console.error('Error resetting password:', err);
-      setErrorMessage("Failed to reset password. Please check your code and try again.");
+      setTimeout(() => navigate("/"), 1000);
+    } catch (err: any) {
+      console.error("Error resetting password:", err);
+      const status = err?.response?.status;
+
+      if (status === 400) {
+        setErrorMessage("Invalid or expired reset token. Please request a new reset.");
+      } else {
+        setErrorMessage("Failed to reset password. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
