@@ -5,8 +5,7 @@ export async function getCurrentUser() {
   return {
     id: "u_001",
     name: "John Doe",
-    initials: "AM",
-    role: "Pro Trader",
+    initials: "JD",
   };
 }
 

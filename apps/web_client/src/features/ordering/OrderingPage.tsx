@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Bell } from "lucide-react";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
@@ -12,7 +11,6 @@ interface User {
   id: string;
   name: string;
   initials: string;
-  role: string;
 }
 
 interface Snapshot {
@@ -80,9 +78,9 @@ export function OrderingPage() {
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-                <span className="text-sm font-bold text-white">S</span>
+                <span className="text-sm font-bold text-white">O</span>
               </div>
-              <span className="text-lg font-semibold">StockPro</span>
+              <span className="text-lg font-semibold">Orion</span>
             </div>
             <nav className="flex gap-6 text-sm">
               <a href="#" className="text-gray-600 hover:text-gray-900">Dashboard</a>
@@ -92,13 +90,9 @@ export function OrderingPage() {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <button className="rounded-lg p-2 hover:bg-gray-100">
-              <Bell className="size-5 text-gray-600" />
-            </button>
             <div className="flex items-center gap-3">
               <div className="text-right text-sm">
                 <div className="font-medium">{user.name}</div>
-                <div className="text-xs text-gray-500">{user.role}</div>
               </div>
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600">
                 <span className="text-sm font-medium text-white">{user.initials}</span>
