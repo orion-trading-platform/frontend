@@ -116,11 +116,6 @@ export function OrderingPage() {
                 ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
-            <div className="ml-auto">
-              <span className={`text-sm ${isPositive ? "text-green-500" : "text-red-500"}`}>
-                {isPositive ? "+" : ""}{snapshot.changePercent.toFixed(2)}%
-              </span>
-            </div>
           </div>
         </div>
 
