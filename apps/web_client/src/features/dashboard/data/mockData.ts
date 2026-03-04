@@ -23,6 +23,6 @@ export const MOCK_HOLDINGS: Holding[] = [
 
 export const MOCK_ACTIVITY = [
   { type: "Buy", symbol: "AAPL", date: "Today, 10:23 AM", value: "-$1,250.00", status: "Completed", isPositive: false },
-  { type: "Sell", symbol: "TSLA", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed",isPositive: false },
-  { type: "Deposit", symbol: "USD", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed", isPositive: false },
+  { type: "Sell", symbol: "TSLA", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed",isPositive: true },
+  { type: "Deposit", symbol: "USD", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed", isPositive: true },
 ];

@@ -17,7 +17,7 @@ export const RecentActivity = ({type, symbol, date, value, status, isPositive}: 
             
             </div>
             <div className = {styles.content}>
-                <div className = {styles.header}>
+                <div className = {styles.headerRow}>
                     <span className = {styles.label}>
                         {type} {symbol}
                         
@@ -26,12 +26,13 @@ export const RecentActivity = ({type, symbol, date, value, status, isPositive}: 
                         {value}
                     </span>
                 </div>
-                <div className = {styles.time}>
-                    {date}
-                
-                </div>
-                <div className = {styles.status}>
-                    {status}
+                <div className = {styles.caption}>
+                    <div className = {styles.time}>
+                        {date}
+                    </div>
+                    <div className = {styles.status}>
+                        {status}
+                    </div>
                 </div>
             </div>
 

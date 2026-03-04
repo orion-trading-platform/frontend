@@ -32,7 +32,7 @@ export const DashboardPage = () => {
       }
       chart={<PerformanceChart />}
       activity={
-        <div style={{ padding: 20, textAlign: 'center', color: '#000000' }}>
+        <div style={{ padding: 20, textAlign: 'center', color: '#000000', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available'}}>
           <h3>Recent Activity</h3>
           <p>Your recent transactions.</p>
           <>

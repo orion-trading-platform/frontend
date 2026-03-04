@@ -5,7 +5,12 @@
     display: flex;
     gap: 16px;
     align-items: center;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #ffffff;
+    width: -webkit-fill-available;
+}
+
+.card:hover{
+    background: #ebedee;
 }
 
 .icon{
@@ -17,47 +22,59 @@
     align-items: center;
     justify-content: center;
     font-size: 24px;
+
 }
 .content {
   flex: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 4px;
 }
 
 .headerRow {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: row;
 }
 
 .label {
-  color: #000000; 
+  width: max-content;
+  color: hsl(0, 0%, 0%); 
   font-size: 14px;
   font-weight: 500;
 }
-
+.caption {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
 .value {
   font-size: 13px;
   font-weight: 700;
   color: #111827;
 }
 .valuePos{
-    color: rgb(9, 255, 95);
+    color: rgb(0, 150, 52);
 }
 .valueNeg{
     color: rgb(0, 0, 0);
 }
 .time{
-    font-size: 8px;
-    color: rgb(140, 140, 140);
+    width: max-content;
+    display: flex;
+    font-size: 10px;
+    color: #4f4f4f;
 }
 
 .status{
-    border-radius: 5px;
-    background-color: #919191;
+    border-radius: 7px;
+    width: auto;
+    background-color: #ededed;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: min-content;
 }
