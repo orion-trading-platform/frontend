@@ -4,6 +4,12 @@
     "allowJs": true,
     "noEmit": true,
     "target": "es5",
-    "lib": ["es2017", "dom", "dom.iterable"]
-  }
+    "lib": ["es2021", "dom", "dom.iterable"],
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": false,
+    "esModuleInterop": true
+  },
+  "include": ["src"]
 }

@@ -1,6 +1,65 @@
-const API_BASE = ""; 
+// ── Types ──────────────────────────────────────────────────────────────────
 
-async function apiGet(path, params = {}) {
+export interface LedgerSummary {
+  netPL: number;
+  realizedPL: number;
+  unrealizedPL: number;
+  cashBalance: number;
+  accountValue: number;
+  buyingPower: number;
+}
+
+export interface ActivityItem {
+  id: string;
+  timestamp: string;
+  type: string;
+  subtype: string | null;
+  symbol: string | null;
+  quantity: number | null;
+  price: number | null;
+  amount: number | null;
+  fee: number;
+  status: string;
+  notes: string | null;
+  orderId: string | null;
+  transferId: string | null;
+}
+
+export interface ActivityDetail extends ActivityItem {
+  filledQuantity: number | null;
+  avgFillPrice: number | null;
+  orderType: string | null;
+  failureReason: string | null;
+}
+
+export interface ActivityPage {
+  items: ActivityItem[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+interface GetSummaryParams {
+  startDate: string;
+  endDate: string;
+}
+
+interface GetActivityParams {
+  startDate: string;
+  endDate: string;
+  type: string;
+  status: string;
+  symbol: string;
+  page: number;
+  pageSize: number;
+}
+
+// ── API helper ─────────────────────────────────────────────────────────────
+
+const API_BASE = "";
+
+async function apiGet<T>(path: string, params: Record<string, string | number | undefined | null> = {}): Promise<T> {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
 
   Object.entries(params).forEach(([k, v]) => {
@@ -11,7 +70,7 @@ async function apiGet(path, params = {}) {
 
   const res = await fetch(url.toString(), {
     method: "GET",
-    credentials: "include", 
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
 
@@ -23,21 +82,18 @@ async function apiGet(path, params = {}) {
   return res.json();
 }
 
-export const ledgerService = {
-  getSummary: ({ startDate, endDate }) =>
-    apiGet("/api/ledger/summary", { startDate, endDate }),
+// ── Service ────────────────────────────────────────────────────────────────
 
-  getActivity: ({ startDate, endDate, type, status, symbol, page, pageSize }) =>
-    apiGet("/api/ledger/activity", {
-      startDate,
-      endDate,
-      type,
-      status,
-      symbol,
-      page,
-      pageSize,
+export const ledgerService = {
+  getSummary: (params: GetSummaryParams): Promise<LedgerSummary> =>
+    apiGet<LedgerSummary>("/api/ledger/summary", params),
+
+  getActivity: (params: GetActivityParams): Promise<ActivityPage> =>
+    apiGet<ActivityPage>("/api/ledger/activity", {
+      ...params,
       sort: "desc",
     }),
 
-  getActivityDetail: (id) => apiGet(`/api/ledger/activity/${id}`),
+  getActivityDetail: (id: string): Promise<ActivityDetail> =>
+    apiGet<ActivityDetail>(`/api/ledger/activity/${id}`),
 };
