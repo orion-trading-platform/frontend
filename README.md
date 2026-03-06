@@ -20,7 +20,7 @@ root/
 │
 ├── packages/                <-- SHARED CODE (Do not duplicate!)
 │   ├── ui-kit/              <-- Generic Buttons, Inputs, Cards
-│   ├── ts-types/            <-- Shared Interfaces (User, Stock, Trade)
+│   ├── ts-config/           <-- Shared Interfaces (User, Stock, Trade)
 │   └── styles/              <-- Global CSS variables & colors
 ```
 
