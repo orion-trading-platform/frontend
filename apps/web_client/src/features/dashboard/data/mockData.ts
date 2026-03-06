@@ -1,7 +1,8 @@
 export const MOCK_STATS = [
-  { label: "Total Gains", value: "$18,320.50", change: "+15.3%", isPositive: true, icon: "graph" },
-  { label: "Cash in Wallet", value: "$12,450.00", change: "-1.2%", isPositive: false, icon: "wallet" },
-  { label: "Day's P&L", value: "$432.20", change: "+0.8%", isPositive: true, icon: "pulse" },
+  { label: "Total Gains", value: "$18,320.50", change: "+15.3%", isPositive: true, icon: "Graph" },
+  { label: "Cash in Wallet", value: "$12,450.00", change: "-1.2%", isPositive: false, icon: "Wallet" },
+  { label: "Day's P&L", value: "$432.20", change: "+0.8%", isPositive: true, icon: "Pulse" },
+  { label: "Total Portfolio Value", value: "$124,592.00", change: "+2.4%", isPositive: true, icon: "Cash" },
 ];
 
 export type Holding = {
@@ -22,7 +23,8 @@ export const MOCK_HOLDINGS: Holding[] = [
 ];
 
 export const MOCK_ACTIVITY = [
-  { type: "Buy", symbol: "AAPL", date: "Today, 10:23 AM", value: "-$1,250.00", status: "Completed", isPositive: false },
+  { type: "Buy", symbol: "AAPL", date: "Today, 10:23 AM", value: "-$1,250.00", status: "Pending", isPositive: false },
   { type: "Sell", symbol: "TSLA", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed",isPositive: true },
   { type: "Deposit", symbol: "USD", date: "Yesterday, 2:45 PM", value: "+$4,200.00", status: "Completed", isPositive: true },
+  { type: "Trade", symbol: "NVDA", date: "Yesterday, 1:00 PM", value: "+$3,200.00", status: "Filled", isPositive: true }
 ];

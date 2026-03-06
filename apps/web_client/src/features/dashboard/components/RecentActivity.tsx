@@ -14,13 +14,13 @@ export const RecentActivity = ({type, symbol, date, value, status, isPositive}: 
         <div className = {styles.card}>
 
             <div className = {styles.icon}>
-            
+                <img src = {`/src/features/dashboard/components/icons/${type}Icon.png`} alt = "Icon" style={{width : '36px', height : '36px',  borderRadius : '12px'}}/>
+              
             </div>
             <div className = {styles.content}>
                 <div className = {styles.headerRow}>
                     <span className = {styles.label}>
                         {type} {symbol}
-                        
                     </span>
                     <span className = {`${styles.value} ${isPositive ? styles.valuePos : styles.valueNeg}`}>
                         {value}

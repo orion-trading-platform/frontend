@@ -5,14 +5,16 @@ interface StatCardProps {
   value: string;
   change: string;
   isPositive: boolean;
+  icon: string;
 }
 
-export const StatCard = ({ label, value, change, isPositive }: StatCardProps) => {
+export const StatCard = ({ label, value, change, isPositive, icon }: StatCardProps) => {
   return (
     <div className={styles.card}>
       <div className={styles.iconBox}>
         {/* We'll add real icons later, using a placeholder for now */}
-        {isPositive ? '📈' : '📉'}
+        <img src = {`/src/features/dashboard/components/icons/${icon}Icon.png`} alt = "Icon" style={{width : '48px', height : '48px',  borderRadius : '8px'}}/>
+        
       </div>
       <div className={styles.content}>
         <div className={styles.headerRow}>
