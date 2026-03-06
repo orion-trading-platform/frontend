@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import AuthRightColumn from './AuthRightColumn';
 
 const ResetPassword: React.FC = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
   const navigate = useNavigate();
 
   // State to track the reset flow step
