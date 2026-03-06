@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 import { useNavigate } from 'react-router-dom';
 import AuthRightColumn from './AuthRightColumn';
