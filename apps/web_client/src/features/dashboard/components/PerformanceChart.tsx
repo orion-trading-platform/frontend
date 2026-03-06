@@ -67,7 +67,7 @@ export const PerformanceChart = () => {
   const data = DATA_BY_TIMELINE[timeline];
 
   return (
-    <div style={{ width: '100%', height: 350, padding: '10px' }}>
+    <div style={{ width: '95%', height: 350, padding: '10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <h3 style={{ margin: 0, color: '#111827' }}>Performance History</h3>
         <div style={{ display: 'flex', gap: 4 }}>

@@ -15,24 +15,22 @@ export const DashboardGrid = ({ header, stats, chart, activity, holdings }: Dash
       <div className={styles.headerArea}>
         {header}
       </div>
-      
-      <div className={styles.statsArea}>
-        {stats}
-      </div>
-      
-      {/* The main content area (Chart + Holdings Table) */}
+      {/*Main content area:  stats, chart*/}
       <div className={styles.mainArea}>
+        <div className={styles.statsArea}>
+          {stats}
+        </div>
         <div className={styles.chartSection}>
           {chart}
         </div>
-        <div className={styles.holdingsSection}>
-          {holdings}
-        </div>
       </div>
-
-      {/* The Sidebar (Recent Activity) */}
+      {/*sidebar */}
       <div className={styles.sidebarArea}>
         {activity}
+      </div>
+      {/*holdings */}
+      <div className={styles.holdingsSection}>
+        {holdings}
       </div>
     </div>
   );

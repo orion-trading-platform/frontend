@@ -2,8 +2,10 @@
     background: white;
     border-radius: 12px;
     padding: 20px;
+    padding-left: 10px;
+    padding-right:10px;
     display: flex;
-    gap: 16px;
+    gap: 10px;
     align-items: center;
     border: 1px solid #ffffff;
     width: -webkit-fill-available;

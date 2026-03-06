@@ -1,18 +1,19 @@
 .container {
   display: grid;
-  height: 100vh; /* Full screen height */
+  height: auto; /* Full screen height */
   padding: 24px;
   box-sizing: border-box;
   background-color: #f9fafb; /* Light gray background */
-  gap: 24px;
+  gap: 20px;
+  width:100%;
   
   /* THE FLOOR PLAN */
-  grid-template-columns: 3fr 1fr; /* Left side wide, Right side narrow */
+  grid-template-columns: 2fr 1fr; /* Left side wide, Right side narrow */
   grid-template-rows: auto auto 1fr; /* Header height, Stats height, Rest of screen */
   grid-template-areas: 
     "header header"
-    "stats stats"
-    "main sidebar";
+    "main sidebar"
+    "holdings holdings";
 }
 
 /* Assigning the rooms to the floor plan */
@@ -20,14 +21,11 @@
 .headerArea {
   grid-area: header;
 }
-
 .statsArea {
-  grid-area: stats;
   display: flex;
-  gap: 40px;
+  gap: 15px;
   /* Ensure stats don't squash each other */
   justify-content: space-between; 
-  width: -webkit-fill-available;
   flex-direction: row;
 }
 
@@ -38,6 +36,7 @@
   gap: 24px;
   /* If content is too tall, let this specific box scroll, not the whole page */
   overflow-y: auto; 
+  min-width: fit-content;
 }
 
 .sidebarArea {
@@ -47,7 +46,6 @@
   background: white;
   border-radius: 12px;
   color: #000000;
-  padding: 20px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   /* Stick to the height of the main content */
@@ -64,11 +62,13 @@
 }
 
 .holdingsSection {
+  grid-area: holdings;
   background: white;
   border-radius: 12px;
+  width:-webkit-fill-available;
   padding: 20px;
   border: 1px solid #e5e7eb;
-  flex: 1; /* Fill remaining space in main column */
+  flex: 0; /* Fill remaining space in main column */
 }
 
 /* MOBILE LAYOUT: Stack everything vertically if screen is small */
@@ -79,9 +79,9 @@
     grid-template-rows: auto;
     grid-template-areas: 
       "header"
-      "stats"
       "main"
-      "sidebar";
+      "sidebar"
+      "holdings";
   }
   
   .statsArea {
