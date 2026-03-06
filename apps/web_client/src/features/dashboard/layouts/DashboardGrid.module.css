@@ -24,9 +24,11 @@
 .statsArea {
   grid-area: stats;
   display: flex;
-  gap: 20px;
+  gap: 40px;
   /* Ensure stats don't squash each other */
   justify-content: space-between; 
+  width: -webkit-fill-available;
+  flex-direction: row;
 }
 
 .mainArea {
@@ -58,7 +60,7 @@
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #e5e7eb;
-  min-height: 300px;
+  min-height: fit-content;
 }
 
 .holdingsSection {

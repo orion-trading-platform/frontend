@@ -32,9 +32,11 @@ export const DashboardPage = () => {
       }
       chart={<PerformanceChart />}
       activity={
-        <div style={{ padding: 20, textAlign: 'center', color: '#000000', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available'}}>
-          <h3>Recent Activity</h3>
-          <p>Your recent transactions.</p>
+        <div style={{ padding: 20, textAlign: 'left', color: '#000000', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available'}}>
+          <div>
+            <h3 style={{marginBlock: '5px', color: '#000000'}}>Recent Activity</h3>
+            <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
+          </div>
           <>
             {MOCK_ACTIVITY.map((activity) => (
               <RecentActivity key={activity.type} {...activity} />

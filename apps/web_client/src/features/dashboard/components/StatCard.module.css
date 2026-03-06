@@ -7,6 +7,11 @@
   gap: 16px;
   align-items: center;
   border: 1px solid #e5e7eb;
+  width: -webkit-fill-available;
+  max-width: 30vw;
+  min-width: max-content;
+  height: -webkit-fill-available;
+  max-height: max-content;
 }
 
 .iconBox {
@@ -31,6 +36,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .label {
@@ -48,7 +54,7 @@
 /* Badges */
 .badge {
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
