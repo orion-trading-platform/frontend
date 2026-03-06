@@ -9,7 +9,7 @@ import AuthRightColumn from './AuthRightColumn';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
   // State to track if user is signing up (true) or logging in (false)
   const [isSignUpMode, setIsSignUpMode] = useState(true);
