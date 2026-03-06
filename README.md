@@ -70,7 +70,7 @@ Follow these steps to get started on developing:
     npm run dev
    ```
 
-7. Open your browser and navigate to [http://localhost:5137](http://localhost:5137) (or your configured port)
+7. Open your browser and navigate to [http://localhost:5173](http://localhost:5173) (or your configured port)
 
 ### Contributing
 
