@@ -56,17 +56,10 @@ const Login: React.FC = () => {
             headers: { 'Content-Type': 'application/json' },
           }
         );
-        // const redirectTo = backendResponse.data.redirect_to;
-        
-        // if (userEmail.toLowerCase() === import.meta.env.DEV_LOGIN_EMAIL) {
-        //   navigate('/admin');
-        // } else if (redirectTo === 'dashboard') {
-        //   navigate('/dashboard');
-        // } else {
-        //   ... // onboarding?
-        // }
+        navigate('/dashboard');
       } catch (err) {
-        console.error('Error during login:', err);
+        console.error('Error during Google login:', err);
+        setErrorMessage("Google login failed. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -128,7 +121,7 @@ const Login: React.FC = () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
 
         setSuccessMessage("Account created. Redirecting...");
-        setTimeout(() => navigate("/"), 800);
+        setTimeout(() => navigate("/dashboard"), 800);
         return;
       }
 
@@ -151,7 +144,7 @@ const Login: React.FC = () => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
 
       setSuccessMessage("Logged in. Redirecting...");
-      setTimeout(() => navigate("/"), 600);
+      setTimeout(() => navigate("/dashboard"), 600);
     } catch (err: any) {
       const status = err?.response?.status;
 
