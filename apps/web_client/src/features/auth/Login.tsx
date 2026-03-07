@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
+// import ReCAPTCHA from 'react-google-recaptcha';
 // import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 import AuthRightColumn from './AuthRightColumn';
@@ -23,11 +23,10 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   
-  // reCAPTCHA token
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  
-  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+  // reCAPTCHA token (not yet fully implemented)
+  // const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  // const recaptchaRef = useRef<ReCAPTCHA>(null);
+  // const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -323,7 +322,7 @@ const Login: React.FC = () => {
               </div>
             )}
 
-            {/* reCAPTCHA */}
+            {/* reCAPTCHA (not yet fully implemented)
             <div className="flex justify-center mt-4">
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -331,6 +330,7 @@ const Login: React.FC = () => {
                 onChange={(token) => setRecaptchaToken(token)}
               />
             </div>
+            */}
 
             {/* Sign Up/Log In Button */}
             <button
