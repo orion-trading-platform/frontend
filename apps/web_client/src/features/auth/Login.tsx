@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
+// import ReCAPTCHA from 'react-google-recaptcha';
 // import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 import AuthRightColumn from './AuthRightColumn';
@@ -23,11 +23,10 @@ const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   
-  // reCAPTCHA token
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  
-  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+  // reCAPTCHA token (not yet fully implemented)
+  // const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  // const recaptchaRef = useRef<ReCAPTCHA>(null);
+  // const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -56,17 +55,10 @@ const Login: React.FC = () => {
             headers: { 'Content-Type': 'application/json' },
           }
         );
-        // const redirectTo = backendResponse.data.redirect_to;
-        
-        // if (userEmail.toLowerCase() === import.meta.env.DEV_LOGIN_EMAIL) {
-        //   navigate('/admin');
-        // } else if (redirectTo === 'dashboard') {
-        //   navigate('/dashboard');
-        // } else {
-        //   ... // onboarding?
-        // }
+        navigate('/dashboard');
       } catch (err) {
-        console.error('Error during login:', err);
+        console.error('Error during Google login:', err);
+        setErrorMessage("Google login failed. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -128,7 +120,7 @@ const Login: React.FC = () => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
 
         setSuccessMessage("Account created. Redirecting...");
-        setTimeout(() => navigate("/"), 800);
+        setTimeout(() => navigate("/dashboard"), 800);
         return;
       }
 
@@ -151,7 +143,7 @@ const Login: React.FC = () => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
 
       setSuccessMessage("Logged in. Redirecting...");
-      setTimeout(() => navigate("/"), 600);
+      setTimeout(() => navigate("/dashboard"), 600);
     } catch (err: any) {
       const status = err?.response?.status;
 
@@ -330,7 +322,7 @@ const Login: React.FC = () => {
               </div>
             )}
 
-            {/* reCAPTCHA */}
+            {/* reCAPTCHA (not yet fully implemented)
             <div className="flex justify-center mt-4">
               <ReCAPTCHA
                 ref={recaptchaRef}
@@ -338,6 +330,7 @@ const Login: React.FC = () => {
                 onChange={(token) => setRecaptchaToken(token)}
               />
             </div>
+            */}
 
             {/* Sign Up/Log In Button */}
             <button
