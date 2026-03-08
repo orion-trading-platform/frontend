@@ -31,31 +31,27 @@ const Login: React.FC = () => {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
+      setErrorMessage("");
       try {
-        // Fetch user info from Google
-        const res = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        });
-        const userData = res.data;
-        const userEmail = userData.email || '';
-        localStorage.setItem('loggedInUserEmail', userEmail);
-        
-        // Send user info to the backend
-        const backendResponse = await axios.post(
-          `${backendUrl}/append_user_id`,
-          {
-            user_id: userEmail,
-            name: userData.name,
-            picture: userData.picture,
-          },
-          {
-            withCredentials: true,
-            headers: { 'Content-Type': 'application/json' },
-          }
+        // Send Google access token to our backend — it handles
+        // verification, user creation, and JWT minting server-side.
+        const res = await axios.post(
+          `${backendUrl}/auth/login/google`,
+          { google_access_token: tokenResponse.access_token },
+          { headers: { 'Content-Type': 'application/json' } }
         );
-        navigate('/dashboard');
+
+        const { access_token, refresh_token } = res.data || {};
+        if (!access_token || !refresh_token) {
+          throw new Error("Missing tokens from /auth/login/google response");
+        }
+
+        localStorage.setItem("accessToken", access_token);
+        localStorage.setItem("refreshToken", refresh_token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+
+        setSuccessMessage("Logged in with Google. Redirecting...");
+        setTimeout(() => navigate('/dashboard'), 600);
       } catch (err) {
         console.error('Error during Google login:', err);
         setErrorMessage("Google login failed. Please try again.");
