@@ -4,13 +4,16 @@ import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
 import { SearchBar } from './components/SearchBar';
+import { TickerSearch } from './components/TickerSearch';
 import { HoldingsTable } from './components/HoldingsTable';
+import { BiggestMovers } from './components/BiggestMovers';
 import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
 import Papa, { ParseResult } from "papaparse"
 
 
 export const DashboardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [rData, setrData] = useState<RecentActivityProps[]>([]);
 
   useEffect(() => {
@@ -49,7 +52,19 @@ export const DashboardPage = () => {
 
   return (
     <DashboardGrid
-      header={<h1>My Dashboard</h1>}
+      header={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 12 }}>
+          <h1 style={{ margin: 0 }}>My Dashboard</h1>
+          <div style={{ minWidth: 220, maxWidth: 360, width: '100%' }}>
+            <TickerSearch
+              value={dashboardSearchQuery}
+              onChange={setDashboardSearchQuery}
+              placeholder="Search for a stock..."
+            />
+          </div>
+        </div>
+      }
+      movers={<BiggestMovers />}
       stats={
         <>
           {MOCK_STATS.map((stat) => (

@@ -9,9 +9,10 @@
   
   /* THE FLOOR PLAN */
   grid-template-columns: 2fr 1fr; /* Left side wide, Right side narrow */
-  grid-template-rows: auto auto 1fr; /* Header height, Stats height, Rest of screen */
+  grid-template-rows: auto auto auto 1fr;
   grid-template-areas: 
     "header header"
+    "movers movers"
     "main sidebar"
     "holdings holdings";
 }
@@ -21,6 +22,11 @@
 .headerArea {
   grid-area: header;
 }
+
+.moversArea {
+  grid-area: movers;
+}
+
 .statsArea {
   display: flex;
   gap: 15px;
@@ -34,9 +40,27 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  /* If content is too tall, let this specific box scroll, not the whole page */
-  overflow-y: auto; 
+  overflow-y: auto;
   min-width: fit-content;
+}
+
+.accountSummaryBox {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #BCCCDC;
+  box-shadow: 4px 4px 5px #9aa6b23c;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.accountSummaryTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: left;
 }
 
 .sidebarArea {
@@ -54,14 +78,14 @@
 }
 
 .chartSection {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #BCCCDC;
-  box-shadow: 4px 4px 5px #9aa6b23c; 
-  margin-bottom: 5px;
-  margin-right: 5px;
+  padding: 0;
+  margin-bottom: 0;
+  margin-right: 0;
   min-height: fit-content;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .holdingsSection {
@@ -85,6 +109,7 @@
     grid-template-rows: auto;
     grid-template-areas: 
       "header"
+      "movers"
       "main"
       "sidebar"
       "holdings";
