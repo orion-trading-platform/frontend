@@ -1,4 +1,4 @@
-Ticker,Date,Quantity,Type,Price,Total Price,Status
+ticker,date,quantity,type,price,totalPrice,status
 NVDA,2026-03-07,91,Dividend,56.1,5105.1,Completed
 PG,2026-03-07,34,Dividend,429.51,14603.34,Completed
 MSFT,2026-03-07,32,Buy,82.68,2645.76,Pending

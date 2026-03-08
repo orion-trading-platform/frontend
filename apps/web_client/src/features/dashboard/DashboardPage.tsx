@@ -1,14 +1,38 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
-import { RecentActivity } from './components/RecentActivity';
+import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
 import { SearchBar } from './components/SearchBar';
 import { HoldingsTable } from './components/HoldingsTable';
 import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
+import Papa, { ParseResult } from "papaparse"
+
 
 export const DashboardPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [rData, setrData] = useState<RecentActivityProps[]>([]);
+
+  useEffect(() => {
+    fetch('/src/features/dashboard/data/ds5_recent_actions.csv')
+      .then((response) => response.text())
+      .then((csvString) => {
+        Papa.parse(csvString, {
+          header: true,
+          dynamicTyping: true,
+          complete: (results) => {
+            const dataWithIds: RecentActivityProps[] = results.data.map((row: any, index: number) => {
+            return {
+              id: index + 1, // Start IDs from 1, or just use index for 0-based
+              ...row,
+            } as RecentActivityProps;
+        });
+            setrData(dataWithIds);
+        },
+        });
+      })
+      .catch((error) => console.error('Error fetching or parsing data:', error));
+  }, []);
 
   const filteredHoldings = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -18,7 +42,10 @@ export const DashboardPage = () => {
         h.symbol.toLowerCase().includes(q) ||
         h.name.toLowerCase().includes(q)
     );
+
   }, [searchQuery]);
+
+
 
   return (
     <DashboardGrid
@@ -38,8 +65,8 @@ export const DashboardPage = () => {
             <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
           </div>
           <>
-            {MOCK_ACTIVITY.map((activity) => (
-              <RecentActivity key={activity.type} {...activity} />
+            {rData.slice(0, 5).map((activity) => (
+              <RecentActivity key={activity.id} {...activity} />
             ))}
         </>
         </div>

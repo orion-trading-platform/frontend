@@ -1,15 +1,18 @@
 import styles from './RecentActivity.module.css';
 
-interface RecentActivityProps {
-    type: string;
-    symbol: string;
+export interface RecentActivityProps {
+    id: number;
+    ticker: string;
     date: string;
-    value: string;
+    quantity: string;
+    type: string;
+    price: string;
+    totalPrice: string;
     status: string;
-    isPositive: boolean;
 }
 
-export const RecentActivity = ({type, symbol, date, value, status, isPositive}: RecentActivityProps) => {
+export const RecentActivity = ({ticker, date, quantity, type, price, totalPrice, status}: RecentActivityProps) => {
+    const isNeg = type == "Buy";
     return (
         <div className = {styles.card}>
 
@@ -20,10 +23,10 @@ export const RecentActivity = ({type, symbol, date, value, status, isPositive}: 
             <div className = {styles.content}>
                 <div className = {styles.headerRow}>
                     <span className = {styles.label}>
-                        {type} {symbol}
+                        {type} {ticker}
                     </span>
-                    <span className = {`${styles.value} ${isPositive ? styles.valuePos : styles.valueNeg}`}>
-                        {value}
+                    <span className = {`${styles.value} ${isNeg ? styles.valuePos : styles.valueNeg}`}>
+                        {isNeg ? "+ " : "- "}${totalPrice}
                     </span>
                 </div>
                 <div className = {styles.caption}>
