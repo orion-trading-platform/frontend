@@ -41,11 +41,13 @@ export async function getStockBars(symbol: string, timeframe: string, start: str
   const count = points[timeframe] ?? 30;
   const data: { time: string; open: number; high: number; low: number; close: number; volume: number }[] = [];
 
+  let prevClose = basePrice;
   for (let i = 0; i < count; i++) {
-    const close = basePrice + i * ((175.43 - basePrice) / count) + (Math.random() * 2 - 1);
-    const open = close - Math.random() * 1.5;
-    const high = close + Math.random() * 1.5;
-    const low = open - Math.random() * 1.5;
+    const open = prevClose;
+    const change = (Math.random() * 2 - 0.75) * 1.5;
+    const close = open + change;
+    const high = Math.max(open, close) + Math.random() * 0.5;
+    const low = Math.min(open, close) - Math.random() * 0.5;
     data.push({
       time: `T${i}`,
       open: parseFloat(open.toFixed(2)),
@@ -54,6 +56,7 @@ export async function getStockBars(symbol: string, timeframe: string, start: str
       close: parseFloat(close.toFixed(2)),
       volume: Math.floor(Math.random() * 500000 + 100000),
     });
+    prevClose = close;
   }
 
   return data;
