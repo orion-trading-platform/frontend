@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import Logo from '../../assets/logo.svg';
 import { useNavigate } from 'react-router-dom';
 import AuthRightColumn from './AuthRightColumn';
+import { useAuthActions } from './useAuthActions';
 
 const ResetPassword: React.FC = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
   const navigate = useNavigate();
+  const { forgotPassword, resetPassword } = useAuthActions();
 
   // State to track the reset flow step
   // 'request': User requests a reset code via email
@@ -40,11 +40,7 @@ const ResetPassword: React.FC = () => {
 
     try {
       // Backend always returns 202 to prevent user enumeration
-      await axios.post(
-        `${backendUrl}/auth/forgot-password`,
-        { email: requestEmail },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      await forgotPassword(requestEmail);
 
       setSuccessMessage("If an account exists for that email, a reset link/code has been sent.");
       setTimeout(() => {
@@ -80,14 +76,7 @@ const ResetPassword: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      await axios.post(
-        `${backendUrl}/auth/reset-password`,
-        {
-          token: resetCode,          // this is the raw token from email/link
-          new_password: newPassword, // matches your ResetPasswordRequest schema
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      await resetPassword(resetCode, newPassword);
 
       setSuccessMessage("Password reset successfully! Redirecting to login...");
       setTimeout(() => navigate("/"), 1000);

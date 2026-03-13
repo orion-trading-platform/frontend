@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // import ReCAPTCHA from 'react-google-recaptcha';
 // import LoginGraphic from '../../assets/login-graphic.svg';
 import Logo from '../../assets/logo.svg';
 import AuthRightColumn from './AuthRightColumn';
+import { useAuthActions } from './useAuthActions';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  const { login: authLogin, register: authRegister, loginWithGoogle } = useAuthActions();
 
   // State to track if user is signing up (true) or logging in (false)
   const [isSignUpMode, setIsSignUpMode] = useState(true);
@@ -28,28 +28,12 @@ const Login: React.FC = () => {
   // const recaptchaRef = useRef<ReCAPTCHA>(null);
   // const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       setErrorMessage("");
       try {
-        // Send Google access token to our backend — it handles
-        // verification, user creation, and JWT minting server-side.
-        const res = await axios.post(
-          `${backendUrl}/auth/login/google`,
-          { google_access_token: tokenResponse.access_token },
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-
-        const { access_token, refresh_token } = res.data || {};
-        if (!access_token || !refresh_token) {
-          throw new Error("Missing tokens from /auth/login/google response");
-        }
-
-        localStorage.setItem("accessToken", access_token);
-        localStorage.setItem("refreshToken", refresh_token);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-
+        await loginWithGoogle(tokenResponse.access_token);
         setSuccessMessage("Logged in with Google. Redirecting...");
         setTimeout(() => navigate('/dashboard'), 600);
       } catch (err) {
@@ -89,55 +73,13 @@ const Login: React.FC = () => {
 
     try {
       if (isSignUpMode) {
-        // 1) Register
-        await axios.post(
-          `${backendUrl}/auth/register`,
-          { email, password },
-          { headers: { "Content-Type": "application/json" } }
-        );
-
-        // 2) Immediately login to receive token pair
-        const loginRes = await axios.post(
-          `${backendUrl}/auth/login`,
-          { email, password },
-          { headers: { "Content-Type": "application/json" } }
-        );
-
-        const { access_token, refresh_token } = loginRes.data || {};
-        if (!access_token || !refresh_token) {
-          throw new Error("Missing tokens from /auth/login response");
-        }
-
-        localStorage.setItem("accessToken", access_token);
-        localStorage.setItem("refreshToken", refresh_token);
-        localStorage.setItem("loggedInUserEmail", email);
-
-        // Optional convenience: set default auth header for future axios calls
-        axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-
+        await authRegister(email, password);
         setSuccessMessage("Account created. Redirecting...");
         setTimeout(() => navigate("/dashboard"), 800);
         return;
       }
 
-      // Login
-      const loginRes = await axios.post(
-        `${backendUrl}/auth/login`,
-        { email, password },
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      const { access_token, refresh_token } = loginRes.data || {};
-      if (!access_token || !refresh_token) {
-        throw new Error("Missing tokens from /auth/login response");
-      }
-
-      localStorage.setItem("accessToken", access_token);
-      localStorage.setItem("refreshToken", refresh_token);
-      localStorage.setItem("loggedInUserEmail", email);
-
-      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
-
+      await authLogin(email, password);
       setSuccessMessage("Logged in. Redirecting...");
       setTimeout(() => navigate("/dashboard"), 600);
     } catch (err: any) {
@@ -213,7 +155,7 @@ const Login: React.FC = () => {
             {/* Sign up/Continue with Google */}
             <button
               className="select-none appearance-none bg-[#F2F2F2] border-none rounded box-border text-[#1F1F1F] cursor-pointer font-['Roboto',arial,sans-serif] text-sm h-10 tracking-[0.25px] outline-none overflow-hidden px-3 relative text-center align-middle whitespace-nowrap w-[280px] max-w-[280px] min-w-min mx-auto block transition-[background-color_.218s,border-color_.218s,box-shadow_.218s] hover:bg-[#DFE1E3]"
-              onClick={() => login()}
+              onClick={() => googleLogin()}
             >
               <div className="flex items-center justify-center h-full">
                 <div className="h-5 mr-3 w-5">
