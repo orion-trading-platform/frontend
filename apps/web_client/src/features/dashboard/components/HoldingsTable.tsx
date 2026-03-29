@@ -48,6 +48,7 @@ export const HoldingsTable = ({ holdings }: HoldingsTableProps) => {
               <td className={styles.tdSymbol}>{h.ticker}</td>
               <td className={styles.td}>{h.companyName}</td>
               <td className={styles.td}>${h.currentPrice}</td>
+              <td className={styles.td}>${h.costBasis}</td>
               <td className={`${styles.td} ${h.changeDaily >= 0 ? styles.positive : styles.negative}`}>
                 {h.changeDaily}%
               </td>

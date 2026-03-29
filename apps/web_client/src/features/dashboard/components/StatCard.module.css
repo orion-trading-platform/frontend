@@ -2,12 +2,12 @@
   background: white;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 4px 4px 5px #9aa6b23c; /* Soft shadow like Figma */
+  /* box-shadow: 4px 4px 5px #9aa6b23c; Soft shadow like Figma */
   display: flex;
   margin-right: 5px;
   gap: 16px;
   align-items: center;
-  border: 1px solid #BCCCDC;
+  /* border: 1px solid #BCCCDC; */
   width: -webkit-fill-available;
   max-width: 30vw;
   min-width: max-content;

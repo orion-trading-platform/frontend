@@ -4,7 +4,7 @@ import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
 import { SearchBar } from './components/SearchBar';
-import { HoldingsTable } from './components/HoldingsTable';
+import { HoldingsTable, HoldingsTableProps, Holding} from './components/HoldingsTable';
 import { TickerSearch } from './components/TickerSearch';
 import { BiggestMovers } from './components/BiggestMovers';
 import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
@@ -60,6 +60,7 @@ export const DashboardPage = () => {
     if (!searchQuery) return hData;
     const q = searchQuery.trim().toLowerCase();
     if (hData.length != 0){
+      console.log(hData)
       return hData.filter(
         (h) =>
           h.ticker.toLowerCase().includes(q) ||
