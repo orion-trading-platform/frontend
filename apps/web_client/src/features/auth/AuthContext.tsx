@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import api, { setUnauthorizedHandler } from "./api";
+import api, { setUnauthorizedHandler, attemptRefresh } from "./api";
 
 export interface AuthUser {
   user_id: number;
@@ -65,21 +65,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   /** Attempt to refresh the access token. Returns true if successful. */
   const refreshToken = useCallback(async (): Promise<boolean> => {
-    const rt = localStorage.getItem("refreshToken");
-    if (!rt) return false;
-    try {
-      const res = await api.post("/auth/refresh", { refresh_token: rt });
-      const { access_token, refresh_token } = res.data;
-      localStorage.setItem("accessToken", access_token);
-      localStorage.setItem("refreshToken", refresh_token);
-      return true;
-    } catch {
+    const newToken = await attemptRefresh();
+    if (!newToken) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("loggedInUserEmail");
       setCurrentUser(null);
-      return false;
     }
+    return newToken !== null;
   }, []);
 
   const logout = useCallback(async () => {

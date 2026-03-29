@@ -32,12 +32,12 @@ function processQueue(token: string | null, error: unknown = null) {
   pendingQueue = [];
 }
 
-// Dedicated client for the refresh call — same baseURL/config as api but no 401 interceptor,
+// Dedicated client for the refresh call — no auth or 401 interceptors,
 // so a failed refresh doesn't re-enter the interceptor and cause an infinite loop.
 const refreshClient = axios.create({ baseURL: API_URL });
 
 /** Attempt a single token refresh. Returns the new access token or null. */
-async function attemptRefresh(): Promise<string | null> {
+export async function attemptRefresh(): Promise<string | null> {
   const rt = localStorage.getItem("refreshToken");
   if (!rt) return null;
   try {
