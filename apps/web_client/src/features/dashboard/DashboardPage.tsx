@@ -53,14 +53,83 @@ export const DashboardPage = () => {
   return (
     <DashboardGrid
       header={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 12 }}>
-          <h1 style={{ margin: 0 }}>My Dashboard</h1>
-          <div style={{ minWidth: 220, maxWidth: 360, width: '100%' }}>
-            <TickerSearch
-              value={dashboardSearchQuery}
-              onChange={setDashboardSearchQuery}
-              placeholder="Search for a stock..."
-            />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          
+          {/* LEFT SECTION: Title */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
+            <h1 style={{ margin: 0, fontSize: '24px' }}>My Dashboard</h1>
+          </div>
+          
+          {/* MIDDLE SECTION: Navigation Links */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '32px' }}>
+            <button 
+              onClick={() => console.log('Route to /ledger')}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                fontSize: '16px', 
+                fontWeight: 500, 
+                color: '#4b5563', /* Dark gray text */
+                cursor: 'pointer', 
+                padding: 0 
+              }}
+            >
+              Ledger
+            </button>
+            <button 
+              onClick={() => console.log('Route to /ordering')}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                fontSize: '16px', 
+                fontWeight: 500, 
+                color: '#4b5563', 
+                cursor: 'pointer', 
+                padding: 0 
+              }}
+            >
+              Ordering
+            </button>
+          </div>
+
+          {/* RIGHT SECTION: Search & Icons */}
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '16px' }}>
+            
+            <div style={{ minWidth: 200, maxWidth: 300, width: '100%' }}>
+              <TickerSearch
+                value={dashboardSearchQuery}
+                onChange={setDashboardSearchQuery}
+                placeholder="Search..."
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button 
+                title="Settings"
+                style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', padding: 0 }}
+              >
+                ⚙️
+              </button>
+              <button 
+                title="Profile"
+                style={{ 
+                  background: '#f3f4f6', 
+                  border: '1px solid #e5e7eb', 
+                  borderRadius: '50%', 
+                  width: '36px', 
+                  height: '36px', 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  padding: 0
+                }}
+              >
+                👤
+              </button>
+            </div>
+
           </div>
         </div>
       }
