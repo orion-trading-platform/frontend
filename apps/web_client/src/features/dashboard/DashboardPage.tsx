@@ -4,17 +4,20 @@ import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
 import { SearchBar } from './components/SearchBar';
-import { TickerSearch } from './components/TickerSearch';
 import { HoldingsTable } from './components/HoldingsTable';
+import { TickerSearch } from './components/TickerSearch';
 import { BiggestMovers } from './components/BiggestMovers';
 import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
 import Papa, { ParseResult } from "papaparse"
 
 
 export const DashboardPage = () => {
+  var emptyTable: Holding[] = [];
+
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [rData, setrData] = useState<RecentActivityProps[]>([]);
+  const [hData, sethData] = useState<Holding[]>([]);
 
   useEffect(() => {
     fetch('/src/features/dashboard/data/ds5_recent_actions.csv')
@@ -37,17 +40,33 @@ export const DashboardPage = () => {
       .catch((error) => console.error('Error fetching or parsing data:', error));
   }, []);
 
+  useEffect(()=> {
+    fetch('/src/features/dashboard/data/ds4_holdings.csv')
+      .then((response) => response.text())
+      .then((csvString) => {
+        Papa.parse(csvString, {
+          header: true,
+          dynamicTyping: true,
+          complete: (results: ParseResult<Holding>) => {
+            sethData(results.data)
+        },
+        });
+      })
+      .catch((error) => console.error('Error fetching or parsing data:', error));
+  }, );
+
+
   const filteredHoldings = useMemo(() => {
+    if (!searchQuery) return hData;
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return MOCK_HOLDINGS;
-    return MOCK_HOLDINGS.filter(
-      (h) =>
-        h.symbol.toLowerCase().includes(q) ||
-        h.name.toLowerCase().includes(q)
-    );
+    if (hData.length != 0){
+      return hData.filter(
+        (h) =>
+          h.ticker.toLowerCase().includes(q) ||
+          h.companyName.toLowerCase().includes(q)
+      );}
 
-  }, [searchQuery]);
-
+  }, [searchQuery, hData]);
 
 
   return (
@@ -158,7 +177,7 @@ export const DashboardPage = () => {
       holdings={
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <HoldingsTable holdings={filteredHoldings} />
+          <HoldingsTable holdings={filteredHoldings??emptyTable}/>
         </div>
       }
     />

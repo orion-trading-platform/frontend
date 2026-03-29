@@ -1,9 +1,21 @@
-import type { Holding } from '../data/mockData';
 import styles from './HoldingsTable.module.css';
 
-interface HoldingsTableProps {
+export interface Holding {
+  ticker: string;
+  companyName: string;
+  currentPrice: number;
+  costBasis: number;
+  changeDaily: number;
+  quantity: number;
+  peRatio: number;
+  totalReturn: number;
+  tradingVolume: number;
+};
+
+export interface HoldingsTableProps {
   holdings: Holding[];
 }
+
 
 export const HoldingsTable = ({ holdings }: HoldingsTableProps) => {
   if (holdings.length === 0) {
@@ -19,25 +31,31 @@ export const HoldingsTable = ({ holdings }: HoldingsTableProps) => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th className={styles.th}>Symbol</th>
-            <th className={styles.th}>Name</th>
-            <th className={styles.th}>Price</th>
-            <th className={styles.th}>Change</th>
-            <th className={styles.th}>Shares</th>
-            <th className={styles.th}>Value</th>
+            <th className={styles.th}>Ticker</th>
+            <th className={styles.th}>Company Name</th>
+            <th className={styles.th}>Current Price</th>
+            <th className={styles.th}>Cost Basis</th>
+            <th className={styles.th}>Change Daily</th>
+            <th className={styles.th}>Quantity</th>
+            <th className={styles.th}>P/E Ratio</th>
+            <th className={styles.th}>Total Return</th>
+            <th className={styles.th}>Trading Volume</th>
           </tr>
         </thead>
         <tbody>
           {holdings.map((h) => (
-            <tr key={h.symbol} className={styles.row}>
-              <td className={styles.tdSymbol}>{h.symbol}</td>
-              <td className={styles.td}>{h.name}</td>
-              <td className={styles.td}>${h.price.toFixed(2)}</td>
-              <td className={`${styles.td} ${h.change.startsWith('+') ? styles.positive : styles.negative}`}>
-                {h.change}
+            <tr key={h.ticker} className={styles.row}>
+              <td className={styles.tdSymbol}>{h.ticker}</td>
+              <td className={styles.td}>{h.companyName}</td>
+              <td className={styles.td}>${h.currentPrice}</td>
+              <td className={`${styles.td} ${h.changeDaily >= 0 ? styles.positive : styles.negative}`}>
+                {h.changeDaily}%
               </td>
-              <td className={styles.td}>{h.shares}</td>
-              <td className={styles.td}>${h.value.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+              <td className={styles.td}>{h.quantity}</td>
+              <td className={styles.td}>{h.peRatio}</td>
+              <td className={`${styles.td} ${h.totalReturn >= 0 ? styles.positive : styles.negative}`}>
+                ${h.totalReturn}</td>
+              <td className={styles.td}>{h.tradingVolume}</td>
             </tr>
           ))}
         </tbody>

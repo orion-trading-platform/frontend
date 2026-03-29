@@ -1,4 +1,4 @@
-Ticker,Company Name,Current Price,Cost Basis,Change Daily (%),Quantity,P/E Ratio,Total Return ($),Trading Volume
+ticker,companyName,currentPrice,costBasis,changeDaily,quantity,peRatio,totalReturn,tradingVolume
 AAPL,Apple Inc.,322.43,368.44,-0.21,418,17.1,-19232.18,25166852
 MSFT,Microsoft Corp.,86.59,75.88,3.03,232,31.38,2484.72,34600864
 GOOGL,Alphabet Inc.,204.22,177.21,-0.53,199,14.3,5374.99,8030718
