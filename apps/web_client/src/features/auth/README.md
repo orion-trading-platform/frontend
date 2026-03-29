@@ -3,7 +3,7 @@
 ## For other teams
 
 ```tsx
-import { AuthProvider, useAuth, api } from "@/features/auth";
+import { AuthProvider, useAuth, ProtectedRoute, api } from "@/features/auth";
 import type { AuthUser } from "@/features/auth";
 ```
 
@@ -31,7 +31,7 @@ const { currentUser, isAuthenticated, isLoading, setTokens, refreshToken, logout
 Pre-configured axios instance with:
 - `baseURL` set to `VITE_BACKEND_URL`
 - Request interceptor: auto-attaches `Authorization: Bearer <token>` header
-- Response interceptor: auto-refreshes on 401 and retries the failed request
+- Response interceptor: auto-refreshes on 401 and retries the failed request; on permanent failure clears localStorage and navigates to `/login`
 
 **Use this for all backend requests** — auth headers are handled automatically:
 
@@ -40,6 +40,8 @@ import { api } from "@/features/auth";
 
 const res = await api.get("/holdings/123");
 ```
+
+> **Note:** Any request made with this `api` instance that returns a 401 (and cannot be recovered by refresh) will trigger a forced logout and redirect to `/login`. Do not use it for optional/unauthenticated requests.
 
 ### `AuthUser` type
 
@@ -51,14 +53,19 @@ interface AuthUser {
 }
 ```
 
-### Common patterns
+### `<ProtectedRoute>`
 
-**Protected route guard:**
+Wraps any route that requires authentication. Renders nothing while the session is restoring, then redirects to `/login` if unauthenticated.
+
 ```tsx
-const { isAuthenticated, isLoading } = useAuth();
-if (isLoading) return <Spinner />;
-if (!isAuthenticated) return <Navigate to="/login" />;
+import { ProtectedRoute } from "@/features/auth";
+
+<Route path="/dashboard" element={
+  <ProtectedRoute><Dashboard /></ProtectedRoute>
+} />
 ```
+
+### Common patterns
 
 **Display current user:**
 ```tsx

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import api from "./api";
+import { Navigate, useNavigate } from "react-router-dom";
+import api, { setUnauthorizedHandler } from "./api";
 
 export interface AuthUser {
   user_id: number;
@@ -19,11 +20,23 @@ interface AuthContextValue {
   logout: () => Promise<void>;
 }
 
+/** Maximum time (ms) to wait for session restore before giving up. */
+const SESSION_RESTORE_TIMEOUT = 10_000;
+
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Register the unauthorized handler so forceLogout in api.ts goes through React Router.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setCurrentUser(null);
+      navigate("/login", { replace: true });
+    });
+  }, [navigate]);
 
   const fetchCurrentUser = useCallback(async (): Promise<AuthUser | null> => {
     try {
@@ -59,7 +72,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("refreshToken", refresh_token);
       return true;
     } catch {
-      // Refresh failed — tokens are invalid.
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("loggedInUserEmail");
@@ -85,10 +97,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // On mount, check if the user has an existing session.
   useEffect(() => {
+    let timedOut = false;
+
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      setCurrentUser(null);
+      setIsLoading(false);
+    }, SESSION_RESTORE_TIMEOUT);
+
     const init = async () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        setIsLoading(false);
+        if (!timedOut) {
+          clearTimeout(timeout);
+          setIsLoading(false);
+        }
         return;
       }
       let user = await fetchCurrentUser();
@@ -99,37 +122,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           user = await fetchCurrentUser();
         }
       }
-      setCurrentUser(user);
-      setIsLoading(false);
+      if (!timedOut) {
+        clearTimeout(timeout);
+        setCurrentUser(user);
+        setIsLoading(false);
+      }
     };
     init();
-  }, [fetchCurrentUser, refreshToken]);
 
-  // Axios response interceptor: auto-refresh on 401 and retry the request.
-  useEffect(() => {
-    const id = api.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-        if (
-          error.response?.status === 401 &&
-          !originalRequest._retry &&
-          !originalRequest.url?.includes("/auth/")
-        ) {
-          originalRequest._retry = true;
-          const refreshed = await refreshToken();
-          if (refreshed) {
-            originalRequest.headers.Authorization = `Bearer ${localStorage.getItem("accessToken")}`;
-            return api(originalRequest);
-          }
-        }
-        return Promise.reject(error);
-      }
-    );
     return () => {
-      api.interceptors.response.eject(id);
+      timedOut = true; // prevent in-flight init() from setting state after cleanup
+      clearTimeout(timeout);
     };
-  }, [refreshToken]);
+  }, [fetchCurrentUser, refreshToken]);
 
   return (
     <AuthContext.Provider
@@ -154,3 +159,11 @@ export function useAuth(): AuthContextValue {
   }
   return ctx;
 }
+
+/** Redirects unauthenticated users to /login. Renders nothing while session is restoring. */
+export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return null;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
