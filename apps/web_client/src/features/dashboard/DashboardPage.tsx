@@ -53,7 +53,7 @@ export const DashboardPage = () => {
         });
       })
       .catch((error) => console.error('Error fetching or parsing data:', error));
-  }, );
+  }, []);
 
 
   const filteredHoldings = useMemo(() => {
