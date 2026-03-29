@@ -32,12 +32,16 @@ function processQueue(token: string | null, error: unknown = null) {
   pendingQueue = [];
 }
 
+// Dedicated client for the refresh call — same baseURL/config as api but no 401 interceptor,
+// so a failed refresh doesn't re-enter the interceptor and cause an infinite loop.
+const refreshClient = axios.create({ baseURL: API_URL });
+
 /** Attempt a single token refresh. Returns the new access token or null. */
 async function attemptRefresh(): Promise<string | null> {
   const rt = localStorage.getItem("refreshToken");
   if (!rt) return null;
   try {
-    const res = await axios.post(`${API_URL}/auth/refresh`, { refresh_token: rt });
+    const res = await refreshClient.post("/auth/refresh", { refresh_token: rt });
     const { access_token, refresh_token } = res.data;
     localStorage.setItem("accessToken", access_token);
     localStorage.setItem("refreshToken", refresh_token);
@@ -50,7 +54,7 @@ async function attemptRefresh(): Promise<string | null> {
 // Registered by AuthProvider so logout can go through React Router instead of hard navigation.
 let unauthorizedHandler: (() => void) | null = null;
 
-export function setUnauthorizedHandler(handler: () => void) {
+export function setUnauthorizedHandler(handler: (() => void) | null) {
   unauthorizedHandler = handler;
 }
 

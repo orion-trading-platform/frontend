@@ -32,10 +32,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Register the unauthorized handler so forceLogout in api.ts goes through React Router.
   useEffect(() => {
-    setUnauthorizedHandler(() => {
+    const handler = () => {
       setCurrentUser(null);
       navigate("/login", { replace: true });
-    });
+    };
+    setUnauthorizedHandler(handler);
+    return () => setUnauthorizedHandler(null);
   }, [navigate]);
 
   const fetchCurrentUser = useCallback(async (): Promise<AuthUser | null> => {
