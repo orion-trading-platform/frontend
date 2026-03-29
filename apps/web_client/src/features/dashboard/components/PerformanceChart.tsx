@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import Papa from 'papaparse';
 import {
   LineChart,
   Line,
@@ -9,62 +10,81 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-type Timeline = 'hours' | 'days' | 'months' | 'years';
+import weekCsv from '../data/ds1_7_days_hourly.csv?raw';
+import yearCsv from '../data/ds2_1_year_daily.csv?raw';
+import fiveYearsCsv from '../data/ds3_5_years_monthly.csv?raw';
+
+type Timeline = 'week' | 'year' | '5years';
 
 interface ChartPoint {
   time: string;
   value: number;
 }
 
-// Dummy data per timeline
-const DATA_BY_TIMELINE: Record<Timeline, ChartPoint[]> = {
-  hours: [
-    { time: '9:00 AM', value: 44200 },
-    { time: '10:00 AM', value: 44500 },
-    { time: '11:00 AM', value: 44100 },
-    { time: '12:00 PM', value: 44800 },
-    { time: '1:00 PM', value: 45200 },
-    { time: '2:00 PM', value: 44900 },
-    { time: '3:00 PM', value: 45500 },
-    { time: '4:00 PM', value: 45320 },
-  ],
-  days: [
-    { time: 'Mon', value: 43800 },
-    { time: 'Tue', value: 44200 },
-    { time: 'Wed', value: 44100 },
-    { time: 'Thu', value: 44800 },
-    { time: 'Fri', value: 45200 },
-    { time: 'Sat', value: 45100 },
-    { time: 'Sun', value: 45320 },
-  ],
-  months: [
-    { time: 'Jul', value: 41200 },
-    { time: 'Aug', value: 42500 },
-    { time: 'Sep', value: 41800 },
-    { time: 'Oct', value: 43200 },
-    { time: 'Nov', value: 44100 },
-    { time: 'Dec', value: 44800 },
-    { time: 'Jan', value: 45320 },
-  ],
-  years: [
-    { time: '2020', value: 38000 },
-    { time: '2021', value: 39500 },
-    { time: '2022', value: 37200 },
-    { time: '2023', value: 41800 },
-    { time: '2024', value: 45320 },
-  ],
-};
+function parseWeekCsv(csv: string): ChartPoint[] {
+  const parsed = Papa.parse<{ Ticker: string; Day: string; Hour: string; Price: string }>(csv, {
+    header: true,
+    skipEmptyLines: true,
+  });
+  const byDayHour = new Map<string, number>();
+  for (const row of parsed.data) {
+    const key = `${row.Day} ${row.Hour}`;
+    const price = parseFloat(row.Price);
+    byDayHour.set(key, (byDayHour.get(key) ?? 0) + price);
+  }
+  return Array.from(byDayHour.entries())
+    .map(([time, value]) => ({ time, value }))
+    .sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function parseYearCsv(csv: string): ChartPoint[] {
+  const parsed = Papa.parse<{ Ticker: string; Day: string; Price: string }>(csv, {
+    header: true,
+    skipEmptyLines: true,
+  });
+  const byDay = new Map<string, number>();
+  for (const row of parsed.data) {
+    const key = row.Day;
+    const price = parseFloat(row.Price);
+    byDay.set(key, (byDay.get(key) ?? 0) + price);
+  }
+  return Array.from(byDay.entries())
+    .map(([time, value]) => ({ time, value }))
+    .sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function parseFiveYearsCsv(csv: string): ChartPoint[] {
+  const parsed = Papa.parse<{ Ticker: string; Month: string; Price: string }>(csv, {
+    header: true,
+    skipEmptyLines: true,
+  });
+  const byMonth = new Map<string, number>();
+  for (const row of parsed.data) {
+    const key = row.Month;
+    const price = parseFloat(row.Price);
+    byMonth.set(key, (byMonth.get(key) ?? 0) + price);
+  }
+  return Array.from(byMonth.entries())
+    .map(([time, value]) => ({ time, value }))
+    .sort((a, b) => a.time.localeCompare(b.time));
+}
 
 const TIMELINE_LABELS: Record<Timeline, string> = {
-  hours: 'Hours',
-  days: 'Days',
-  months: 'Months',
-  years: 'Years',
+  week: 'Week',
+  year: 'Year',
+  '5years': '5 Years',
 };
 
 export const PerformanceChart = () => {
-  const [timeline, setTimeline] = useState<Timeline>('days');
-  const data = DATA_BY_TIMELINE[timeline];
+  const [timeline, setTimeline] = useState<Timeline>('week');
+
+  const dataByTimeline = useMemo(() => ({
+    week: parseWeekCsv(weekCsv),
+    year: parseYearCsv(yearCsv),
+    '5years': parseFiveYearsCsv(fiveYearsCsv),
+  }), []);
+
+  const data = dataByTimeline[timeline];
 
   return (
     <div style={{ width: '95%', height: 350, padding: '10px' }}>
@@ -102,15 +122,16 @@ export const PerformanceChart = () => {
             tickLine={false}
             axisLine={false}
             dy={10}
+            interval="preserveStartEnd"
           />
           <YAxis
             tick={{ fontSize: 12, fill: '#6b7280' }}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => `$${value}`}
           />
           <Tooltip
-            formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Portfolio Value']}
+            formatter={(value) => [`$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Total value']}
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           />
           <Line
