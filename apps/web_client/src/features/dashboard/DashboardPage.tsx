@@ -73,23 +73,23 @@ export const DashboardPage = () => {
   return (
     <DashboardGrid
       header={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', width: '100%' }}>
           
           {/* LEFT SECTION: Title */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start' }}>
-            <h1 style={{ margin: 0, fontSize: '24px' }}>My Dashboard</h1>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', width:'max-content', paddingRight:'54px' }}>
+            <h1 style={{ margin: 0, fontSize: '32px', color: 'white' }}>My Dashboard</h1>
           </div>
           
           {/* MIDDLE SECTION: Navigation Links */}
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '32px' }}>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'left', gap: '48px', width: '-webkit-fill-available' }}>
             <button 
               onClick={() => console.log('Route to /ledger')}
               style={{ 
                 background: 'transparent', 
                 border: 'none', 
-                fontSize: '16px', 
+                fontSize: '20px', 
                 fontWeight: 500, 
-                color: '#4b5563', /* Dark gray text */
+                color: '#eceef5', /* Dark gray text */
                 cursor: 'pointer', 
                 padding: 0 
               }}
@@ -101,9 +101,9 @@ export const DashboardPage = () => {
               style={{ 
                 background: 'transparent', 
                 border: 'none', 
-                fontSize: '16px', 
+                fontSize: '20px', 
                 fontWeight: 500, 
-                color: '#4b5563', 
+                color: '#eceef5', 
                 cursor: 'pointer', 
                 padding: 0 
               }}

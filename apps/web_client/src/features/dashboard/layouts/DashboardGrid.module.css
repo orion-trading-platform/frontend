@@ -1,7 +1,7 @@
 .container {
   display: grid;
   height: auto; /* Full screen height */
-  padding: 24px;
+  padding: 0px;
   box-sizing: border-box;
   background-color: 	#F8FAFC; /* Light gray background */
   gap: 20px;
@@ -20,11 +20,22 @@
 /* Assigning the rooms to the floor plan */
 
 .headerArea {
+  padding: 15px;
+  margin: 0;
+  display: flex;
+  background: rgb(94, 111, 161);
   grid-area: header;
+  justify-content:left;
+  flex-direction: row;
+  align-items: left;
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
 }
 
 .moversArea {
   grid-area: movers;
+  padding-right: 24px;
+  padding-left: 24px;
 }
 
 .statsArea {
@@ -39,6 +50,7 @@
   grid-area: main;
   display: flex;
   flex-direction: column;
+  padding-left: 24px;
   gap: 24px;
   overflow-y: auto;
   min-width: fit-content;
@@ -66,6 +78,7 @@
 .sidebarArea {
   grid-area: sidebar;
   display:flex;
+  margin-right: 24px;
   flex-direction: column;
   background: white;
   border-radius: 12px;
@@ -91,12 +104,14 @@
 .holdingsSection {
   grid-area: holdings;
   background: white;
+  padding-right: 24px;
+  padding-top: 24px;
+  padding-left: 24px;
   border-radius: 12px;
   width:-webkit-fill-available;
   box-shadow: 4px 4px 5px #9aa6b23c; 
   margin-bottom: 5px;
   margin-right: 5px;
-  padding: 20px;
   border: 1px solid #BCCCDC;
   flex: 0; /* Fill remaining space in main column */
 }
