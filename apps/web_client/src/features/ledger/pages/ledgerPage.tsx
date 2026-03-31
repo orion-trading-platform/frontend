@@ -397,7 +397,9 @@ export default function LedgerPage() {
       if (customEnd) end.setTime(new Date(customEnd).getTime());
     }
 
-    return { startDate: start.toISOString(), endDate: end.toISOString() };
+    const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+
+    return { startDate: formatDate(start), endDate: formatDate(end) };
   }, [dateRange, customStart, customEnd]);
 
   const effectiveType = useMemo(() => {

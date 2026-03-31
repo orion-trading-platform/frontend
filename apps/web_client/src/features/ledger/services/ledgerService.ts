@@ -58,6 +58,7 @@ interface GetActivityParams {
 // ── API helper ─────────────────────────────────────────────────────────────
 
 const API_BASE = "";
+const ACCOUNT_ID = "user_123"; // will change once auth is integrated
 
 async function apiGet<T>(path: string, params: Record<string, string | number | undefined | null> = {}): Promise<T> {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
@@ -86,12 +87,16 @@ async function apiGet<T>(path: string, params: Record<string, string | number | 
 
 export const ledgerService = {
   getSummary: (params: GetSummaryParams): Promise<LedgerSummary> =>
-    apiGet<LedgerSummary>("/api/ledger/summary", params),
+    apiGet<LedgerSummary>("/api/ledger/summary", {
+      account_id: ACCOUNT_ID,
+      ...params,
+    }),
 
   getActivity: (params: GetActivityParams): Promise<ActivityPage> =>
     apiGet<ActivityPage>("/api/ledger/activity", {
+      account_id: ACCOUNT_ID,
       ...params,
-      sort: "desc",
+      sort: "timestamp_desc",
     }),
 
   getActivityDetail: (id: string): Promise<ActivityDetail> =>
