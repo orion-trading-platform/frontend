@@ -76,12 +76,26 @@ export const DashboardPage = () => {
         <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', width: '100%' }}>
           
           {/* LEFT SECTION: Title */}
-          <div style={{ display: 'flex', justifyContent: 'flex-start', width:'max-content', paddingRight:'54px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', width:'max-content', paddingRight:'64px', paddingLeft: '40px' }}>
             <h1 style={{ margin: 0, fontSize: '32px', color: 'white' }}>My Dashboard</h1>
           </div>
           
           {/* MIDDLE SECTION: Navigation Links */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'left', gap: '48px', width: '-webkit-fill-available' }}>
+            <button 
+              onClick={() => console.log('Route to /dashboard')}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                fontSize: '20px', 
+                fontWeight: 500, 
+                color: '#eceef5', 
+                cursor: 'pointer', 
+                padding: 0 
+              }}
+            >
+              Dashboard
+            </button>
             <button 
               onClick={() => console.log('Route to /ledger')}
               style={{ 

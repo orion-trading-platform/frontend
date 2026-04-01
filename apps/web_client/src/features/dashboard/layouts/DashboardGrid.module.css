@@ -5,6 +5,7 @@
   box-sizing: border-box;
   background-color: 	#F8FAFC; /* Light gray background */
   gap: 20px;
+  font-family: "Noto Sans", Roboto;
   width:100%;
   
   /* THE FLOOR PLAN */
@@ -30,6 +31,7 @@
   align-items: left;
   width: -webkit-fill-available;
   height: -webkit-fill-available;
+  font-family: "IBM Plex Serif", serif;
 }
 
 .moversArea {
@@ -104,6 +106,8 @@
 .holdingsSection {
   grid-area: holdings;
   background: white;
+  margin-left: 24px;
+  margin-right: 24px;
   padding-right: 24px;
   padding-top: 24px;
   padding-left: 24px;
@@ -111,7 +115,6 @@
   width:-webkit-fill-available;
   box-shadow: 4px 4px 5px #9aa6b23c; 
   margin-bottom: 5px;
-  margin-right: 5px;
   border: 1px solid #BCCCDC;
   flex: 0; /* Fill remaining space in main column */
 }
