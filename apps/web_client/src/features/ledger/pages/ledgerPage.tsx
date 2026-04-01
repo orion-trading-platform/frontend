@@ -379,7 +379,15 @@ export default function LedgerPage() {
   const [detail, setDetail] = useState<ActivityDetail | null>(null);
   const [drawerError, setDrawerError] = useState("");
 
+  const USE_MOCK_BACKEND = true;
+
   const { startDate, endDate } = useMemo(() => {
+    if (USE_MOCK_BACKEND) {
+      return {
+        startDate: "2026-03-01",
+        endDate: "2026-03-31",
+      };
+    }
     const now = new Date();
     const end = new Date(now);
     let start = new Date(now);

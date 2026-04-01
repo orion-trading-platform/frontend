@@ -58,7 +58,7 @@ interface GetActivityParams {
 // ── API helper ─────────────────────────────────────────────────────────────
 
 const API_BASE = "";
-const ACCOUNT_ID = "user_123"; // will change once auth is integrated
+const ACCOUNT_ID = "2000000000"; // will change once auth is integrated
 
 async function apiGet<T>(path: string, params: Record<string, string | number | undefined | null> = {}): Promise<T> {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
