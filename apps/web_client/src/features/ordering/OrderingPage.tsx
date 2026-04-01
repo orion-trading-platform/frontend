@@ -2,16 +2,11 @@ import { useEffect, useState } from "react";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
-import { getCurrentUser, getAccountBalance } from "./api/user";
+import { getAccountBalance } from "./api/user";
 import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
-
-interface User {
-  id: string;
-  name: string;
-  initials: string;
-}
+import { useAuth } from "../auth";
 
 interface Snapshot {
   symbol: string;
@@ -30,14 +25,17 @@ interface Snapshot {
 const SYMBOL = "AAPL";
 
 export function OrderingPage() {
-  const [user, setUser] = useState<User | null>(null);
+  const { currentUser } = useAuth();
   const [balance, setBalance] = useState<number>(0);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
 
-  // Fetch user, balance, and initial snapshot on mount
+  // Derive display name and initials from the real auth user
+  const displayName = currentUser?.email?.split("@")[0] ?? "Guest";
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  // Fetch balance and initial snapshot on mount
   useEffect(() => {
-    getCurrentUser().then(setUser);
     getAccountBalance().then((data) => setBalance(data.balance));
     getStockSnapshot(SYMBOL).then((data) => {
       setSnapshot(data);
@@ -61,7 +59,7 @@ export function OrderingPage() {
     return unsubscribe; // React calls this on unmount to stop the subscription
   }, []);
 
-  if (!user || !snapshot) {
+  if (!snapshot) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa]">
         <div className="text-gray-500">Loading...</div>
@@ -92,10 +90,10 @@ export function OrderingPage() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="text-right text-sm">
-                <div className="font-medium">{user.name}</div>
+                <div className="font-medium">{displayName}</div>
               </div>
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600">
-                <span className="text-sm font-medium text-white">{user.initials}</span>
+                <span className="text-sm font-medium text-white">{initials}</span>
               </div>
             </div>
           </div>

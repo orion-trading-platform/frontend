@@ -1,11 +1,12 @@
 import React from 'react';
 import Login from './features/auth/Login';
 import ResetPassword from './features/auth/ResetPassword';
-import { AuthProvider } from './features/auth';
+import { AuthProvider, ProtectedRoute } from './features/auth';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { OrderingPage } from './features/ordering/OrderingPage';
 
 const App: React.FC = () => {
+  // wrap protected routes with ProtectedRoute component to require authentication
   return (
     <Router>
       <AuthProvider>
