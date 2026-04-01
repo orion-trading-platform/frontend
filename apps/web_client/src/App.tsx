@@ -1,5 +1,25 @@
-import { OrderingPage } from "./features/ordering/OrderingPage";
+import React from 'react';
+import Login from './features/auth/Login';
+import ResetPassword from './features/auth/ResetPassword';
+import { AuthProvider } from './features/auth';
+// import Dashboard from './features/dashboard/DashboardPage';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
-export default function App() {
-  return <OrderingPage />;
-}
+const App: React.FC = () => {
+  return (
+    <Router>
+      <AuthProvider>
+        <div className="app-container">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="*" element={<DashboardPage />} /> */}
+          </Routes>
+        </div>
+      </AuthProvider>
+    </Router>
+  );
+};
+
+export default App;
