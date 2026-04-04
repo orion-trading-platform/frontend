@@ -3,8 +3,8 @@
 ## For other teams
 
 ```tsx
-import { AuthProvider, useAuth, ProtectedRoute, api } from "@/features/auth";
-import type { AuthUser } from "@/features/auth";
+import { AuthProvider, useAuth, useAccount, useAccounts, ProtectedRoute, api } from "@/features/auth";
+import type { AuthUser, AccountInfo } from "@/features/auth";
 ```
 
 ### `<AuthProvider>`
@@ -43,6 +43,45 @@ const res = await api.get("/holdings/123");
 
 > **Note:** Any request made with this `api` instance that returns a 401 (and cannot be recovered by refresh) will trigger a forced logout and redirect to `/login`. Do not use it for optional/unauthenticated requests.
 
+### `useAccount()` and `useAccounts()`
+
+Two hooks are provided depending on how many accounts we support per user (single or multiple). So whichever is the right choice to use depends on our final design and should be agreed upon ASAP. useAccounts() provides the full accounts list and thus provides more freedom. useAccount() is simpler and just assumes a single account, wrapping useAccounts() and taking account[0] (or null if empty) as that account.
+
+#### `useAccount()` — single account
+
+```tsx
+const { account, isLoading } = useAccount();
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `account` | `AccountInfo \| null` | The user's account, or `null` while loading |
+| `isLoading` | `boolean` | `true` while the request is in flight |
+
+#### `useAccounts()` — full list
+
+```tsx
+const { accounts, isLoading } = useAccounts();
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `accounts` | `AccountInfo[]` | All accounts belonging to the current user |
+| `isLoading` | `boolean` | `true` while the request is in flight |
+
+Both call `GET /auth/me/accounts` (token injected automatically). Use these to resolve `account_id` for any downstream request (e.g. posting transactions, fetching holdings).
+
+### `AccountInfo` type
+
+```typescript
+interface AccountInfo {
+  account_id: number;
+  balance: string;
+  currency: string;
+  version: number;
+}
+```
+
 ### `AuthUser` type
 
 ```typescript
@@ -73,10 +112,55 @@ const { currentUser } = useAuth();
 return <span>{currentUser?.email}</span>;
 ```
 
-**Pass user ID to an API call:**
+**Fetch data for the current account (with stale closure guard):**
 ```tsx
-const { currentUser } = useAuth();
-const res = await api.get(`/holdings/${currentUser?.user_id}`);
+const { account, isLoading } = useAccount();
+
+useEffect(() => {
+  if (!account) return;
+  let ignore = false;
+  api.get(`/holdings/${account.account_id}`).then(res => {
+    if (!ignore) {
+      // handle res.data
+    }
+  });
+  return () => { ignore = true; };
+}, [account]);
+```
+
+**Render a list of accounts (multi-account scenario):**
+```tsx
+const { accounts, isLoading } = useAccounts();
+if (isLoading) return null;
+return (
+  <>
+    {accounts.map(a => (
+      <div key={a.account_id}>
+        {a.account_id} — {a.currency} {a.balance}
+      </div>
+    ))}
+  </>
+);
+```
+
+**Let the user pick an account before acting:**
+```tsx
+const { accounts } = useAccounts();
+const [selectedId, setSelectedId] = useState<number | null>(null);
+
+return (
+  <>
+    {accounts.map(a => (
+      <button key={a.account_id} onClick={() => setSelectedId(a.account_id)}>
+        Account {a.account_id}
+      </button>
+    ))}
+    {selectedId !== null && (
+      // render whatever needs the selected account_id
+      <div>Selected: {selectedId}</div>
+    )}
+  </>
+);
 ```
 
 ---
