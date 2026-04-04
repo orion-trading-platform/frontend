@@ -55,7 +55,7 @@ const { account, isLoading } = useAccount();
 
 | Field | Type | Description |
 |---|---|---|
-| `account` | `AccountInfo \| null` | The user's account, or `null` while loading |
+| `account` | `AccountInfo \| null` | The user's account, or `null` while loading or if the user has no accounts |
 | `isLoading` | `boolean` | `true` while the request is in flight |
 
 #### `useAccounts()` — full list
