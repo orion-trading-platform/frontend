@@ -45,7 +45,7 @@ const res = await api.get("/holdings/123");
 
 ### `useAccount()` and `useAccounts()`
 
-Two hooks are provided depending on how many accounts we support per user (single or multiple). So whichever is the right choice to use depends on our final design and should be agreed upon ASAP. useAccounts() provides the full accounts list and thus provides more freedom. useAccount() is simpler and just assumes a single account, wrapping useAccounts() and taking account[0] (or null if empty) as that account.
+Two hooks are provided depending on how many accounts we support per user (single or multiple). So whichever is the right choice to use depends on our final design and should be agreed upon ASAP. `useAccounts()` provides the full accounts list and thus provides more freedom. `useAccount()` is simpler and just assumes a single account, wrapping `useAccounts()` and taking `accounts[0]` (or `null` if empty) as that account.
 
 #### `useAccount()` — single account
 
