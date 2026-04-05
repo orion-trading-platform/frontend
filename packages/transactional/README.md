@@ -37,7 +37,7 @@ export default function PasswordReset() {
 ```
 
 > [!NOTE]
-> An expanded working example with image handling is in [`emails/simple-example.tsx`](emails/simple-example.tsx).
+> An expanded working example with image handling is in [`emails/simple_example.tsx`](emails/simple_example.tsx).
 
 ---
 
