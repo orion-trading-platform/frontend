@@ -11,24 +11,18 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 
 const TermsOfService: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#0d0d14] text-white">
+    <main className="min-h-screen bg-[#0d0d14] text-white">
       {/* Top bar */}
       <div className="sticky top-0 z-10 bg-[#0d0d14]/90 backdrop-blur border-b border-white/10">
         <div className="max-w-[760px] mx-auto px-6 h-14 flex items-center justify-between">
           <span className="text-sm font-semibold tracking-widest uppercase text-white/90">Orion</span>
-          <a
-            href="/#/"
-            className="text-sm text-white/50 hover:text-white transition-colors"
-          >
-            ← Back to Orion
-          </a>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-[760px] mx-auto px-6 py-14 pb-24">
         <h1 className="text-2xl font-semibold text-white mb-2">Terms of Use</h1>
-        <p className="text-sm text-white/40 mb-2">Last updated: {LAST_UPDATED}</p>
+        <p className="text-sm text-white/60 mb-2">Last updated: {LAST_UPDATED}</p>
         <p className="text-sm text-white/75 leading-relaxed mt-6">
           These Terms of Use ("Terms") govern your access to and use of the Orion trading platform,
           including all associated websites, APIs, mobile applications, and services
@@ -216,7 +210,7 @@ const TermsOfService: React.FC = () => {
           </p>
         </Section>
       </div>
-    </div>
+    </main>
   );
 };
 
