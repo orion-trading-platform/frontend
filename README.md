@@ -22,7 +22,7 @@ root/
 │   ├── ui-kit/              <-- Generic Buttons, Inputs, Cards
 │   ├── ts-config/           <-- Shared Interfaces (User, Stock, Trade)
 │   ├── styles/              <-- Global CSS variables & colors
-│   └── transactional/       <-- Email templates (react-email) → export HTML → 413-database-system/emails/
+│   └── transactional/       <-- Email templates (react-email) → export HTML → 413-database-system repo
 ```
 
 ### Developer Guide
