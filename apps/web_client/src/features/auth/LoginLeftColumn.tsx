@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import Logo from '@/assets/logo.svg';
+import Logo from '@/assets/logo-white.svg';
 import { useAuthActions } from './useAuthActions';
 
 const LoginLeftColumn: React.FC = () => {
@@ -10,20 +10,14 @@ const LoginLeftColumn: React.FC = () => {
   const location = useLocation();
   const { login: authLogin, register: authRegister, loginWithGoogle } = useAuthActions();
 
-  // State to track if user is signing up (true) or logging in (false)
   const [isSignUpMode, setIsSignUpMode] = useState(
     (location.state as { mode?: string } | null)?.mode !== 'login'
   );
-
-  // Local state for manual sign-up fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Loading state for the login process
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
@@ -56,19 +50,14 @@ const LoginLeftColumn: React.FC = () => {
       setErrorMessage("Please enter your email.");
       return;
     }
-
     if (!password) {
       setErrorMessage("Please enter your password.");
       return;
     }
-
-    // your backend enforces password length at register-time only (via schema/validation),
-    // but keeping this UX guard is fine:
     if (isSignUpMode && password.length < 8) {
       setErrorMessage("Password must be at least 8 characters.");
       return;
     }
-
     if (!recaptchaToken) {
       setErrorMessage("Please complete the reCAPTCHA.");
       return;
@@ -83,13 +72,11 @@ const LoginLeftColumn: React.FC = () => {
         setTimeout(() => navigate("/dashboard"), 800);
         return;
       }
-
       await authLogin(email, password, recaptchaToken);
       setSuccessMessage("Logged in. Redirecting...");
       setTimeout(() => navigate("/dashboard"), 600);
     } catch (err: any) {
       const status = err?.response?.status;
-
       if (isSignUpMode) {
         if (status === 409) setErrorMessage("Email already registered. Please log in.");
         else setErrorMessage("Failed to create account. Please try again.");
@@ -110,225 +97,190 @@ const LoginLeftColumn: React.FC = () => {
 
   const toggleMode = () => {
     setIsSignUpMode(!isSignUpMode);
-    // Clear form fields when switching modes
     setEmail("");
     setPassword("");
   };
 
   return (
     <>
-      {/* Loading animation spinner */}
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .spinner { animation: spin 2s linear infinite; }
 
-          .spinner {
-            animation: spin 2s linear infinite;
-          }
-        `}
-      </style>
+        @keyframes blobFloat1 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          33%  { transform: translate(40px, -70px) scale(1.1); }
+          66%  { transform: translate(-25px, 35px) scale(0.93); }
+        }
+        @keyframes blobFloat2 {
+          0%, 100% { transform: translate(0px, 0px) scale(1); }
+          40%  { transform: translate(-55px, 45px) scale(0.9); }
+          70%  { transform: translate(35px, -45px) scale(1.08); }
+        }
+        .blob1 { animation: blobFloat1 20s ease-in-out infinite; will-change: transform; }
+        .blob2 { animation: blobFloat2 25s ease-in-out infinite; will-change: transform; }
+      `}</style>
 
-      {/* Loading Animation Overlay */}
+      {/* Loading overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="spinner border-8 border-gray-300 border-t-gray-900 rounded-full w-20 h-20"></div>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+          <div className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
         </div>
       )}
 
-      {/* LEFT COLUMN */}
-      <div className="relative flex-1 bg-white flex items-center justify-center p-16 md:w-full">
-        <div
-          style={styles.logoStyle}
-          role="img"
-          aria-label="Orion logo"
-        />
+      <main className="relative flex-1 bg-[#0a0a14] overflow-hidden flex items-center justify-center px-10 py-16">
 
-        <div className="max-w-[480px] w-full">
-          {/* Welcome/Login Header */}
-          <div className="mb-10 flex flex-col gap-2 text-left">
-            <h1 className="text-3xl font-semibold text-gray-900 font-sans">
-              {isSignUpMode ? 'Sign up to Orion' : 'Welcome back'}
-            </h1>
+        {/* Background blobs */}
+        <div aria-hidden="true" className="blob1 absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[100px] pointer-events-none" />
+        <div aria-hidden="true" className="blob2 absolute -bottom-16 -right-16 w-[440px] h-[440px] rounded-full bg-emerald-500/15 blur-[110px] pointer-events-none" />
 
-            <h1 className="text-base text-gray-500 font-sans">
-              {isSignUpMode ? 'Sign up to access your trading account' : 'Get back to trading with your account'}
+        {/* Logo */}
+        <div className="absolute top-6 left-7">
+          <img src={Logo} alt="Orion" className="h-[18px] w-auto" />
+        </div>
+
+        {/* Form */}
+        <div className="relative z-10 w-full max-w-[380px]">
+
+          {/* Heading */}
+          <div className="mb-8">
+            <h1 className="text-[1.75rem] font-bold text-white leading-tight mb-2">
+              {isSignUpMode ? 'Create your account' : 'Welcome back'}
             </h1>
+            <p className="text-sm text-white/50">
+              {isSignUpMode ? 'Sign up to start trading on Orion' : 'Sign in to your trading account'}
+            </p>
           </div>
 
-
-          {/* Sign up/Continue with Google */}
+          {/* Google button */}
           <button
-            className="select-none appearance-none bg-[#F2F2F2] border-none rounded box-border text-[#1F1F1F] cursor-pointer font-['Roboto',arial,sans-serif] text-sm h-10 tracking-[0.25px] outline-none overflow-hidden px-3 relative text-center align-middle whitespace-nowrap w-[280px] max-w-[280px] min-w-min mx-auto block transition-[background-color_.218s,border-color_.218s,box-shadow_.218s] hover:bg-[#DFE1E3]"
+            className="w-full flex items-center justify-center gap-3 h-11 rounded-lg border border-[#8E918F] bg-[#131314] text-[#E3E3E3] text-sm font-medium transition-colors hover:bg-[#1e1f20] active:bg-[#2a2b2c]"
             onClick={() => googleLogin()}
           >
-            <div className="flex items-center justify-center h-full">
-              <div className="h-5 mr-3 w-5">
-                <svg
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  className="block h-full w-full"
-                >
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                  <path fill="none" d="M0 0h48v48H0z"></path>
-                </svg>
-              </div>
-              <span className="font-medium flex-grow font-['Roboto',arial,sans-serif] text-sm">
-                {isSignUpMode ? 'Sign up with Google' : 'Continue with Google'}
-              </span>
-            </div>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5 flex-shrink-0">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              <path fill="none" d="M0 0h48v48H0z" />
+            </svg>
+            {isSignUpMode ? 'Sign up with Google' : 'Continue with Google'}
           </button>
 
           {/* Divider */}
-          <div className="flex items-center my-8 mt-[3.4rem] mb-[3.4rem] w-full">
-            <div className="flex-1 h-px bg-gray-300 -mx-4" />
-            <span className="mx-4 text-gray-500 text-xs whitespace-nowrap bg-white px-2 relative z-[1]">
-              OR
-            </span>
-            <div className="flex-1 h-px bg-gray-300 -mx-4" />
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-white/55 tracking-widest uppercase">or</span>
+            <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          {/* Success / Error messages */}
+          {/* Messages */}
           {successMessage && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded text-green-700 text-sm font-sans">
+            <div className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
               {successMessage}
             </div>
           )}
-
           {errorMessage && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-700 text-sm font-sans">
+            <div className="mb-5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
               {errorMessage}
             </div>
           )}
 
-          {/* Manual signup/login fields */}
-          <div className="text-left mb-6">
-            <label className="block mb-2 text-gray-900 text-base font-medium font-sans">
+          {/* Email */}
+          <div className="mb-4">
+            <label className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
               Email
             </label>
             <input
               type="email"
-              placeholder="example@gmail.com"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded border border-gray-300 text-base font-sans text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+              className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
             />
           </div>
 
-          <div className="text-left mb-6">
-            <label className="block mb-2 text-gray-900 text-base font-medium font-sans">
-              Password
-            </label>
+          {/* Password */}
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+                Password
+              </label>
+              {!isSignUpMode && (
+                <button
+                  onClick={handleForgotPassword}
+                  className="text-xs text-[#818cf8] hover:text-white transition-colors"
+                >
+                  Forgot password?
+                </button>
+              )}
+            </div>
             <input
               type="password"
-              placeholder="********"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded border border-gray-300 text-base font-sans text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+              className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
             />
           </div>
 
-          {/* Terms text for sign up mode, Forgot password for login mode */}
-          {isSignUpMode ? (
-            <p className="text-sm text-gray-600 leading-relaxed text-left">
-              By clicking SIGN UP, you acknowledge that you have read and agree to Orion's{' '}
-              <a
-                href="/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline font-normal hover:text-blue-800"
-              >
+          {/* Terms — sign up only */}
+          {isSignUpMode && (
+            <p className="text-xs text-white/60 leading-relaxed mb-5">
+              By clicking CREATE ACCOUNT, you agree to Orion's{' '}
+              <a href="/#/terms" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
                 Terms of Use
-              </a>{' '}
-              and{' '}
-              <a
-                href="/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline font-normal hover:text-blue-800"
-              >
+              </a>{' '}and{' '}
+              <a href="/#/privacy" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
                 Privacy Policy
               </a>.
             </p>
-          ) : (
-            <div className="text-left mb-2">
-              <button
-                onClick={handleForgotPassword}
-                className="bg-transparent border-none text-blue-600 underline text-sm cursor-pointer font-sans p-0 font-normal hover:text-blue-800"
-              >
-                Forgot my password
-              </button>
-            </div>
           )}
 
-          <div className="flex justify-center mt-4">
+          {/* reCAPTCHA */}
+          <div className="flex justify-center mb-5">
             <ReCAPTCHA
               ref={recaptchaRef}
               sitekey={siteKey}
+              theme="dark"
               onChange={(token) => setRecaptchaToken(token)}
             />
           </div>
 
-          {/* Sign Up/Log In Button */}
+          {/* Submit */}
           <button
             onClick={handleManualSignupOrLogin}
-            className="w-full h-12 bg-[#2B2359] rounded-[10px] text-white text-base font-medium font-sans my-6 transition hover:bg-[#3d3378]"
+            className="w-full h-11 rounded-lg bg-[#5B6AD4] hover:bg-[#4e5cbd] active:bg-[#434fb3] text-white text-sm font-semibold transition-colors mb-6"
           >
-            {isSignUpMode ? 'SIGN UP' : 'LOG IN'}
+            {isSignUpMode ? 'Create account' : 'Log in to Orion'}
           </button>
 
-          {/* Toggle between sign up and log in */}
-          <p className="mt-0 text-base text-gray-600 text-center font-normal">
+          {/* Toggle */}
+          <p className="text-sm text-white/60 text-center">
             {isSignUpMode ? (
               <>
                 Already have an account?{' '}
-                <button
-                  onClick={toggleMode}
-                  className="bg-transparent border-none text-blue-600 no-underline text-base cursor-pointer font-sans p-0 font-normal hover:underline"
-                >
+                <button onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
                   Log in
                 </button>
               </>
             ) : (
               <>
                 Don't have an account?{' '}
-                <button
-                  onClick={toggleMode}
-                  className="bg-transparent border-none text-blue-600 no-underline text-base cursor-pointer font-sans p-0 font-normal hover:underline"
-                >
+                <button onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
                   Sign up
                 </button>
               </>
             )}
           </p>
+
         </div>
-      </div>
+      </main>
     </>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  logoStyle: {
-    position: 'absolute',
-    top: '15px',
-    left: '15px',
-    height: '19px',
-    width: '70px',
-    minHeight: '19px',
-    minWidth: '70px',
-    zIndex: 1000,
-    backgroundColor: '#1a1a1a',
-    mask: `url(${Logo}) no-repeat center`,
-    maskSize: 'contain',
-    WebkitMask: `url(${Logo}) no-repeat center`,
-    WebkitMaskSize: 'contain',
-  },
 };
 
 export default LoginLeftColumn;

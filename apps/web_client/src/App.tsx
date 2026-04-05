@@ -1,6 +1,8 @@
 import React from 'react';
 import Login from '@/features/auth/Login';
 import ResetPassword from '@/features/auth/ResetPassword';
+import TermsOfService from '@/features/auth/TermsOfService';
+import PrivacyPolicy from '@/features/auth/PrivacyPolicy';
 import { AuthProvider } from '@/features/auth';
 // import Dashboard from './features/dashboard/DashboardPage';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
@@ -13,6 +15,8 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             {/* <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="*" element={<DashboardPage />} /> */}
           </Routes>
