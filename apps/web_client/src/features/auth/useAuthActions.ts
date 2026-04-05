@@ -10,9 +10,9 @@ export function useAuthActions() {
   const { setTokens } = useAuth();
 
   const register = useCallback(
-    async (email: string, password: string) => {
-      await api.post("/auth/register", { email, password });
-      const res = await api.post("/auth/login", { email, password });
+    async (email: string, password: string, recaptchaToken: string) => {
+      await api.post("/auth/register", { email, password, recaptcha_token: recaptchaToken });
+      const res = await api.post("/auth/login", { email, password, recaptcha_token: recaptchaToken });
       const { access_token, refresh_token } = res.data;
       await setTokens(access_token, refresh_token);
     },
@@ -20,8 +20,8 @@ export function useAuthActions() {
   );
 
   const login = useCallback(
-    async (email: string, password: string) => {
-      const res = await api.post("/auth/login", { email, password });
+    async (email: string, password: string, recaptchaToken: string) => {
+      const res = await api.post("/auth/login", { email, password, recaptcha_token: recaptchaToken });
       const { access_token, refresh_token } = res.data;
       await setTokens(access_token, refresh_token);
     },
@@ -39,8 +39,8 @@ export function useAuthActions() {
     [setTokens]
   );
 
-  const forgotPassword = useCallback(async (email: string) => {
-    await api.post("/auth/forgot-password", { email });
+  const forgotPassword = useCallback(async (email: string, recaptchaToken: string) => {
+    await api.post("/auth/forgot-password", { email, recaptcha_token: recaptchaToken });
   }, []);
 
   const resetPassword = useCallback(async (token: string, newPassword: string) => {

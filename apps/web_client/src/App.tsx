@@ -1,7 +1,7 @@
 import React from 'react';
-import Login from './features/auth/Login';
-import ResetPassword from './features/auth/ResetPassword';
-import { AuthProvider } from './features/auth';
+import Login from '@/features/auth/Login';
+import ResetPassword from '@/features/auth/ResetPassword';
+import { AuthProvider } from '@/features/auth';
 // import Dashboard from './features/dashboard/DashboardPage';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
