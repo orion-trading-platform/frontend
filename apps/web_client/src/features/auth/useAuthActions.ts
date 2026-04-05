@@ -54,5 +54,9 @@ export function useAuthActions() {
     });
   }, []);
 
-  return { register, login, loginWithGoogle, forgotPassword, resetPassword, changePassword };
+  const setPassword = useCallback(async (newPassword: string) => {
+    await api.post("/auth/set-password", { new_password: newPassword });
+  }, []);
+
+  return { register, login, loginWithGoogle, forgotPassword, resetPassword, changePassword, setPassword };
 }

@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ProfileModal from '../auth/ProfileModal';
+import { useAuth } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
@@ -14,8 +16,10 @@ import Papa, { ParseResult } from "papaparse"
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   var emptyTable: Holding[] = [];
 
+  const [profileOpen, setProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [rData, setrData] = useState<RecentActivityProps[]>([]);
@@ -73,6 +77,8 @@ export const DashboardPage = () => {
 
 
   return (
+    <>
+    <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     <DashboardGrid
       header={
         <div style={{ display: 'flex', justifyContent: 'left', alignItems: 'left', width: '100%' }}>
@@ -146,23 +152,39 @@ export const DashboardPage = () => {
               >
                 ⚙️
               </button>
-              <button 
+              <button
                 title="Profile"
-                style={{ 
-                  background: '#f3f4f6', 
-                  border: '1px solid #e5e7eb', 
-                  borderRadius: '50%', 
-                  width: '36px', 
-                  height: '36px', 
+                onClick={() => setProfileOpen(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '36px',
+                  height: '36px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '18px',
-                  padding: 0
+                  padding: 0,
+                  overflow: 'hidden',
                 }}
               >
-                👤
+                {currentUser?.profile_picture_url ? (
+                  <img
+                    src={currentUser.profile_picture_url}
+                    alt="Profile"
+                    style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{
+                    width: '36px', height: '36px', borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.18)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '18px',
+                  }}>
+                    👤
+                  </div>
+                )}
               </button>
             </div>
 
@@ -198,6 +220,7 @@ export const DashboardPage = () => {
         </div>
       }
     />
+    </>
   );
 };
 
