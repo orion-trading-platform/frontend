@@ -14,6 +14,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/react-google-recaptcha": "^2.1.9",
     "axios": "^1.13.4",
+    "lucide-react": "^1.7.0",
     "netlify-cli": "^23.15.1",
     "papaparse": "^5.5.3",
     "react": "^19.2.4",
