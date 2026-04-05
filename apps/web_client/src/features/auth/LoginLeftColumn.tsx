@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import Logo from '@/assets/logo.svg';
+import Logo from '@/assets/logo-white.svg';
 import { useAuthActions } from './useAuthActions';
 
 const LoginLeftColumn: React.FC = () => {
@@ -234,12 +234,12 @@ const LoginLeftColumn: React.FC = () => {
             />
           </div>
 
-          {/* Terms text for sign up mode, Forgot password for login mode */}
+          {/* Terms and privacy policy text for sign up mode, Forgot password for login mode */}
           {isSignUpMode ? (
             <p className="text-sm text-gray-600 leading-relaxed text-left">
               By clicking SIGN UP, you acknowledge that you have read and agree to Orion's{' '}
               <a
-                href="/terms"
+                href="/#/terms"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 underline font-normal hover:text-blue-800"
@@ -248,7 +248,7 @@ const LoginLeftColumn: React.FC = () => {
               </a>{' '}
               and{' '}
               <a
-                href="/terms"
+                href="/#/privacy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 underline font-normal hover:text-blue-800"

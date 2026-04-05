@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import Logo from '../../assets/logo.svg';
+import Logo from '@/assets/logo-white.svg';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import LoginRightColumn from './LoginRightColumn';
