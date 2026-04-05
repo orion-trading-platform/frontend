@@ -81,8 +81,8 @@ export function OrderingPage() {
               <span className="text-lg font-semibold">Orion</span>
             </div>
             <nav className="flex gap-6 text-sm">
-              <a href="#" className="text-gray-600 hover:text-gray-900">Dashboard</a>
-              <a href="#" className="font-medium text-gray-900">Trade</a>
+              <a href="#/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
+              <a href="#/trade" className="font-medium text-gray-900">Trade</a>
               <a href="#" className="text-gray-600 hover:text-gray-900">Portfolio</a>
               <a href="#" className="text-gray-600 hover:text-gray-900">Transactions</a>
             </nav>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
@@ -12,6 +13,7 @@ import Papa, { ParseResult } from "papaparse"
 
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
   var emptyTable: Holding[] = [];
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,7 +85,7 @@ export const DashboardPage = () => {
           {/* MIDDLE SECTION: Navigation Links */}
           <div style={{ flex: 1, display: 'flex', justifyContent: 'left', gap: '48px', width: '-webkit-fill-available' }}>
             <button 
-              onClick={() => console.log('Route to /dashboard')}
+              onClick={() => navigate('/dashboard')}
               style={{ 
                 background: 'transparent', 
                 border: 'none', 
@@ -97,7 +99,7 @@ export const DashboardPage = () => {
               Dashboard
             </button>
             <button 
-              onClick={() => console.log('Route to /ledger')}
+              onClick={() => navigate('/ledger')}
               style={{ 
                 background: 'transparent', 
                 border: 'none', 
@@ -111,7 +113,7 @@ export const DashboardPage = () => {
               Ledger
             </button>
             <button 
-              onClick={() => console.log('Route to /ordering')}
+              onClick={() => navigate('/trade')}
               style={{ 
                 background: 'transparent', 
                 border: 'none', 
