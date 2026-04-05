@@ -20,3 +20,7 @@ html, body {
 *, *::before, *::after {
   box-sizing: border-box;
 }
+
+::selection {
+  background: rgba(0, 200, 5, 0.25);
+}

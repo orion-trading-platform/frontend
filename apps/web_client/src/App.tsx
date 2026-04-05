@@ -6,6 +6,7 @@ import PrivacyPolicy from '@/features/auth/PrivacyPolicy';
 import { AuthProvider, ProtectedRoute } from '@/features/auth';
 import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from './features/ordering/OrderingPage';
+import LedgerPage from "./features/ledger/pages/ledgerPage";
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 const App: React.FC = () => {
@@ -15,13 +16,13 @@ const App: React.FC = () => {
       <AuthProvider>
         <div className="app-container">
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trade" element={<OrderingPage />} />
+            <Route path="/ledger" element={<LedgerPage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
