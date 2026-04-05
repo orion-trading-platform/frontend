@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
+    "@types/papaparse": "^5.5.2",
     "@types/react-google-recaptcha": "^2.1.9",
     "axios": "^1.13.4",
     "netlify-cli": "^23.15.1",
+    "papaparse": "^5.5.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-google-recaptcha": "^3.1.0",
@@ -28,8 +30,6 @@
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
-    "autoprefixer": "^10.4.24",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "autoprefixer": "^10.4.24"
   }
 }
