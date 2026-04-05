@@ -66,7 +66,7 @@ function forceLogout() {
   if (unauthorizedHandler) {
     unauthorizedHandler();
   } else {
-    window.location.href = "/login";
+    window.location.href = "/"; //NOTE: currently routes to Login but should be LandingPage in final design
   }
 }
 

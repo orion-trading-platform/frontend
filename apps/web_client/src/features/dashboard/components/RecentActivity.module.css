@@ -1,0 +1,84 @@
+.card{
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    padding-left: 10px;
+    padding-right:10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid #ffffff;
+    width: -webkit-fill-available;
+}
+
+.card:hover{
+    background: 	#eff4f7;
+}
+
+.icon{
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background-color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+
+}
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.label {
+  width: max-content;
+  color: hsl(0, 0%, 0%); 
+  font-size: 14px;
+  font-weight: 500;
+}
+.caption {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+.valuePos{
+    color: rgb(0, 150, 52);
+}
+.valueNeg{
+    color: rgb(0, 0, 0);
+}
+.time{
+    width: max-content;
+    display: flex;
+    font-size: 10px;
+    color: #4f4f4f;
+}
+
+.status{
+    border-radius: 7px;
+    width: auto;
+    background-color: #ededed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 2px;
+    border: 2px solid white;
+    height: min-content;
+}
