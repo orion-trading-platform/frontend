@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LAST_UPDATED = 'April 4, 2025';
+const LAST_UPDATED = 'April 4, 2026';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="border-t border-white/10 pt-8 mt-8">
