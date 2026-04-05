@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AuthRightColumn: React.FC = () => {
+const LoginRightColumn: React.FC = () => {
   return (
 <div className="hidden md:flex md:w-1/2 min-h-screen bg-gradient-to-b from-[#2b265f] to-[#241f4d] text-white px-16">
       <div className="flex flex-col w-full h-full py-14">
@@ -107,4 +107,4 @@ const AuthRightColumn: React.FC = () => {
   );
 };
 
-export default AuthRightColumn;
+export default LoginRightColumn;

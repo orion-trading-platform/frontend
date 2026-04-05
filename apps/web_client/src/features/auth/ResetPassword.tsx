@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Logo from '../../assets/logo.svg';
 import { useNavigate } from 'react-router-dom';
-import AuthRightColumn from './AuthRightColumn';
+import ReCAPTCHA from 'react-google-recaptcha';
+import LoginRightColumn from './LoginRightColumn';
 import { useAuthActions } from './useAuthActions';
 
 const ResetPassword: React.FC = () => {
@@ -15,6 +16,9 @@ const ResetPassword: React.FC = () => {
   
   // Request reset step
   const [requestEmail, setRequestEmail] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
   
   // Reset password step
   const [resetCode, setResetCode] = useState("");
@@ -34,14 +38,21 @@ const ResetPassword: React.FC = () => {
       return;
     }
 
+    if (!recaptchaToken) {
+      setErrorMessage("Please complete the reCAPTCHA.");
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
 
     try {
       // Backend always returns 202 to prevent user enumeration
-      await forgotPassword(requestEmail);
+      await forgotPassword(requestEmail, recaptchaToken);
 
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       setSuccessMessage("If an account exists for that email, a reset link/code has been sent.");
       setTimeout(() => {
         setStep("reset");
@@ -49,6 +60,8 @@ const ResetPassword: React.FC = () => {
       }, 1200);
     } catch (err) {
       console.error("Error requesting password reset:", err);
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       setErrorMessage("Failed to request password reset. Please try again.");
     } finally {
       setIsLoading(false);
@@ -79,7 +92,7 @@ const ResetPassword: React.FC = () => {
       await resetPassword(resetCode, newPassword);
 
       setSuccessMessage("Password reset successfully! Redirecting to login...");
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/", { state: { mode: "login" } }), 1000);
     } catch (err: any) {
       console.error("Error resetting password:", err);
       const status = err?.response?.status;
@@ -95,9 +108,7 @@ const ResetPassword: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    // TODO: Navigate back to login
     navigate('/');
-    console.log("Navigate back to login");
   };
 
   return (
@@ -129,7 +140,7 @@ const ResetPassword: React.FC = () => {
           <div
             style={styles.logoStyle}
             role="img"
-            aria-label="SiteName logo"
+            aria-label="Orion logo"
           />
 
           <div className="max-w-[480px] w-full">
@@ -180,6 +191,14 @@ const ResetPassword: React.FC = () => {
                     value={requestEmail}
                     onChange={(e) => setRequestEmail(e.target.value)}
                     className="w-full px-4 py-3 rounded border border-gray-300 text-base font-sans text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="flex justify-center mt-4 mb-2">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={siteKey}
+                    onChange={(token) => setRecaptchaToken(token)}
                   />
                 </div>
 
@@ -261,7 +280,7 @@ const ResetPassword: React.FC = () => {
         </div>
 
         {/* RIGHT COLUMN (hidden for medium screens and below ~768px) */}
-        <AuthRightColumn />
+        <LoginRightColumn />
       </div>
     </>
   );

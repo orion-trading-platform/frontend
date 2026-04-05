@@ -145,9 +145,10 @@ return (
 
 **Let the user pick an account before acting:**
 ```tsx
-const { accounts } = useAccounts();
+const { accounts, isLoading } = useAccounts();
 const [selectedId, setSelectedId] = useState<number | null>(null);
 
+if (isLoading) return null;
 return (
   <>
     {accounts.map(a => (
