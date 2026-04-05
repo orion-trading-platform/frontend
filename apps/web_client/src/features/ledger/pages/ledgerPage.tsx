@@ -379,15 +379,7 @@ export default function LedgerPage() {
   const [detail, setDetail] = useState<ActivityDetail | null>(null);
   const [drawerError, setDrawerError] = useState("");
 
-  const USE_MOCK_BACKEND = true;
-
   const { startDate, endDate } = useMemo(() => {
-    if (USE_MOCK_BACKEND) {
-      return {
-        startDate: "2026-03-01",
-        endDate: "2026-03-31",
-      };
-    }
     const now = new Date();
     const end = new Date(now);
     let start = new Date(now);
@@ -395,7 +387,7 @@ export default function LedgerPage() {
     if (dateRange === "TODAY") {
       start.setHours(0, 0, 0, 0);
     } else if (dateRange === "7D") {
-      start.setDate(start.getDate() - 7);
+      start.setDate(start.getDate() - 6);
     } else if (dateRange === "1M") {
       start.setMonth(start.getMonth() - 1);
     } else if (dateRange === "YTD") {
@@ -423,23 +415,49 @@ export default function LedgerPage() {
     setPage(1);
   }, [dateRange, customStart, customEnd, tab, type, status, symbol]);
 
-  async function fetchSummary() {
-    setLoadingSummary(true);
-    setError("");
-    try {
-      const data = await ledgerService.getSummary({ startDate, endDate });
-      setSummary(data);
-    } catch (e: unknown) {
-      setError(String((e as Error).message || e));
-    } finally {
-      setLoadingSummary(false);
+  function computeSummary(items: ActivityItem[]): LedgerSummary {
+    let realizedPL = 0;
+    let cashBalance = 0;
+
+    for (const item of items) {
+      const amt = Number(item.amount) || 0;
+      const fee = Number(item.fee) || 0;
+
+      if (item.type === "TRADE") {
+        realizedPL += amt - fee;
+      }
+      cashBalance += amt - fee;
     }
+
+    return {
+      netPL: realizedPL, // unrealizedPL is 0 — needs market prices
+      realizedPL,
+      unrealizedPL: 0,
+      cashBalance,
+      accountValue: 0,
+      buyingPower: 0,
+    };
   }
 
   async function fetchActivity() {
     setLoadingActivity(true);
+    setLoadingSummary(true);
     setError("");
     try {
+      // Fetch all activity (unfiltered by type/status/symbol) for summary computation
+      const allData = await ledgerService.getActivity({
+        startDate,
+        endDate,
+        type: "",
+        status: "",
+        symbol: "",
+        page: 1,
+        pageSize: 100,
+      });
+      const allItems = Array.isArray(allData.items) ? allData.items : [];
+      setSummary(computeSummary(allItems));
+
+      // Fetch the filtered + paginated activity for the table
       const data = await ledgerService.getActivity({
         startDate,
         endDate,
@@ -456,6 +474,7 @@ export default function LedgerPage() {
       setError(String((e as Error).message || e));
     } finally {
       setLoadingActivity(false);
+      setLoadingSummary(false);
     }
   }
 
@@ -474,11 +493,6 @@ export default function LedgerPage() {
       setDetailLoading(false);
     }
   }
-
-  useEffect(() => {
-    fetchSummary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate]);
 
   useEffect(() => {
     fetchActivity();
@@ -508,7 +522,7 @@ export default function LedgerPage() {
   const summaryCards = [
     { title: "Net P/L", value: summary ? formatMoney(summary.netPL) : "--" },
     { title: "Realized P/L", value: summary ? formatMoney(summary.realizedPL) : "--" },
-    { title: "Unrealized P/L", value: summary ? formatMoney(summary.unrealizedPL) : "--" },
+    { title: "Unrealized P/L (pending)", value: summary ? formatMoney(summary.unrealizedPL) : "--" },
     { title: "Cash Balance", value: summary ? formatMoney(summary.cashBalance) : "--" },
   ];
 
