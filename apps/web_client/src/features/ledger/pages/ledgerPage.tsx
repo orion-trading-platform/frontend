@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuth, useAccount, useAccounts, api } from "@/features/auth";
 import {
   ledgerService,
   type ActivityItem,
@@ -6,7 +7,6 @@ import {
   type LedgerSummary,
 } from "../services/ledgerService";
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 
 const formatMoney = (n: number | null | undefined): string => {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "--";
@@ -32,7 +32,7 @@ const formatDateTime = (iso: string | null | undefined): string => {
   });
 };
 
-// ── Badge / pill helpers ───────────────────────────────────────────────────
+
 
 const pillClass = (status: string | undefined): string => {
   const s = (status || "").toUpperCase();
@@ -77,8 +77,6 @@ const typeBadge = (type: string | undefined, subtype: string | null | undefined)
   return { label: type || "EVENT", cls: "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]" };
 };
 
-// ── Theme hook ─────────────────────────────────────────────────────────────
-
 function useDarkMode(): [boolean, () => void] {
   const [dark, setDark] = useState<boolean>(() => {
     const stored = localStorage.getItem("ledger-theme");
@@ -98,8 +96,6 @@ function useDarkMode(): [boolean, () => void] {
   const toggle = useCallback(() => setDark((d) => !d), []);
   return [dark, toggle];
 }
-
-// ── Small components ───────────────────────────────────────────────────────
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
@@ -144,7 +140,6 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ── Details drawer ─────────────────────────────────────────────────────────
 
 interface DetailsDrawerProps {
   open: boolean;
@@ -249,8 +244,6 @@ function DetailsDrawer({ open, onClose, loading, detail, drawerError }: DetailsD
   );
 }
 
-// ── Filter components ──────────────────────────────────────────────────────
-
 function Label({ children }: { children: React.ReactNode }) {
   return <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{children}</div>;
 }
@@ -342,8 +335,6 @@ function FilterSelect({ label, value, onChange, options, className = "" }: Filte
     </div>
   );
 }
-
-// ── Main page ──────────────────────────────────────────────────────────────
 
 const DEFAULT_PAGE_SIZE = 25;
 
