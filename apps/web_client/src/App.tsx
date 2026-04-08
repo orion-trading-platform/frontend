@@ -24,10 +24,18 @@ const App: React.FC = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/trade" element={<OrderingPage />} />
-            <Route path="/ledger" element={<LedgerPage />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute><Dashboard /></ProtectedRoute>
+              } />
+            <Route path="/trade" element={
+              <ProtectedRoute><OrderingPage /></ProtectedRoute>
+              } />
+            <Route path="/ledger" element={
+              <ProtectedRoute><LedgerPage /></ProtectedRoute>
+              } />
+            <Route path="*" element={
+              <Navigate to="/dashboard" replace />
+              } />
           </Routes>
         </div>
       </AuthProvider>
