@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useGoogleLogin } from '@react-oauth/google';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Logo from '@/assets/logo-white.svg';
 import { useAuthActions } from './useAuthActions';
@@ -15,6 +16,9 @@ const LoginLeftColumn: React.FC = () => {
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -42,7 +46,8 @@ const LoginLeftColumn: React.FC = () => {
     },
   });
 
-  const handleManualSignupOrLogin = async () => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
+    e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
 
@@ -56,6 +61,10 @@ const LoginLeftColumn: React.FC = () => {
     }
     if (isSignUpMode && password.length < 8) {
       setErrorMessage("Password must be at least 8 characters.");
+      return;
+    }
+    if (isSignUpMode && password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
       return;
     }
     if (!recaptchaToken) {
@@ -91,14 +100,11 @@ const LoginLeftColumn: React.FC = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    navigate('/reset-password');
-  };
-
   const toggleMode = () => {
     setIsSignUpMode(!isSignUpMode);
     setEmail("");
     setPassword("");
+    setConfirmPassword("");
   };
 
   return (
@@ -126,8 +132,8 @@ const LoginLeftColumn: React.FC = () => {
 
       {/* Loading overlay */}
       {isLoading && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
-          <div className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
+        <div role="status" aria-label="Loading" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+          <div aria-hidden="true" className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
         </div>
       )}
 
@@ -157,10 +163,11 @@ const LoginLeftColumn: React.FC = () => {
 
           {/* Google button */}
           <button
+            type="button"
             className="w-full flex items-center justify-center gap-3 h-11 rounded-lg border border-[#8E918F] bg-[#131314] text-[#E3E3E3] text-sm font-medium transition-colors hover:bg-[#1e1f20] active:bg-[#2a2b2c]"
             onClick={() => googleLogin()}
           >
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5 flex-shrink-0">
+            <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="w-5 h-5 flex-shrink-0">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
@@ -171,7 +178,7 @@ const LoginLeftColumn: React.FC = () => {
           </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-6">
+          <div className="flex items-center gap-3 my-6" aria-hidden="true">
             <div className="flex-1 h-px bg-white/10" />
             <span className="text-xs text-white/55 tracking-widest uppercase">or</span>
             <div className="flex-1 h-px bg-white/10" />
@@ -179,103 +186,155 @@ const LoginLeftColumn: React.FC = () => {
 
           {/* Messages */}
           {successMessage && (
-            <div className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
+            <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
               {successMessage}
             </div>
           )}
           {errorMessage && (
-            <div className="mb-5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
+            <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 text-sm">
               {errorMessage}
             </div>
           )}
 
-          {/* Email */}
-          <div className="mb-4">
-            <label className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
-            />
-          </div>
+          <form onSubmit={handleSubmit} noValidate>
 
-          {/* Password */}
-          <div className="mb-5">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-[11px] font-medium uppercase tracking-widest text-white/60">
-                Password
+            {/* Email */}
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
+                Email
               </label>
-              {!isSignUpMode && (
-                <button
-                  onClick={handleForgotPassword}
-                  className="text-xs text-[#818cf8] hover:text-white transition-colors"
-                >
-                  Forgot password?
-                </button>
-              )}
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
+              />
             </div>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
-            />
-          </div>
 
-          {/* Terms — sign up only */}
-          {isSignUpMode && (
-            <p className="text-xs text-white/60 leading-relaxed mb-5">
-              By clicking CREATE ACCOUNT, you agree to Orion's{' '}
-              <a href="/#/terms" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
-                Terms of Use
-              </a>{' '}and{' '}
-              <a href="/#/privacy" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
-                Privacy Policy
-              </a>.
-            </p>
-          )}
+            {/* Password */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="text-[11px] font-medium uppercase tracking-widest text-white/60">
+                  Password
+                </label>
+                {!isSignUpMode && (
+                  <Link
+                    to="/reset-password"
+                    className="text-xs text-[#818cf8] hover:text-white transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete={isSignUpMode ? "new-password" : "current-password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 pr-14 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                >
+                  {showPassword ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
+                </button>
+              </div>
+            </div>
 
-          {/* reCAPTCHA */}
-          <div className="flex justify-center mb-5">
-            <ReCAPTCHA
-              ref={recaptchaRef}
-              sitekey={siteKey}
-              theme="dark"
-              onChange={(token) => setRecaptchaToken(token)}
-            />
-          </div>
+            {/* Confirm Password — sign up only */}
+            {isSignUpMode && (
+              <div className="mb-5">
+                <label htmlFor="confirm-password" className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full h-11 rounded-lg bg-white/5 border border-white/10 text-white text-sm placeholder-white/25 px-4 pr-14 focus:outline-none focus:border-white/25 focus:bg-white/10 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  >
+                    {showConfirmPassword ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
+                  </button>
+                </div>
+              </div>
+            )}
 
-          {/* Submit */}
-          <button
-            onClick={handleManualSignupOrLogin}
-            className="w-full h-11 rounded-lg bg-[#5B6AD4] hover:bg-[#4e5cbd] active:bg-[#434fb3] text-white text-sm font-semibold transition-colors mb-6"
-          >
-            {isSignUpMode ? 'Create account' : 'Log in to Orion'}
-          </button>
+            {/* Terms — sign up only */}
+            {isSignUpMode && (
+              <p className="text-xs text-white/60 leading-relaxed mb-5">
+                By clicking CREATE ACCOUNT, you agree to Orion's{' '}
+                <a href="/#/terms" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
+                  Terms of Use
+                </a>{' '}and{' '}
+                <a href="/#/privacy" target="_blank" rel="noopener noreferrer" className="text-white/55 hover:text-white underline transition-colors">
+                  Privacy Policy
+                </a>.
+              </p>
+            )}
+
+            {/* reCAPTCHA */}
+            <div className="flex justify-center mb-5">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={siteKey}
+                theme="dark"
+                onChange={(token) => setRecaptchaToken(token)}
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="w-full h-11 rounded-lg bg-[#5B6AD4] hover:bg-[#4e5cbd] active:bg-[#434fb3] text-white text-sm font-semibold transition-colors mb-6"
+            >
+              {isSignUpMode ? 'Create account' : 'Log in to Orion'}
+            </button>
+
+          </form>
 
           {/* Toggle */}
           <p className="text-sm text-white/60 text-center">
             {isSignUpMode ? (
               <>
                 Already have an account?{' '}
-                <button onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
+                <button type="button" onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
                   Log in
                 </button>
               </>
             ) : (
               <>
                 Don't have an account?{' '}
-                <button onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
+                <button type="button" onClick={toggleMode} className="text-[#818cf8] hover:text-white transition-colors font-medium">
                   Sign up
                 </button>
               </>
             )}
           </p>
+
+          <div className="mt-5">
+            <Link to="/" className="text-xs text-white/35 hover:text-white/60 transition-colors">
+              ← Return to home
+            </Link>
+          </div>
 
         </div>
       </main>

@@ -3,7 +3,8 @@ import Login from '@/features/auth/Login';
 import ResetPassword from '@/features/auth/ResetPassword';
 import TermsOfService from '@/features/auth/TermsOfService';
 import PrivacyPolicy from '@/features/auth/PrivacyPolicy';
-// import LandingPage from '@/features/auth/LandingPage';
+import LandingDashboard from '@/features/auth/LandingDashboard';
+import { LandingOrdering } from '@/features/auth/LandingOrdering';
 import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from '@/features/ordering/OrderingPage';
 import LedgerPage from "@/features/ledger/pages/ledgerPage";
@@ -17,9 +18,8 @@ const App: React.FC = () => {
       <AuthProvider>
         <div className="app-container">
           <Routes>
-            {/*TEMP: path="/" will direct to LandingPage in final design */}
-            <Route path="/" element={<Login />} />
-            {/* <Route path="/" element={<LandingPage />} /> */}
+            <Route path="/" element={<LandingDashboard />} />
+            <Route path="/tradeview" element={<LandingOrdering />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<TermsOfService />} />
