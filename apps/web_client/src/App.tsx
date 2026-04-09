@@ -19,7 +19,7 @@ const App: React.FC = () => {
         <div className="app-container">
           <Routes>
             <Route path="/" element={<LandingDashboard />} />
-            <Route path="/tradeview" element={<LandingOrdering />} />
+            <Route path="/tickerview" element={<LandingOrdering />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<TermsOfService />} />

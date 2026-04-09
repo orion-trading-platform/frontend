@@ -68,7 +68,7 @@ const LandingDashboard: React.FC = () => {
               <TickerSearch
                 value={dashboardSearchQuery}
                 onChange={setDashboardSearchQuery}
-                onSelect={(sym) => navigate(`/tradeview?symbol=${sym}`)}
+                onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)}
                 placeholder="Search..."
               />
             </div>
