@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LAST_UPDATED = 'April 4, 2026';
+const LAST_UPDATED = 'April 10, 2026';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="border-t border-white/10 pt-8 mt-8">
@@ -24,6 +24,9 @@ const TermsOfService: React.FC = () => {
         <h1 className="text-2xl font-semibold text-white mb-2">Terms of Use</h1>
         <p className="text-sm text-white/60 mb-2">Last updated: {LAST_UPDATED}</p>
         <p className="text-sm text-white/75 leading-relaxed mt-6">
+          This website is merely a class software development project and stock trading simulator.
+          No real money is managed and Orion Trading, Inc. does not exist. Any financial, legal,
+          contact, etc. information listed is a fabrication for the purposes of this exercise.
           These Terms of Use ("Terms") govern your access to and use of the Orion trading platform,
           including all associated websites, APIs, mobile applications, and services
           (collectively, the "Platform"), operated by Orion Trading, Inc. ("Orion", "we", "us", or "our").
