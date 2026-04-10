@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
 import { DashboardGrid } from '@/features/dashboard/layouts/DashboardGrid';
 import { SearchBar } from '@/features/dashboard/components/SearchBar';
@@ -47,7 +48,11 @@ const LandingDashboard: React.FC = () => {
     }
   }, [searchQuery, hData]);
 
-  const [loginHovered, setLoginHovered] = useState(false);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
 
   if (isLoading) return null;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
@@ -57,14 +62,19 @@ const LandingDashboard: React.FC = () => {
       header={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
 
-          {/* LEFT SECTION: Title */}
+          {/* LEFT SECTION: Brand */}
           <div style={{ paddingLeft: '40px' }}>
-            <h1 style={{ margin: 0, fontSize: '32px', color: 'white' }}>Orion Trading</h1>
+            <button
+              onClick={() => navigate('/')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
+            >
+              ORION
+            </button>
           </div>
 
-          {/* RIGHT SECTION: Search & Login */}
+          {/* RIGHT SECTION: Search & Icons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ minWidth: 200, maxWidth: 300, width: '100%' }}>
+            <div style={{ width: '240px', flexShrink: 0 }}>
               <TickerSearch
                 value={dashboardSearchQuery}
                 onChange={setDashboardSearchQuery}
@@ -72,24 +82,22 @@ const LandingDashboard: React.FC = () => {
                 placeholder="Search..."
               />
             </div>
-            <button
-              onClick={() => navigate('/login')}
-              onMouseEnter={() => setLoginHovered(true)}
-              onMouseLeave={() => setLoginHovered(false)}
-              style={{
-                background: loginHovered ? 'rgba(255,255,255,0.15)' : 'transparent',
-                border: '2px solid white',
-                borderRadius: '6px',
-                fontSize: '16px',
-                fontWeight: 600,
-                color: 'white',
-                cursor: 'pointer',
-                padding: '6px 16px',
-                transition: 'background 0.15s',
-              }}
-            >
-              Login
-            </button>
+            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <button
+                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+                onClick={() => setDark(!dark)}
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+              >
+                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                aria-label="Login"
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+              >
+                <MdLogin size={22} />
+              </button>
+            </div>
           </div>
 
         </div>
