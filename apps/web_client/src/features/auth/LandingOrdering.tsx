@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link, Navigate } from "react-router-dom";
+import { useAuth } from '@/features/auth';
 import { OrderBook } from "@/features/ordering/components/OrderBook";
 import { StockChart } from "@/features/ordering/components/StockChart";
 import { getStockSnapshot } from "@/features/ordering/api/stocks";
@@ -22,8 +23,9 @@ interface Snapshot {
 
 export function LandingOrdering() {
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
   const [searchParams] = useSearchParams();
-  const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
+  const initialSymbol = searchParams.get('symbol') ?? 'AAPL'; //NOTE(An): presuming placeholder
   const [symbol, setSymbol] = useState(initialSymbol);
   const [loginHovered, setLoginHovered] = useState(false);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
@@ -46,6 +48,14 @@ export function LandingOrdering() {
   }, [symbol]);
 
   const isPositive = snapshot ? snapshot.change >= 0 : true;
+
+  if (isLoading) return null;
+  if (isAuthenticated) {
+    if (symbol != null && symbol != "") {
+      return <Navigate to={`/trade?symbol=${symbol}`} replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">

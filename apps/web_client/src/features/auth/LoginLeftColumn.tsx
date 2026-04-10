@@ -11,9 +11,12 @@ const LoginLeftColumn: React.FC = () => {
   const location = useLocation();
   const { login: authLogin, register: authRegister, loginWithGoogle } = useAuthActions();
 
-  const [isSignUpMode, setIsSignUpMode] = useState(
-    (location.state as { mode?: string } | null)?.mode !== 'login'
-  );
+  const [isSignUpMode, setIsSignUpMode] = useState(() => {
+    const stateMode = (location.state as { mode?: string } | null)?.mode;
+    if (stateMode === 'login') return false;
+    if (localStorage.getItem('orion_returning_user')) return false;
+    return true;
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,6 +35,7 @@ const LoginLeftColumn: React.FC = () => {
       setErrorMessage("");
       try {
         await loginWithGoogle(tokenResponse.access_token);
+        localStorage.setItem('orion_returning_user', '1');
         setSuccessMessage("Logged in with Google. Redirecting...");
         setTimeout(() => navigate('/dashboard'), 600);
       } catch (err) {
@@ -77,11 +81,13 @@ const LoginLeftColumn: React.FC = () => {
     try {
       if (isSignUpMode) {
         await authRegister(email, password, recaptchaToken);
+        localStorage.setItem('orion_returning_user', '1');
         setSuccessMessage("Account created. Redirecting...");
         setTimeout(() => navigate("/dashboard"), 800);
         return;
       }
       await authLogin(email, password, recaptchaToken);
+      localStorage.setItem('orion_returning_user', '1');
       setSuccessMessage("Logged in. Redirecting...");
       setTimeout(() => navigate("/dashboard"), 600);
     } catch (err: any) {

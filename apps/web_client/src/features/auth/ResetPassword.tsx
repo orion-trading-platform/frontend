@@ -89,7 +89,7 @@ const ResetPassword: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    navigate('/');
+    navigate('/login', { state: { mode: 'login' } });
   };
 
   return (
