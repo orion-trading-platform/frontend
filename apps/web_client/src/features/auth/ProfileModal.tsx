@@ -272,13 +272,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* Logout */}
-          <div className="border-t border-[#BCCCDC] pt-5">
+          {/* Account actions */}
+          <div className="border-t border-[#BCCCDC] pt-5 flex flex-col gap-3">
             <button
-              onClick={() => { void handleLogout(); }}
-              className="w-full px-4 py-2.5 rounded-md border border-red-300 text-sm font-medium bg-white text-red-600 cursor-pointer"
+              onClick={() => { onClose(); navigate('/ledger'); }}
+              className="w-full px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
             >
-              Log Out
+              Account Ledger
             </button>
           </div>
 
