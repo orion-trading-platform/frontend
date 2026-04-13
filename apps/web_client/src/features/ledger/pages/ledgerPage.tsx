@@ -379,26 +379,45 @@ export default function LedgerPage() {
   const [drawerError, setDrawerError] = useState("");
 
   const { startDate, endDate } = useMemo(() => {
+    // Build a local-time window so the backend filter matches the dates users
+    // see in the table (timestamps render in local time). Send full ISO-8601
+    // so servers compare instants directly and there is no UTC-date rounding.
     const now = new Date();
-    const end = new Date(now);
     let start = new Date(now);
+    let end = new Date(now);
+
+    const parseYmdLocal = (s: string): Date | null => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+      if (!m) return null;
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    };
 
     if (dateRange === "TODAY") {
       start.setHours(0, 0, 0, 0);
     } else if (dateRange === "7D") {
       start.setDate(start.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
     } else if (dateRange === "1M") {
       start.setMonth(start.getMonth() - 1);
+      start.setHours(0, 0, 0, 0);
     } else if (dateRange === "YTD") {
       start = new Date(now.getFullYear(), 0, 1);
     } else if (dateRange === "CUSTOM") {
-      if (customStart) start = new Date(customStart);
-      if (customEnd) end.setTime(new Date(customEnd).getTime());
+      if (customStart) {
+        const parsed = parseYmdLocal(customStart);
+        if (parsed) start = parsed;
+      } else {
+        start.setHours(0, 0, 0, 0);
+      }
+      if (customEnd) {
+        const parsed = parseYmdLocal(customEnd);
+        if (parsed) end = parsed;
+      }
     }
 
-    const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+    end.setHours(23, 59, 59, 999);
 
-    return { startDate: formatDate(start), endDate: formatDate(end) };
+    return { startDate: start.toISOString(), endDate: end.toISOString() };
   }, [dateRange, customStart, customEnd]);
 
   const effectiveType = useMemo(() => {
