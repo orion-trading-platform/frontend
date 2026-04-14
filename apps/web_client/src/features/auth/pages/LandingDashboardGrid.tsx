@@ -1,47 +1,65 @@
 import { ReactNode } from 'react';
-import styles from '@/features/dashboard/layouts/DashboardGrid.module.css';
 
 interface LandingDashboardGridProps {
   header: ReactNode;
   movers: ReactNode;
-  stats?: ReactNode;
-  chart?: ReactNode;
-  activity?: ReactNode;
   holdings: ReactNode;
+  assetTop?: ReactNode;
+  assetBottom?: ReactNode;
 }
 
-export const LandingDashboardGrid = ({ header, movers, stats, chart, activity, holdings }: DashboardGridProps) => {
+export const LandingDashboardGrid = ({
+  header,
+  movers,
+  holdings,
+  assetTop,
+  assetBottom,
+}: LandingDashboardGridProps) => {
   return (
-    <div className={styles.container}>
-      <header className={styles.headerArea}>
+    <div className="flex flex-col h-screen font-['Noto_Sans',Roboto,sans-serif]">
+
+      {/* HEADER */}
+      <header
+        className="flex-shrink-0 flex items-center px-6 py-2 font-['IBM_Plex_Serif',serif]"
+        style={{ background: 'rgb(94, 111, 161)' }}
+      >
         {header}
       </header>
-      <main style={{ display: 'contents' }}>
-        <div className={styles.moversArea}>
-          {movers}
+
+      {/* BODY */}
+      <div className="flex flex-row flex-1 overflow-hidden">
+
+        {/* LEFT COL - INFO */}
+        <div className="flex flex-col flex-1 overflow-hidden bg-[#F8FAFC] gap-5 p-5">
+          <div>{movers}</div>
+          <div className="flex-1 min-h-0 overflow-y-auto">{holdings}</div>
         </div>
-        {(stats || chart) && (
-          <div className={styles.mainArea}>
-            <div className={styles.accountSummaryBox}>
-              <h2 className={styles.accountSummaryTitle}>Account Summary</h2>
-              <div className={styles.statsArea}>
-                {stats}
+
+        {/* RIGHT COL - MARKETING */}
+        <aside
+          aria-label="Platform highlights"
+          className="hidden min-[1152px]:flex flex-col w-1/2 flex-shrink-0"
+        >
+          {/* Top asset panel */}
+          <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] p-4">
+            {assetTop ?? (
+              <div className="w-full h-full flex items-center justify-center border border-[#BCCCDC] rounded-lg text-[#9AA6B2] text-sm select-none">
+                Placeholder asset
               </div>
-              <div className={styles.chartSection}>
-                {chart}
+            )}
+          </div>
+
+          {/* Bottom asset panel */}
+          <div className="flex-1 flex items-center justify-center bg-[#F8FAFC] p-4">
+            {assetBottom ?? (
+              <div className="w-full h-full flex items-center justify-center border border-[#BCCCDC] rounded-lg text-[#9AA6B2] text-sm select-none">
+                Placeholder asset
               </div>
-            </div>
+            )}
           </div>
-        )}
-        {activity && (
-          <div className={styles.sidebarArea}>
-            {activity}
-          </div>
-        )}
-        <div className={styles.holdingsSection}>
-          {holdings}
-        </div>
-      </main>
+        </aside>
+
+      </div>
     </div>
   );
 };
