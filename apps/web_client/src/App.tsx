@@ -25,7 +25,7 @@ const App: React.FC = () => {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/trade" element={<OrderingPage />} />
+            <Route path="/trade" element={<ProtectedRoute><OrderingPage /></ProtectedRoute>} />
             <Route path="/ledger" element={<LedgerPage />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>

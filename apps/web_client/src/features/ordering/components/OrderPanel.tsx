@@ -7,13 +7,14 @@ interface OrderPanelProps {
   symbol: string;
   currentPrice: number;
   buyingPower: number;
+  userId: string;
   onOrderPlaced: (result: OrderResponse) => void;
 }
 
 type OrderSide = "buy" | "sell";
 type OrderType = "market" | "limit" | "stop" | "stop_limit";
 
-export function OrderPanel({ symbol, currentPrice, buyingPower, onOrderPlaced }: OrderPanelProps) {
+export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderPlaced }: OrderPanelProps) {
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
   const [orderType, setOrderType] = useState<OrderType>("market");
   const [quantity, setQuantity] = useState<string>("");
@@ -45,6 +46,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, onOrderPlaced }:
     try {
       const result = await placeOrder({
         symbol,
+        userId,
         side: orderSide.toUpperCase() as "BUY" | "SELL",
         type: orderType,
         qty: shares,

@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
-import { getAccountBalance } from "./api/user";
 import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
-import { useAuth } from "../auth";
+import { useAuth, useAccount } from "../auth";
 
 interface Snapshot {
   symbol: string;
@@ -26,7 +25,8 @@ const SYMBOL = "AAPL";
 
 export function OrderingPage() {
   const { currentUser } = useAuth();
-  const [balance, setBalance] = useState<number>(0);
+  const { account } = useAccount();
+  const balance = account ? parseFloat(account.balance) : 0;
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
 
@@ -34,21 +34,16 @@ export function OrderingPage() {
   const displayName = currentUser?.email?.split("@")[0] ?? "Guest";
   const initials = displayName.slice(0, 2).toUpperCase();
 
-  // Fetch balance and initial snapshot on mount
+  // Fetch initial snapshot on mount
   useEffect(() => {
-    getAccountBalance().then((data) => setBalance(data.balance));
     getStockSnapshot(SYMBOL).then((data) => {
       setSnapshot(data);
       setCurrentPrice(data.price);
     });
   }, []);
 
-  const handleOrderPlaced = (result: OrderResponse) => {
-    setBalance((prev) =>
-      parseFloat(
-        (result.side === "BUY" ? prev - result.totalAmount : prev + result.totalAmount).toFixed(2)
-      )
-    );
+  const handleOrderPlaced = (_result: OrderResponse) => {
+    // balance is now driven by useAccount — no manual update needed
   };
 
   // Subscribe to live price updates via SSE
@@ -152,7 +147,7 @@ export function OrderingPage() {
             <OrderBook symbol={SYMBOL} />
           </div>
           <div className="col-span-1">
-            <OrderPanel symbol={SYMBOL} currentPrice={currentPrice} buyingPower={balance} onOrderPlaced={handleOrderPlaced} />
+            <OrderPanel symbol={SYMBOL} currentPrice={currentPrice} buyingPower={balance} userId={currentUser?.user_id?.toString() ?? ""} onOrderPlaced={handleOrderPlaced} />
           </div>
         </div>
       </main>

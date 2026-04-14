@@ -1,7 +1,8 @@
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+import api from "@/features/auth/api";
 
 export interface OrderRequest {
   symbol: string;
+  userId: string;
   side: "BUY" | "SELL";
   type: "market" | "limit" | "stop" | "stop_limit";
   qty: number;
@@ -21,59 +22,40 @@ export interface OrderResponse {
   timestamp: string;
 }
 
-// NOTE: assuming endpoint POST /api/orders
 export async function placeOrder(order: OrderRequest): Promise<OrderResponse> {
-  await delay(800);
-
-  return {
-    orderId: `ORD-${Date.now()}`,
-    status: order.type === "market" ? "filled" : "pending",
-    symbol: order.symbol,
+  const res = await api.post("/orders", {
+    ticker: order.symbol,
+    user_id: order.userId,
     side: order.side,
+    quantity: order.qty,
+    limit_price: order.limit_price,
+  });
+  const d = res.data;
+  const executedPrice = order.limit_price ?? 0;
+  return {
+    orderId: `${d.ticker}-${d.timestamp}`,
+    status: "pending",
+    symbol: d.ticker,
+    side: d.side,
     type: order.type,
-    qty: order.qty,
-    executedPrice: 175.43,
-    totalAmount: parseFloat((order.qty * 175.43 * 1.0001).toFixed(2)),
-    timestamp: new Date().toISOString(),
+    qty: d.quantity,
+    executedPrice,
+    totalAmount: parseFloat((d.quantity * executedPrice).toFixed(2)),
+    timestamp: new Date(d.timestamp / 1000).toISOString(),
   };
 }
 
 export async function getOrderHistory(): Promise<OrderResponse[]> {
-  await delay(400);
-
-  return [
-    {
-      orderId: "ORD-1001",
-      status: "filled",
-      symbol: "AAPL",
-      side: "BUY",
-      type: "market",
-      qty: 5,
-      executedPrice: 173.20,
-      totalAmount: 866.09,
-      timestamp: "2026-02-04T09:31:00.000Z",
-    },
-    {
-      orderId: "ORD-1002",
-      status: "filled",
-      symbol: "AAPL",
-      side: "SELL",
-      type: "limit",
-      qty: 2,
-      executedPrice: 174.50,
-      totalAmount: 349.03,
-      timestamp: "2026-02-04T10:15:00.000Z",
-    },
-    {
-      orderId: "ORD-1003",
-      status: "pending",
-      symbol: "AAPL",
-      side: "BUY",
-      type: "limit",
-      qty: 10,
-      executedPrice: 174.00,
-      totalAmount: 1740.17,
-      timestamp: "2026-02-04T11:00:00.000Z",
-    },
-  ];
+  const res = await api.get("/orders/active");
+  return res.data.orders.map((d: any) => ({
+    orderId: `${d.ticker}-${d.timestamp}`,
+    status: d.status === "PENDING" ? "pending" : "filled",
+    symbol: d.ticker,
+    side: d.side,
+    type: "limit",
+    qty: d.quantity,
+    executedPrice: d.limit_price ?? 0,
+    totalAmount: parseFloat((d.quantity * (d.limit_price ?? 0)).toFixed(2)),
+    timestamp: new Date(d.timestamp / 1000).toISOString(),
+  }));
 }
