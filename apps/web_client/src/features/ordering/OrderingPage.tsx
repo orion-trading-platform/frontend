@@ -78,8 +78,7 @@ export function OrderingPage() {
             <nav className="flex gap-6 text-sm">
               <a href="#/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
               <a href="#/trade" className="font-medium text-gray-900">Trade</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Portfolio</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Transactions</a>
+              <a href="#/ledger" className="text-gray-600 hover:text-gray-900">Ledger</a>
             </nav>
           </div>
           <div className="flex items-center gap-4">
