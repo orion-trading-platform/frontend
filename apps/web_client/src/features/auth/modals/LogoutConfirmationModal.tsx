@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'ui-kit';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../AuthContext';
 
 interface LogoutConfirmationModalProps {
   isOpen: boolean;

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { useAuth, useAccount, useAccounts, api } from "@/features/auth";
-import ProfileModal from "@/features/auth/ProfileModal";
-import LogoutConfirmationModal from "@/features/auth/LogoutConfirmationModal";
+import ProfileModal from "@/features/auth/modals/ProfileModal";
+import LogoutConfirmationModal from "@/features/auth/modals/LogoutConfirmationModal";
 import {
   ledgerService,
   type ActivityItem,

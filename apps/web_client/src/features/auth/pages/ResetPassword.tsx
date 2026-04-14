@@ -3,7 +3,7 @@ import Logo from '@/assets/logo-white.svg';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import LoginRightColumn from './LoginRightColumn';
-import { useAuthActions } from './useAuthActions';
+import { useAuthActions } from '../useAuthActions';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();

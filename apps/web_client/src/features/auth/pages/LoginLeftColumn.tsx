@@ -4,7 +4,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Logo from '@/assets/logo-white.svg';
-import { useAuthActions } from './useAuthActions';
+import { useAuthActions } from '../useAuthActions';
 
 const LoginLeftColumn: React.FC = () => {
   const navigate = useNavigate();

@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
-import ProfileModal from '../auth/ProfileModal';
-import LogoutConfirmationModal from '../auth/LogoutConfirmationModal';
+import ProfileModal from '../auth/modals/ProfileModal';
+import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
 import { useAuth } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';

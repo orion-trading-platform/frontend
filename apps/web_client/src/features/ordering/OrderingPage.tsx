@@ -10,8 +10,8 @@ import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth } from "../auth";
-import ProfileModal from "../auth/ProfileModal";
-import LogoutConfirmationModal from "../auth/LogoutConfirmationModal";
+import ProfileModal from "../auth/modals/ProfileModal";
+import LogoutConfirmationModal from "../auth/modals/LogoutConfirmationModal";
 
 interface Snapshot {
   symbol: string;

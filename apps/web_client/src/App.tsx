@@ -1,10 +1,10 @@
 import React from 'react';
-import Login from '@/features/auth/Login';
-import ResetPassword from '@/features/auth/ResetPassword';
-import TermsOfService from '@/features/auth/TermsOfService';
-import PrivacyPolicy from '@/features/auth/PrivacyPolicy';
-import LandingDashboard from '@/features/auth/LandingDashboard';
-import { LandingOrdering } from '@/features/auth/LandingOrdering';
+import Login from '@/features/auth/pages/Login';
+import ResetPassword from '@/features/auth/pages/ResetPassword';
+import TermsOfService from '@/features/auth/pages/TermsOfService';
+import PrivacyPolicy from '@/features/auth/pages/PrivacyPolicy';
+import LandingDashboard from '@/features/auth/pages/LandingDashboard';
+import { LandingOrdering } from '@/features/auth/pages/LandingOrdering';
 import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from '@/features/ordering/OrderingPage';
 import LedgerPage from "@/features/ledger/pages/ledgerPage";

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from 'ui-kit';
-import { useAuth } from './AuthContext';
-import { useAuthActions } from './useAuthActions';
+import { useAuth } from '../AuthContext';
+import { useAuthActions } from '../useAuthActions';
 
 interface DeleteUserConfirmationModalProps {
   isOpen: boolean;
