@@ -1,4 +1,9 @@
 {
   "name": "comp413-root",
-  "private": true
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "apps/web_client/src/features/ledger/mock_backend"
+  ]
 }

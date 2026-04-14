@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
-import ProfileModal from '../auth/ProfileModal';
+import ProfileModal from '../auth/modals/ProfileModal';
+import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
 import { useAuth } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { StatCard } from './components/StatCard';
@@ -17,7 +18,7 @@ import Papa, { ParseResult } from "papaparse"
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
   var emptyTable: Holding[] = [];
 
   const [dark, setDark] = useState(false);
@@ -25,6 +26,7 @@ export const DashboardPage = () => {
     document.documentElement.classList.toggle('dark', dark);
   }, [dark]);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [rData, setrData] = useState<RecentActivityProps[]>([]);
@@ -84,6 +86,7 @@ export const DashboardPage = () => {
   return (
     <>
     <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
+    <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
     <DashboardGrid
       header={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
@@ -133,7 +136,7 @@ export const DashboardPage = () => {
               </button>
               <button
                 aria-label="Logout"
-                onClick={() => logout().then(() => navigate('/'))}
+                onClick={() => setLogoutOpen(true)}
                 style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
               >
                 <MdLogout size={22} />

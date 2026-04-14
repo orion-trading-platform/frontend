@@ -172,8 +172,10 @@ Internal files (beside pages) **not** exported via `index.ts`:
 
 | File | Purpose |
 |---|---|
-| `useAuthActions.ts` | Auth-only actions: `login`, `register`, `loginWithGoogle`, `forgotPassword`, `resetPassword`, `changePassword` |
+| `useAuthActions.ts` | Auth-only actions: `login`, `register`, `loginWithGoogle`, `forgotPassword`, `resetPassword`, `changePassword`, `deleteUser` |
 | `AuthContext.tsx` | React context, provider, token lifecycle, 401 interceptor |
+| `LogoutConfirmationModal.tsx` | Confirmation dialog for logout — used in ProfileModal, ledger, and ordering pages |
+| `DeleteUserConfirmationModal.tsx` | Confirmation dialog for account deletion — used in ProfileModal |
 
 ### `useAuthActions()`
 
@@ -191,3 +193,4 @@ const { register, login, loginWithGoogle, forgotPassword, resetPassword, changeP
 | `forgotPassword(email)` | `POST /auth/forgot-password` | Always returns 202 (silent) |
 | `resetPassword(token, pw)` | `POST /auth/reset-password` | Token from the reset email link |
 | `changePassword(current, new)` | `POST /auth/change-password` | Requires valid session |
+| `deleteUser()` | `DELETE /auth/me` | Permanently deletes the authenticated user's account |
