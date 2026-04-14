@@ -159,7 +159,7 @@ export function LandingOrdering() {
                   </p>
                   <button
                     onClick={() => navigate('/login')}
-                    className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white hover:bg-blue-700"
+                    className="w-full rounded-lg bg-[#5B6AD4] px-4 py-3 font-medium text-white hover:bg-[#4e5cbd] active:bg-[#434fb3] transition-colors"
                   >
                     Log in to Trade
                   </button>
