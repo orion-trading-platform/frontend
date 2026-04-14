@@ -20,8 +20,10 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "ui-kit": ["../../packages/ui-kit/src/index.ts"],
+      "ui-kit/*": ["../../packages/ui-kit/src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../../packages/ui-kit/src"]
 }

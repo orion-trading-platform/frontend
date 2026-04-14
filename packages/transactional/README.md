@@ -43,11 +43,18 @@ export default function PasswordReset() {
 
 ## Development
 
-Preview templates in a browser with hot reload:
+Preview templates in a browser with hot reload.
+
+From the **repo root** (preferred):
+
+```bash
+npm run dev -w transactional
+```
+
+Or from this directory (no separate `npm install` needed — the root workspace install covers it):
 
 ```bash
 cd packages/transactional
-npm install
 npm run dev
 ```
 
@@ -82,7 +89,15 @@ Before running `npm run export`, swap `logoSrc` for the hosted absolute URL — 
 
 ## Exporting to HTML
 
-When templates are ready, export them to static HTML files:
+When templates are ready, export them to static HTML files.
+
+From the **repo root** (preferred):
+
+```bash
+npm run export -w transactional
+```
+
+Or from this directory:
 
 ```bash
 npm run export

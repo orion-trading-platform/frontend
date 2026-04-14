@@ -11,6 +11,7 @@ import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth } from "../auth";
 import ProfileModal from "../auth/ProfileModal";
+import LogoutConfirmationModal from "../auth/LogoutConfirmationModal";
 
 interface Snapshot {
   symbol: string;
@@ -30,11 +31,12 @@ export function OrderingPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
   const [dark, setDark] = useState<boolean>(false);
   const [symbol, setSymbol] = useState(initialSymbol);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [balance, setBalance] = useState<number>(0);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
@@ -86,6 +88,7 @@ export function OrderingPage() {
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
+      <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
       <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
 
@@ -115,7 +118,7 @@ export function OrderingPage() {
                   <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
                 )}
               </button>
-              <button aria-label="Logout" onClick={() => logout().then(() => navigate('/'))} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+              <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
                 <MdLogout size={22} />
               </button>
             </div>
