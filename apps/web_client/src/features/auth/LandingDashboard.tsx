@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
-import { DashboardGrid } from '@/features/dashboard/layouts/DashboardGrid';
+import { LandingDashboardGrid } from '@/features/auth/LandingDashboardGrid';
 import { SearchBar } from '@/features/dashboard/components/SearchBar';
 import { HoldingsTable, Holding } from '@/features/dashboard/components/HoldingsTable';
 import { TickerSearch } from '@/features/dashboard/components/TickerSearch';
@@ -58,7 +58,7 @@ const LandingDashboard: React.FC = () => {
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (
-    <DashboardGrid
+    <LandingDashboardGrid
       header={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
 

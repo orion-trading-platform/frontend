@@ -74,7 +74,7 @@ const ResetPassword: React.FC = () => {
     try {
       await resetPassword(resetCode, newPassword);
       setSuccessMessage("Password reset successfully! Redirecting to login...");
-      setTimeout(() => navigate("/", { state: { mode: "login" } }), 1000);
+      setTimeout(() => navigate("/login", { state: { mode: "login" } }), 1000);
     } catch (err: any) {
       console.error("Error resetting password:", err);
       const status = err?.response?.status;
