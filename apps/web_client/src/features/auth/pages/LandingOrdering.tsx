@@ -65,7 +65,7 @@ export function LandingOrdering() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <Header
         left={
           <button
