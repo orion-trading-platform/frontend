@@ -73,7 +73,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #c2c5cd;
   text-align: left;
 }
 
@@ -82,11 +82,11 @@
   display:flex;
   margin-right: 24px;
   flex-direction: column;
-  background: #0d1426;
-  border-radius: 12px;
-  color: #ffffff;
-  border: 1px solid #3c4349;
-  box-shadow: 4px 4px 5px #9aa6b23c; 
+  background-image: url(recent4.png);
+  border-radius: 40px;
+  color: #c2c5cd;
+  box-shadow: inset 0px 0px 50px -1px #0d1426, inset 0px 0px 40px -1px #0d1426, inset 0px 0px 30px -1px #0d1426, inset 0px 0px 20px -1px #0d1426, inset 0px 0px 10px -1px #0d1426, inset 0px 0px 50px -1px #0d1426;
+
   /* Stick to the height of the main content */
   height: 100%; 
   overflow-y: auto;
