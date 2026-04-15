@@ -23,12 +23,23 @@ interface Snapshot {
 
 const SYMBOL = "AAPL";
 
+function formatLoadError(err: unknown): string {
+  if (err && typeof err === "object") {
+    const e = err as { message?: string; response?: { data?: { detail?: unknown } } };
+    const detail = e.response?.data?.detail;
+    if (typeof detail === "string") return detail;
+    if (typeof e.message === "string" && e.message) return e.message;
+  }
+  return "Could not load market data.";
+}
+
 export function OrderingPage() {
   const { currentUser } = useAuth();
   const { account } = useAccount();
   const balance = account ? parseFloat(account.balance) : 0;
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [snapshotError, setSnapshotError] = useState<string | null>(null);
 
   // Derive display name and initials from the real auth user
   const displayName = currentUser?.email?.split("@")[0] ?? "Guest";
@@ -36,10 +47,15 @@ export function OrderingPage() {
 
   // Fetch initial snapshot on mount
   useEffect(() => {
-    getStockSnapshot(SYMBOL).then((data) => {
-      setSnapshot(data);
-      setCurrentPrice(data.price);
-    });
+    setSnapshotError(null);
+    getStockSnapshot(SYMBOL)
+      .then((data) => {
+        setSnapshot(data);
+        setCurrentPrice(data.price);
+      })
+      .catch((err: unknown) => {
+        setSnapshotError(formatLoadError(err));
+      });
   }, []);
 
   const handleOrderPlaced = (_result: OrderResponse) => {
@@ -53,6 +69,18 @@ export function OrderingPage() {
     });
     return unsubscribe; // React calls this on unmount to stop the subscription
   }, []);
+
+  if (snapshotError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f8f9fa] px-6">
+        <div className="text-center text-gray-800">Could not load the trading view.</div>
+        <div className="max-w-md text-center text-sm text-gray-500">{snapshotError}</div>
+        <div className="text-xs text-gray-400">
+          Start the Market Data API on port 8001 and restart the Vite dev server, then refresh.
+        </div>
+      </div>
+    );
+  }
 
   if (!snapshot) {
     return (
