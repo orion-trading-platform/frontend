@@ -3,8 +3,10 @@ import { useTheme } from '@/ThemeContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
-import landingAsset1 from '@/assets/landing-asset-1.png';
-import landingAsset2 from '@/assets/landing-asset-2.png';
+import landingTopTitle from '@/assets/landing-top-title.svg';
+import landingTopAccent from '@/assets/landing-top-accent.svg';
+import landingTopResponsive from '@/assets/landing-top-responsive.svg';
+import landingBottomAsset from '@/assets/landing-bottom-asset.png';
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { LandingDashboardGrid } from './LandingDashboardGrid';
@@ -27,7 +29,6 @@ const LandingDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [hData, sethData] = useState<Holding[]>([]);
-
 
   useEffect(() => {
     fetch('/src/features/dashboard/data/ds4_holdings.csv')
@@ -56,14 +57,11 @@ const LandingDashboard: React.FC = () => {
     }
   }, [searchQuery, hData]);
 
-
-
-
-
   if (isLoading) return null;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
   return (
+    <>
     <LandingDashboardGrid
       header={
         <Header
@@ -116,16 +114,43 @@ const LandingDashboard: React.FC = () => {
         </div>
       }
       assetTop={
-        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
-          <img src={landingAsset1} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
+        <div
+          className="group relative isolate w-full h-full overflow-hidden rounded-3xl border-2 transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]"
+          style={{
+            background: dark
+              ? 'radial-gradient(ellipse 65% 55% at 18% 28%, rgba(139,92,246,0.22) 0%, transparent 70%), radial-gradient(ellipse 50% 65% at 82% 78%, rgba(59,130,246,0.16) 0%, transparent 70%), radial-gradient(ellipse 55% 45% at 68% 8%, rgba(168,85,247,0.14) 0%, transparent 70%), #0D0D14'
+              : 'radial-gradient(ellipse 65% 55% at 18% 28%, rgba(139,92,246,0.10) 0%, transparent 70%), radial-gradient(ellipse 50% 65% at 82% 78%, rgba(59,130,246,0.08) 0%, transparent 70%), radial-gradient(ellipse 55% 45% at 68% 8%, rgba(168,85,247,0.06) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 45% 60%, rgba(20,15,55,0.13) 0%, transparent 65%), radial-gradient(ellipse 35% 40% at 70% 30%, rgba(15,10,45,0.09) 0%, transparent 55%), #F8FAFC',
+            borderColor: dark ? 'rgba(91,106,212,0.35)' : 'rgba(91,106,212,0.22)',
+          }}
+        >
+          <svg aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.035]" xmlns="http://www.w3.org/2000/svg">
+            <filter id="lp-top-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+              <feColorMatrix type="saturate" values="0"/>
+            </filter>
+            <rect width="100%" height="100%" filter="url(#lp-top-noise)"/>
+          </svg>
+          <img src={landingTopAccent} alt="" className="w-full h-full object-cover object-center block" />
+          <img src={landingTopResponsive} alt="" className="absolute inset-0 w-full h-full object-cover object-center block brightness-0 dark:brightness-100" />
+          <img src={landingTopTitle} alt="" className="absolute inset-0 w-full h-full object-cover object-center block transition-transform duration-300 group-hover:scale-[1.01]" />
+          <button
+            onClick={() => navigate('/login')}
+            className="absolute left-1/2 -translate-x-1/2 top-[64%] z-10 rounded-lg border px-6 py-3 text-sm font-semibold tracking-widest transition duration-300 group-hover:scale-[1.03]"
+            style={{ color: '#5B6AD4', borderColor: 'rgba(91,106,212,0.55)', background: 'transparent' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(91,106,212,0.10)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            Begin your journey
+          </button>
         </div>
       }
       assetBottom={
-        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
-          <img src={landingAsset2} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
+        <div className="relative isolate w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
+          <img src={landingBottomAsset} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
         </div>
       }
     />
+    </>
   );
 };
 
