@@ -89,7 +89,7 @@ export const PerformanceChart = () => {
   return (
     <div style={{ width: '95%', height: 350, padding: '10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-        <h3 style={{ margin: 0, color: '#111827' }}>Performance History</h3>
+        <h3 style={{ margin: 0, color: '#e3e5e4' }}>Performance History</h3>
         <div style={{ display: 'flex', gap: 4 }}>
           {(Object.keys(TIMELINE_LABELS) as Timeline[]).map((key) => (
             <button

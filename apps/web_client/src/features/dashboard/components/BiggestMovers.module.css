@@ -1,5 +1,5 @@
 .wrapper {
-  background: white;
+  background: #0d1426;
   border-radius: 12px;
   padding: 14px 20px;
   border: 1px solid #BCCCDC;
@@ -28,7 +28,7 @@
 .symbol {
   font-weight: 700;
   font-size: 14px;
-  color: #111827;
+  color: #1a2336;
 }
 
 .price {

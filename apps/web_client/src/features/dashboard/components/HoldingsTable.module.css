@@ -17,21 +17,21 @@
 }
 
 .row {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #798290;
 }
 
 .row:hover {
-  background: #f9fafb;
+  background: #2c4a74;
 }
 
 .td {
   padding: 12px 16px;
-  color: #374151;
+  color: #c2c5cd;
 }
 
 .tdSymbol {
   font-weight: 600;
-  color: #111827;
+  color: #c2c5cd;
 }
 
 .positive {

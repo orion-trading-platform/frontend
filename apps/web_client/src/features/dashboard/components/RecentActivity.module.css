@@ -1,5 +1,5 @@
 .card{
-    background: white;
+    background: #0d1426;
     border-radius: 12px;
     padding: 20px;
     padding-left: 10px;
@@ -7,7 +7,6 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    border: 1px solid #ffffff;
     width: -webkit-fill-available;
 }
 
