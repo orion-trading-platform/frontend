@@ -1,18 +1,14 @@
 import axios from "axios";
 
-/**
- * In dev, always use same-origin (`""`) so `/api/*` goes through the Vite proxy → :8001 (no CORS).
- * @returns The base URL for the market API.
- */
 function marketApiBaseURL(): string {
-  if (import.meta.env.DEV) {
-    return "";
-  }
   return String(import.meta.env.VITE_MARKET_DATA_URL ?? "").replace(/\/$/, "");
 }
 
 const marketApi = axios.create({ baseURL: marketApiBaseURL() });
 
+/**
+ * circumvent header issue. maybe a bit slapdash.
+ */
 marketApi.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) {
