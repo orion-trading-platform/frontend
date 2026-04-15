@@ -14,6 +14,8 @@ import { TickerSearch } from './components/TickerSearch';
 import { BiggestMovers } from './components/BiggestMovers';
 import { MOCK_STATS, MOCK_HOLDINGS, MOCK_ACTIVITY } from './data/mockData';
 import Papa, { ParseResult } from "papaparse"
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
 
 
 export const DashboardPage = () => {
@@ -92,14 +94,13 @@ export const DashboardPage = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
 
           {/* LEFT SECTION: Brand */}
-          <div style={{ paddingLeft: '25px' }}>
-            <button
-              onClick={() => navigate('/dashboard')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
-            >
-              ORION
-            </button>
-          </div>
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
+          </button>
 
           {/* RIGHT SECTION: Search & Icons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

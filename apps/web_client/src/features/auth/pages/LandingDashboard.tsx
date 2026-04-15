@@ -2,7 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
+import landingAsset1 from '@/assets/landing-asset-1.png';
+import landingAsset2 from '@/assets/landing-asset-2.png';
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
 import { LandingDashboardGrid } from './LandingDashboardGrid';
+import { Header } from 'ui-kit';
 import { SearchBar } from '@/features/dashboard/components/SearchBar';
 import { HoldingsTable, Holding } from '@/features/dashboard/components/HoldingsTable';
 import { TickerSearch } from '@/features/dashboard/components/TickerSearch';
@@ -60,53 +65,63 @@ const LandingDashboard: React.FC = () => {
   return (
     <LandingDashboardGrid
       header={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-
-          {/* LEFT SECTION: Brand */}
-          <div style={{ paddingLeft: '40px' }}>
+        <Header
+          left={
             <button
               onClick={() => navigate('/')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
             >
-              ORION
+              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
+              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
             </button>
-          </div>
-
-          {/* RIGHT SECTION: Search & Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '240px', flexShrink: 0 }}>
-              <TickerSearch
-                value={dashboardSearchQuery}
-                onChange={setDashboardSearchQuery}
-                onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)}
-                placeholder="Search..."
-              />
+          }
+          right={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ width: '240px', flexShrink: 0 }}>
+                <TickerSearch
+                  value={dashboardSearchQuery}
+                  onChange={setDashboardSearchQuery}
+                  onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)}
+                  placeholder="Search..."
+                />
+              </div>
+              <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+                  onClick={() => setDark(!dark)}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                >
+                  {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  aria-label="Login"
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                >
+                  <MdLogin size={22} />
+                </button>
+              </div>
             </div>
-            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-              <button
-                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                onClick={() => setDark(!dark)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
-              >
-                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                aria-label="Login"
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
-              >
-                <MdLogin size={22} />
-              </button>
-            </div>
-          </div>
-
-        </div>
+          }
+        />
       }
       movers={<BiggestMovers />}
       holdings={
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <HoldingsTable holdings={filteredHoldings ?? emptyTable} publicOnly={true} />
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <HoldingsTable holdings={filteredHoldings ?? emptyTable} publicOnly={true} />
+          </div>
+        </div>
+      }
+      assetTop={
+        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 hover:scale-[1.01] motion-safe:animate-[fadeIn_0.6s_ease_both]">
+          <img src={landingAsset1} alt="" className="w-full h-full object-cover object-center block" />
+        </div>
+      }
+      assetBottom={
+        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 hover:scale-[1.01] motion-safe:animate-[fadeIn_0.6s_ease_both]">
+          <img src={landingAsset2} alt="" className="w-full h-full object-cover object-center block" />
         </div>
       }
     />

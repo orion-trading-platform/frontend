@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'ui-kit';
+import { Modal, Button } from 'ui-kit';
 import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 import LogoutConfirmationModal from './LogoutConfirmationModal';
@@ -93,7 +93,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="Profile" titleId="profile-modal-title">
+      <Modal isOpen={isOpen && !showLogoutModal && !showDeleteModal} onClose={onClose} title="Profile" titleId="profile-modal-title">
 
         {/* User info */}
         <div className="bg-slate-50 border border-[#BCCCDC] rounded-lg px-[18px] py-4 mb-6">
@@ -139,14 +139,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             {setPassMessage && (
               <p className="mt-2 mb-0 text-[13px] text-green-600" role="status">{setPassMessage}</p>
             )}
-            <button
+            <Button
+              variant="primary"
               onClick={() => { void handleSetPassword(); }}
               disabled={settingPassword}
-              className="w-full px-4 py-2.5 rounded-md border-none text-sm font-medium text-white mt-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ background: 'rgb(94, 111, 161)' }}
+              className="w-full mt-3 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {settingPassword ? 'Setting...' : 'Set Password'}
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="mb-6">
@@ -183,37 +183,28 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             {passwordMessage && (
               <p className="mt-2 mb-0 text-[13px] text-green-600" role="status">{passwordMessage}</p>
             )}
-            <button
+            <Button
+              variant="primary"
               onClick={() => { void handleChangePassword(); }}
               disabled={changingPassword}
-              className="w-full px-4 py-2.5 rounded-md border-none text-sm font-medium text-white mt-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ background: 'rgb(94, 111, 161)' }}
+              className="w-full mt-3 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {changingPassword ? 'Updating...' : 'Update Password'}
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Account actions */}
         <div className="border-t border-[#BCCCDC] pt-5 flex flex-col gap-3">
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="w-full px-4 py-2.5 rounded-md border border-red-200 text-sm font-medium bg-white text-red-600 cursor-pointer hover:bg-red-50"
-          >
+          <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
             Delete Account
-          </button>
-          <button
-            onClick={() => { onClose(); navigate('/ledger'); }}
-            className="w-full px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => { onClose(); navigate('/ledger'); }} className="w-full">
             Account Ledger (temp redirect)
-          </button>
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className="w-full px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => setShowLogoutModal(true)} className="w-full">
             Log Out
-          </button>
+          </Button>
         </div>
 
       </Modal>

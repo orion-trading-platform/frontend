@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { MdSearch } from 'react-icons/md';
 import { DUMMY_TICKERS } from '../data/tickerSearchData';
 import styles from './TickerSearch.module.css';
 
@@ -49,7 +50,7 @@ export const TickerSearch = ({
 
   return (
     <div ref={containerRef} className={styles.wrapper}>
-      <span className={styles.icon} aria-hidden>🔍</span>
+      <MdSearch size={20} className={styles.icon} aria-hidden />
       <input
         type="search"
         className={styles.input}

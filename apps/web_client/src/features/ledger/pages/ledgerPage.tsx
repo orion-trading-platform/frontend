@@ -1,4 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
+import { Header } from 'ui-kit';
 import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
@@ -177,7 +180,7 @@ function DetailsDrawer({ open, onClose, loading, detail, drawerError }: DetailsD
       />
 
       <div
-        className={`absolute right-0 top-0 h-full w-full max-w-md transform bg-white dark:bg-[#0b0f14] shadow-2xl transition-transform ${
+        className={`absolute right-0 top-0 h-full w-full max-w-md transform bg-white dark:bg-[#0D0D14] shadow-2xl transition-transform ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -547,23 +550,20 @@ export default function LedgerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f14]">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
       <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
-      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-
-          {/* LEFT: Brand */}
-          <div style={{ paddingLeft: '25px' }}>
-            <button
-              onClick={() => navigate('/dashboard')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
-            >
-              ORION
-            </button>
-          </div>
-
-          {/* RIGHT: Search + Icons */}
+      <Header
+        left={
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
+          </button>
+        }
+        right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '240px', flexShrink: 0 }}>
               <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} placeholder="Search..." />
@@ -584,9 +584,8 @@ export default function LedgerPage() {
               </button>
             </div>
           </div>
-
-        </div>
-      </header>
+        }
+      />
 
       <DetailsDrawer
         open={drawerOpen}

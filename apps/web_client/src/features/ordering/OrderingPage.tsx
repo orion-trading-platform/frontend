@@ -10,6 +10,9 @@ import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth } from "../auth";
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
+import { Header } from 'ui-kit';
 import ProfileModal from "../auth/modals/ProfileModal";
 import LogoutConfirmationModal from "../auth/modals/LogoutConfirmationModal";
 
@@ -77,7 +80,7 @@ export function OrderingPage() {
 
   if (!snapshot) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f8f9fa]">
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-[#0D0D14]">
         <div className="text-gray-500">Loading...</div>
       </div>
     );
@@ -86,23 +89,20 @@ export function OrderingPage() {
   const isPositive = snapshot.change >= 0;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
       <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
-      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-
-          {/* LEFT: Brand */}
-          <div style={{ paddingLeft: '25px' }}>
-            <button
-              onClick={() => navigate('/dashboard')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
-            >
-              ORION
-            </button>
-          </div>
-
-          {/* RIGHT: Search + Icons */}
+      <Header
+        left={
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
+          </button>
+        }
+        right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '240px', flexShrink: 0 }}>
               <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => { setSymbol(sym); setTickerQuery(sym); }} placeholder="Search..." />
@@ -123,9 +123,8 @@ export function OrderingPage() {
               </button>
             </div>
           </div>
-
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto max-w-7xl p-6">
         <button

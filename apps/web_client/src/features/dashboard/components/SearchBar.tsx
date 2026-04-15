@@ -1,3 +1,4 @@
+import { MdSearch } from 'react-icons/md';
 import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
@@ -9,7 +10,7 @@ interface SearchBarProps {
 export const SearchBar = ({ value, onChange, placeholder = 'Search holdings by symbol or name...' }: SearchBarProps) => {
   return (
     <div className={styles.wrapper}>
-      <span className={styles.icon} aria-hidden>🔍</span>
+      <MdSearch size={20} className={styles.icon} aria-hidden />
       <input
         type="search"
         className={styles.input}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'ui-kit';
+import { Modal, Button } from 'ui-kit';
 import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 
@@ -40,21 +40,12 @@ const DeleteUserConfirmationModal: React.FC<DeleteUserConfirmationModalProps> = 
         <p className="mt-0 mb-4 text-[13px] text-red-600" role="alert">{error}</p>
       )}
       <div className="flex gap-3">
-        <button
-          onClick={onClose}
-          disabled={deleting}
-          className="flex-1 px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed"
-        >
+        <Button variant="ghost" onClick={onClose} disabled={deleting} className="flex-1 disabled:opacity-70 disabled:cursor-not-allowed">
           Cancel
-        </button>
-        <button
-          onClick={() => { void handleConfirm(); }}
-          disabled={deleting}
-          className="flex-1 px-4 py-2.5 rounded-md border-none text-sm font-medium text-white cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-          style={{ background: '#dc2626' }}
-        >
+        </Button>
+        <Button variant="danger" onClick={() => { void handleConfirm(); }} disabled={deleting} className="flex-1 disabled:opacity-70 disabled:cursor-not-allowed">
           {deleting ? 'Deleting...' : 'Delete Account'}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

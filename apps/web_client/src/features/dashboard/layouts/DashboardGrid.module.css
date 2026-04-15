@@ -21,10 +21,10 @@
 /* Assigning the rooms to the floor plan */
 
 .headerArea {
-  padding: 15px;
+  padding: 15px 25px;
   margin: 0;
   display: flex;
-  background: rgb(94, 111, 161);
+  background: #5B6AD4;
   grid-area: header;
   justify-content:left;
   flex-direction: row;
@@ -117,6 +117,10 @@
   margin-bottom: 5px;
   border: 1px solid #BCCCDC;
   flex: 0; /* Fill remaining space in main column */
+}
+
+:global(.dark) .container {
+  background-color: #0D0D14;
 }
 
 /* MOBILE LAYOUT: Stack everything vertically if screen is small */
