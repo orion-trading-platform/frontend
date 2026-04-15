@@ -13,6 +13,7 @@ import {
 import weekCsv from '../data/ds1_7_days_hourly.csv?raw';
 import yearCsv from '../data/ds2_1_year_daily.csv?raw';
 import fiveYearsCsv from '../data/ds3_5_years_monthly.csv?raw';
+import styles from './PerformanceChart.module.css';
 
 type Timeline = 'week' | 'year' | '5years';
 
@@ -69,6 +70,14 @@ function parseFiveYearsCsv(csv: string): ChartPoint[] {
     .sort((a, b) => a.time.localeCompare(b.time));
 }
 
+function activate() {
+        const currentActive = document.querySelector('styles.switch.active');
+        console.log(currentActive)
+        if (currentActive) {
+            currentActive.classList.remove('active');
+        }
+        }
+
 const TIMELINE_LABELS: Record<Timeline, string> = {
   week: 'Week',
   year: 'Year',
@@ -77,6 +86,7 @@ const TIMELINE_LABELS: Record<Timeline, string> = {
 
 export const PerformanceChart = () => {
   const [timeline, setTimeline] = useState<Timeline>('week');
+  const [activeButton, setActiveButton] = useState<Timeline>('week');
 
   const dataByTimeline = useMemo(() => ({
     week: parseWeekCsv(weekCsv),
@@ -94,18 +104,13 @@ export const PerformanceChart = () => {
           {(Object.keys(TIMELINE_LABELS) as Timeline[]).map((key) => (
             <button
               key={key}
+              id={key}
               type="button"
-              onClick={() => setTimeline(key)}
-              style={{
-                padding: '6px 12px',
-                fontSize: 13,
-                fontWeight: 500,
-                border: '1px solid #e5e7eb',
-                borderRadius: 6,
-                background: timeline === key ? '#2563eb' : '#fff',
-                color: timeline === key ? '#fff' : '#6b7280',
-                cursor: 'pointer',
-              }}
+              className = {`${styles.switch} ${activeButton === key && styles.switchactive}`}
+              onClick={function(event){
+                setTimeline(key);
+                setActiveButton(key);
+                }}
             >
               {TIMELINE_LABELS[key]}
             </button>
@@ -115,17 +120,17 @@ export const PerformanceChart = () => {
 
       <ResponsiveContainer width="100%" height="85%">
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb70" />
           <XAxis
             dataKey="time"
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
             tickLine={false}
             axisLine={false}
             dy={10}
             interval="preserveStartEnd"
           />
           <YAxis
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `$${value}`}
@@ -137,7 +142,7 @@ export const PerformanceChart = () => {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#2563eb"
+            stroke="#5179b2"
             strokeWidth={3}
             dot={false}
             activeDot={{ r: 6 }}
