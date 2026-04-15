@@ -1,75 +1,73 @@
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+import axios from "axios";
+
+/**
+ * In dev, always use same-origin (`""`) so `/api/*` goes through the Vite proxy → :8001 (no CORS).
+ * @returns The base URL for the market API.
+ */
+function marketApiBaseURL(): string {
+  if (import.meta.env.DEV) {
+    return "";
+  }
+  return String(import.meta.env.VITE_MARKET_DATA_URL ?? "").replace(/\/$/, "");
+}
+
+const marketApi = axios.create({ baseURL: marketApiBaseURL() });
+
+marketApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // Maps to GET /api/stocks/:symbol
 export async function getStockSnapshot(symbol: string) {
-  await delay(300);
+  const res = await marketApi.get(`/api/stocks/${symbol}`);
+  const { daily_bar, previous_daily_bar, latest_quote } = res.data;
+  const price = latest_quote?.ask_price ?? daily_bar.close;
+  const change = daily_bar.close - previous_daily_bar.close;
+  const changePercent = (change / previous_daily_bar.close) * 100;
   return {
     symbol,
-    price: 175.43,
-    change: 2.15,
-    changePercent: 1.24,
-    open: 173.50,
-    high: 176.20,
-    low: 173.10,
-    volume: "42.5M",
-    marketCap: "$2.71T",
+    price,
+    change: parseFloat(change.toFixed(2)),
+    changePercent: parseFloat(changePercent.toFixed(2)),
+    open: daily_bar.open,
+    high: daily_bar.high,
+    low: daily_bar.low,
+    volume: daily_bar.volume.toLocaleString(),
+    marketCap: "N/A",
     marketStatus: "Open",
-    lastUpdated: "Feb 4, 2026 9:30 AM EST",
+    lastUpdated: new Date(daily_bar.timestamp).toLocaleString(),
   };
 }
 
 // Maps to GET /api/stocks/:symbol/bars
 // timeframe: "1Min" | "5Min" | "15Min" | "30Min" | "1Hour" | "1Day" | "1Week" | "1Month"
 export async function getStockBars(symbol: string, timeframe: string, start: string, end?: string) {
-  await delay(400);
-
-  const bases: Record<string, number> = {
-    "1Hour": 173.50,
-    "1Day": 160.00,
-    "1Week": 120.00,
-    "1Month": 80.00,
-  };
-
-  const points: Record<string, number> = {
-    "1Hour": 7,
-    "1Day": 30,
-    "1Week": 52,
-    "1Month": 60,
-  };
-
-  const basePrice = bases[timeframe] ?? 173.50;
-  const count = points[timeframe] ?? 30;
-  const data: { time: string; open: number; high: number; low: number; close: number; volume: number }[] = [];
-
-  let prevClose = basePrice;
-  for (let i = 0; i < count; i++) {
-    const open = prevClose;
-    const change = (Math.random() * 2 - 0.75) * 1.5;
-    const close = open + change;
-    const high = Math.max(open, close) + Math.random() * 0.5;
-    const low = Math.min(open, close) - Math.random() * 0.5;
-    data.push({
-      time: `T${i}`,
-      open: parseFloat(open.toFixed(2)),
-      high: parseFloat(high.toFixed(2)),
-      low: parseFloat(low.toFixed(2)),
-      close: parseFloat(close.toFixed(2)),
-      volume: Math.floor(Math.random() * 500000 + 100000),
-    });
-    prevClose = close;
-  }
-
-  return data;
+  const params: Record<string, string> = { timeframe, start };
+  if (end) params.end = end;
+  const res = await marketApi.get(`/api/stocks/${symbol}/bars`, { params });
+  const bars = res.data.data?.[symbol] ?? [];
+  return bars.map((b: any) => ({
+    time: new Date(b.timestamp).toLocaleTimeString(),
+    open: b.open,
+    high: b.high,
+    low: b.low,
+    close: b.close,
+    volume: b.volume,
+  }));
 }
 
 // Maps to GET /api/stocks/:symbol/quote
 export async function getStockQuote(symbol: string) {
-  await delay(200);
+  const res = await marketApi.get(`/api/stocks/${symbol}/quote`);
   return {
     symbol,
-    bidPrice: 175.38,
-    bidSize: 312,
-    askPrice: 175.48,
-    askSize: 270,
+    bidPrice: res.data.bid_price,
+    bidSize: res.data.bid_size ?? 0,
+    askPrice: res.data.ask_price,
+    askSize: res.data.ask_size ?? 0,
   };
 }
