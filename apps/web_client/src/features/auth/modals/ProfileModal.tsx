@@ -96,23 +96,23 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
       <Modal isOpen={isOpen && !showLogoutModal && !showDeleteModal} onClose={onClose} title="Profile" titleId="profile-modal-title">
 
         {/* User info */}
-        <div className="bg-slate-50 border border-[#BCCCDC] rounded-lg px-[18px] py-4 mb-6">
+        <div className="bg-slate-50 dark:bg-[#141628] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-lg px-[18px] py-4 mb-6">
           <div className="mb-2.5">
-            <span className="text-xs text-[#6B7280] uppercase tracking-[0.05em]">Email</span>
-            <p className="mt-1 mb-0 text-[15px] text-[#111827] font-medium">
+            <span className="text-xs text-[#6B7280] dark:text-[#8892b0] uppercase tracking-[0.05em]">Email</span>
+            <p className="mt-1 mb-0 text-[15px] text-[#111827] dark:text-[#e2e8f0] font-medium">
               {currentUser?.email ?? '—'}
             </p>
           </div>
           <div>
-            <span className="text-xs text-[#6B7280] uppercase tracking-[0.05em]">Member since</span>
-            <p className="mt-1 mb-0 text-[15px] text-[#111827] font-medium">{memberSince}</p>
+            <span className="text-xs text-[#6B7280] dark:text-[#8892b0] uppercase tracking-[0.05em]">Member since</span>
+            <p className="mt-1 mb-0 text-[15px] text-[#111827] dark:text-[#e2e8f0] font-medium">{memberSince}</p>
           </div>
         </div>
 
         {showSetPassword ? (
           <div className="mb-6">
-            <h3 className="mt-0 mb-[6px] text-[15px] font-semibold text-[#111827]">Set Password</h3>
-            <p className="mt-0 mb-[14px] text-[13px] text-[#6B7280]">
+            <h3 className="mt-0 mb-[6px] text-[15px] font-semibold text-[#111827] dark:text-[#e2e8f0]">Set Password</h3>
+            <p className="mt-0 mb-[14px] text-[13px] text-[#6B7280] dark:text-[#8892b0]">
               Add email/password login to your account.
             </p>
             <div className="flex flex-col gap-[10px]">
@@ -122,7 +122,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 readOnly
                 aria-label="Account email address"
                 aria-readonly="true"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#6B7280] outline-none box-border bg-slate-50 cursor-default"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#6B7280] dark:text-[#8892b0] outline-none box-border bg-slate-50 dark:bg-[#141628] cursor-default"
               />
               <input
                 type="password"
@@ -130,7 +130,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={setPassNewPassword}
                 onChange={(e) => setSetPassNewPassword(e.target.value)}
                 aria-label="New password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
             </div>
             {setPassError && (
@@ -150,7 +150,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
           </div>
         ) : (
           <div className="mb-6">
-            <h3 className="mt-0 mb-[14px] text-[15px] font-semibold text-[#111827]">Change Password</h3>
+            <h3 className="mt-0 mb-[14px] text-[15px] font-semibold text-[#111827] dark:text-[#e2e8f0]">Change Password</h3>
             <div className="flex flex-col gap-[10px]">
               <input
                 type="password"
@@ -158,7 +158,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 aria-label="Current password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
               <input
                 type="password"
@@ -166,7 +166,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 aria-label="New password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
               <input
                 type="password"
@@ -174,7 +174,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 aria-label="Confirm new password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
             </div>
             {passwordError && (
@@ -195,7 +195,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         )}
 
         {/* Account actions */}
-        <div className="border-t border-[#BCCCDC] pt-5 flex flex-col gap-3">
+        <div className="border-t border-[#BCCCDC] dark:border-[#2d2f50] pt-5 flex flex-col gap-3">
           <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
             Delete Account
           </Button>

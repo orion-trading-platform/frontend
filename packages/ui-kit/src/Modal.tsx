@@ -79,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, titleId = 'modal-
             {title}
           </span>
         </div>
-        <div className="overflow-y-auto px-6 pt-6 pb-7 flex-1 bg-white rounded-xl -mt-3">
+        <div className="overflow-y-auto px-6 pt-6 pb-7 flex-1 bg-white dark:bg-[#1a1d2e] rounded-xl -mt-3">
           {children}
         </div>
       </div>

@@ -20,7 +20,7 @@ const LogoutConfirmationModal: React.FC<LogoutConfirmationModalProps> = ({ isOpe
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Log Out" titleId="logout-modal-title">
-      <p className="mt-3 mb-6 text-[15px] text-[#111827]">Are you sure you want to log out?</p>
+      <p className="mt-3 mb-6 text-[15px] text-[#111827] dark:text-[#e2e8f0]">Are you sure you want to log out?</p>
       <div className="flex gap-3">
         <Button variant="ghost" onClick={onClose} className="flex-1">
           Cancel
