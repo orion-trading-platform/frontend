@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTheme } from '@/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
 import ProfileModal from '../auth/modals/ProfileModal';
@@ -21,12 +22,8 @@ import orionTextWhite from '@/assets/orion-text-white.svg';
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { dark, toggleDark } = useTheme();
   var emptyTable: Holding[] = [];
-
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-  }, [dark]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,8 +95,8 @@ export const DashboardPage = () => {
             onClick={() => navigate('/dashboard')}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
           >
-            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
-            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
           </button>
 
           {/* RIGHT SECTION: Search & Icons */}
@@ -117,8 +114,8 @@ export const DashboardPage = () => {
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                onClick={() => setDark(!dark)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                onClick={toggleDark}
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
               >
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
@@ -138,7 +135,7 @@ export const DashboardPage = () => {
               <button
                 aria-label="Logout"
                 onClick={() => setLogoutOpen(true)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
               >
                 <MdLogout size={22} />
               </button>

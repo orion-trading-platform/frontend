@@ -24,9 +24,10 @@
   padding: 15px 25px;
   margin: 0;
   display: flex;
-  background: #5B6AD4;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
   grid-area: header;
-  justify-content:left;
+  justify-content: left;
   flex-direction: row;
   align-items: left;
   width: -webkit-fill-available;

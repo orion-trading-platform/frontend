@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTheme } from '@/ThemeContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
@@ -20,11 +21,13 @@ import Papa, { ParseResult } from "papaparse"
 const LandingDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+  const { dark, toggleDark } = useTheme();
   const emptyTable: Holding[] = [];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardSearchQuery, setDashboardSearchQuery] = useState('');
   const [hData, sethData] = useState<Holding[]>([]);
+
 
   useEffect(() => {
     fetch('/src/features/dashboard/data/ds4_holdings.csv')
@@ -53,11 +56,9 @@ const LandingDashboard: React.FC = () => {
     }
   }, [searchQuery, hData]);
 
-  const [dark, setDark] = useState(false);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-  }, [dark]);
+
+
 
   if (isLoading) return null;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
@@ -71,8 +72,8 @@ const LandingDashboard: React.FC = () => {
               onClick={() => navigate('/')}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
             >
-              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} />
-              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} />
+              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
             </button>
           }
           right={
@@ -88,15 +89,15 @@ const LandingDashboard: React.FC = () => {
               <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
                 <button
                   aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                  onClick={() => setDark(!dark)}
-                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                  onClick={toggleDark}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
                 >
                   {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
                 </button>
                 <button
                   onClick={() => navigate('/login')}
                   aria-label="Login"
-                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
                 >
                   <MdLogin size={22} />
                 </button>
@@ -115,13 +116,13 @@ const LandingDashboard: React.FC = () => {
         </div>
       }
       assetTop={
-        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 hover:scale-[1.01] motion-safe:animate-[fadeIn_0.6s_ease_both]">
-          <img src={landingAsset1} alt="" className="w-full h-full object-cover object-center block" />
+        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
+          <img src={landingAsset1} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
         </div>
       }
       assetBottom={
-        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 hover:scale-[1.01] motion-safe:animate-[fadeIn_0.6s_ease_both]">
-          <img src={landingAsset2} alt="" className="w-full h-full object-cover object-center block" />
+        <div className="w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
+          <img src={landingAsset2} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
         </div>
       }
     />
