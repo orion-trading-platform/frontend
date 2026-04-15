@@ -1,6 +1,6 @@
 import React from 'react';
 
-const LAST_UPDATED = 'April 4, 2026';
+const LAST_UPDATED = 'April 10, 2026';
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="border-t border-white/10 pt-8 mt-8">
@@ -24,6 +24,9 @@ const PrivacyPolicy: React.FC = () => {
         <h1 className="text-2xl font-semibold text-white mb-2">Privacy Policy</h1>
         <p className="text-sm text-white/60 mb-2">Last updated: {LAST_UPDATED}</p>
         <p className="text-sm text-white/75 leading-relaxed mt-6">
+          This website is merely a class software development project and stock trading simulator.
+          No real money is managed and Orion Trading, Inc. does not exist. Any financial, legal,
+          contact, etc. information listed is a fabrication for the purposes of this exercise.
           This Privacy Policy describes how Orion Trading, Inc. ("Orion", "we", "us", or "our")
           collects, uses, stores, and shares information when you use the Orion trading platform,
           including all associated websites, APIs, and services (collectively, the "Platform").

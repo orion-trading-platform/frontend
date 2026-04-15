@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { useAuth, useAccount, useAccounts, api } from "@/features/auth";
+import ProfileModal from "@/features/auth/modals/ProfileModal";
+import LogoutConfirmationModal from "@/features/auth/modals/LogoutConfirmationModal";
 import {
   ledgerService,
   type ActivityItem,
@@ -339,6 +344,11 @@ function FilterSelect({ label, value, onChange, options, className = "" }: Filte
 const DEFAULT_PAGE_SIZE = 25;
 
 export default function LedgerPage() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const [tickerQuery, setTickerQuery] = useState('');
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [dark, toggleDark] = useDarkMode();
 
   // Filters
@@ -371,26 +381,45 @@ export default function LedgerPage() {
   const [drawerError, setDrawerError] = useState("");
 
   const { startDate, endDate } = useMemo(() => {
+    // Build a local-time window so the backend filter matches the dates users
+    // see in the table (timestamps render in local time). Send full ISO-8601
+    // so servers compare instants directly and there is no UTC-date rounding.
     const now = new Date();
-    const end = new Date(now);
     let start = new Date(now);
+    let end = new Date(now);
+
+    const parseYmdLocal = (s: string): Date | null => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+      if (!m) return null;
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    };
 
     if (dateRange === "TODAY") {
       start.setHours(0, 0, 0, 0);
     } else if (dateRange === "7D") {
       start.setDate(start.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
     } else if (dateRange === "1M") {
       start.setMonth(start.getMonth() - 1);
+      start.setHours(0, 0, 0, 0);
     } else if (dateRange === "YTD") {
       start = new Date(now.getFullYear(), 0, 1);
     } else if (dateRange === "CUSTOM") {
-      if (customStart) start = new Date(customStart);
-      if (customEnd) end.setTime(new Date(customEnd).getTime());
+      if (customStart) {
+        const parsed = parseYmdLocal(customStart);
+        if (parsed) start = parsed;
+      } else {
+        start.setHours(0, 0, 0, 0);
+      }
+      if (customEnd) {
+        const parsed = parseYmdLocal(customEnd);
+        if (parsed) end = parsed;
+      }
     }
 
-    const formatDate = (d: Date) => d.toISOString().slice(0, 10);
+    end.setHours(23, 59, 59, 999);
 
-    return { startDate: formatDate(start), endDate: formatDate(end) };
+    return { startDate: start.toISOString(), endDate: end.toISOString() };
   }, [dateRange, customStart, customEnd]);
 
   const effectiveType = useMemo(() => {
@@ -519,6 +548,46 @@ export default function LedgerPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f14]">
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
+      <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
+      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+
+          {/* LEFT: Brand */}
+          <div style={{ paddingLeft: '25px' }}>
+            <button
+              onClick={() => navigate('/dashboard')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
+            >
+              ORION
+            </button>
+          </div>
+
+          {/* RIGHT: Search + Icons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '240px', flexShrink: 0 }}>
+              <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} placeholder="Search..." />
+            </div>
+            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDark} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+              </button>
+              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
+                {currentUser?.profile_picture_url ? (
+                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
+                )}
+              </button>
+              <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+                <MdLogout size={22} />
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
       <DetailsDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -528,6 +597,12 @@ export default function LedgerPage() {
       />
 
       <div className="mx-auto max-w-6xl px-4 py-10">
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ background: 'none', border: 'none', color: '#4b5563', fontSize: '14px', cursor: 'pointer', padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '4px' }}
+        >
+          ← Return to home
+        </button>
         {/* Header */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -538,13 +613,6 @@ export default function LedgerPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleDark}
-              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-              className="rounded-xl border border-slate-200 dark:border-[rgba(148,163,184,0.18)] bg-white dark:bg-[#0f1520] px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#121b2a]"
-            >
-              {dark ? "\u2600 Light" : "\u263E Dark"}
-            </button>
             <button
               onClick={exportCSV}
               aria-label="Export activity as CSV"

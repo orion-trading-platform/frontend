@@ -58,5 +58,9 @@ export function useAuthActions() {
     await api.post("/auth/set-password", { new_password: newPassword });
   }, []);
 
-  return { register, login, loginWithGoogle, forgotPassword, resetPassword, changePassword, setPassword };
+  const deleteUser = useCallback(async () => {
+    await api.delete("/auth/me");
+  }, []);
+
+  return { register, login, loginWithGoogle, forgotPassword, resetPassword, changePassword, setPassword, deleteUser };
 }

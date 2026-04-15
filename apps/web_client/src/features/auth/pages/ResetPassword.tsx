@@ -3,7 +3,7 @@ import Logo from '@/assets/logo-white.svg';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import LoginRightColumn from './LoginRightColumn';
-import { useAuthActions } from './useAuthActions';
+import { useAuthActions } from '../useAuthActions';
 
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -74,7 +74,7 @@ const ResetPassword: React.FC = () => {
     try {
       await resetPassword(resetCode, newPassword);
       setSuccessMessage("Password reset successfully! Redirecting to login...");
-      setTimeout(() => navigate("/", { state: { mode: "login" } }), 1000);
+      setTimeout(() => navigate("/login", { state: { mode: "login" } }), 1000);
     } catch (err: any) {
       console.error("Error resetting password:", err);
       const status = err?.response?.status;
@@ -89,7 +89,7 @@ const ResetPassword: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    navigate('/');
+    navigate('/login', { state: { mode: 'login' } });
   };
 
   return (

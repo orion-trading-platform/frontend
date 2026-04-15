@@ -45,7 +45,7 @@ const LoginRightColumn: React.FC = () => {
           {/* Status badge */}
           <div className="mb-10">
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/70 font-sans">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+              <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
               All systems operational
             </span>
           </div>
@@ -70,7 +70,7 @@ const LoginRightColumn: React.FC = () => {
                 title: 'Real-time market data',
                 desc: 'Live order books and price feeds with sub-millisecond latency across all pairs.',
                 icon: (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="9" />
                     <path strokeLinecap="round" d="M12 7v5l3 3" />
                   </svg>
@@ -80,7 +80,7 @@ const LoginRightColumn: React.FC = () => {
                 title: 'Security protected',
                 desc: 'Two-factor authentication, cold storage, and real-time threat monitoring on all assets.',
                 icon: (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path strokeLinejoin="round" d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
                   </svg>
@@ -90,7 +90,7 @@ const LoginRightColumn: React.FC = () => {
                 title: 'Advanced analytics',
                 desc: 'Professional charting tools, portfolio insights, and tax reporting built in.',
                 icon: (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path strokeLinecap="round" d="M4 20h16M7 20V13M12 20V8M17 20v-5" />
                   </svg>
                 ),

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
@@ -6,6 +9,8 @@ import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth, useAccount } from "../auth";
+import ProfileModal from "../auth/modals/ProfileModal";
+import LogoutConfirmationModal from "../auth/modals/LogoutConfirmationModal";
 
 interface Snapshot {
   symbol: string;
@@ -21,42 +26,42 @@ interface Snapshot {
   lastUpdated: string;
 }
 
-const SYMBOL = "AAPL";
-
-function formatLoadError(err: unknown): string {
-  if (err && typeof err === "object") {
-    const e = err as { message?: string; response?: { data?: { detail?: unknown } } };
-    const detail = e.response?.data?.detail;
-    if (typeof detail === "string") return detail;
-    if (typeof e.message === "string" && e.message) return e.message;
-  }
-  return "Could not load market data.";
-}
-
 export function OrderingPage() {
+  const navigate = useNavigate();
+  // keeping apple as default for now. Should definitely have a real default/error. snapshoterror handles for now.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSymbol = searchParams.get("symbol") ?? "AAPL";
   const { currentUser } = useAuth();
   const { account } = useAccount();
   const balance = account ? parseFloat(account.balance) : 0;
+  const [dark, setDark] = useState<boolean>(false);
+  const [symbol, setSymbol] = useState(initialSymbol);
+  const [tickerQuery, setTickerQuery] = useState(initialSymbol);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [snapshotError, setSnapshotError] = useState<string | null>(null);
 
-  // Derive display name and initials from the real auth user
-  const displayName = currentUser?.email?.split("@")[0] ?? "Guest";
-  const initials = displayName.slice(0, 2).toUpperCase();
-
-  // Fetch initial snapshot on mount
+  // update symbol. balance is a part of account.
   useEffect(() => {
+    setSymbol(initialSymbol);
+    setTickerQuery(initialSymbol);
+  }, [initialSymbol]);
+
+  // Fetch snapshot whenever symbol changes
+  useEffect(() => {
+    setSnapshot(null);
     setSnapshotError(null);
-    getStockSnapshot(SYMBOL)
+    getStockSnapshot(symbol)
       .then((data) => {
         setSnapshot(data);
         setCurrentPrice(data.price);
       })
       .catch((err: unknown) => {
-        setSnapshotError(formatLoadError(err));
+        setSnapshotError(err instanceof Error ? err.message : "Unknown error");
       });
-  }, []);
+  }, [symbol]);
 
   const handleOrderPlaced = (_result: OrderResponse) => {
     // balance is now driven by useAccount — no manual update needed
@@ -64,20 +69,21 @@ export function OrderingPage() {
 
   // Subscribe to live price updates via SSE
   useEffect(() => {
-    const unsubscribe = subscribeToStream([SYMBOL], (update) => {
+    const unsubscribe = subscribeToStream([symbol], (update) => {
       setCurrentPrice(update.price);
     });
-    return unsubscribe; // React calls this on unmount to stop the subscription
-  }, []);
+    return unsubscribe;
+  }, [symbol]);
 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
+
+  // error handling. could possibly be due to bad symbol.
   if (snapshotError) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f8f9fa] px-6">
-        <div className="text-center text-gray-800">Could not load the trading view.</div>
         <div className="max-w-md text-center text-sm text-gray-500">{snapshotError}</div>
-        <div className="text-xs text-gray-400">
-          Start the Market Data API on port 8001 and restart the Vite dev server, then refresh.
-        </div>
       </div>
     );
   }
@@ -94,35 +100,67 @@ export function OrderingPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      <header className="border-b border-gray-200 bg-white px-6 py-3.5">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-                <span className="text-sm font-bold text-white">O</span>
-              </div>
-              <span className="text-lg font-semibold">Orion</span>
-            </div>
-            <nav className="flex gap-6 text-sm">
-              <a href="#/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
-              <a href="#/trade" className="font-medium text-gray-900">Trade</a>
-              <a href="#/ledger" className="text-gray-600 hover:text-gray-900">Ledger</a>
-            </nav>
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
+      <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
+      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+
+          {/* LEFT: Brand */}
+          <div style={{ paddingLeft: '25px' }}>
+            <button
+              onClick={() => navigate('/dashboard')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
+            >
+              ORION
+            </button>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="text-right text-sm">
-                <div className="font-medium">{displayName}</div>
-              </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600">
-                <span className="text-sm font-medium text-white">{initials}</span>
-              </div>
+
+          {/* RIGHT: Search + Icons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '240px', flexShrink: 0 }}>
+              <TickerSearch
+                value={tickerQuery}
+                onChange={setTickerQuery}
+                onSelect={(sym) => {
+                  setTickerQuery(sym);
+                  setSymbol(sym);
+                  // update url with new symbol
+                  setSearchParams((prev) => {
+                    const params = new URLSearchParams(prev);
+                    params.set("symbol", sym);
+                    return params;
+                  });
+                }}
+                placeholder="Search for Stock..."
+              />
+            </div>
+            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={() => setDark(!dark)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+              </button>
+              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
+                {currentUser?.profile_picture_url ? (
+                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
+                )}
+              </button>
+              <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+                <MdLogout size={22} />
+              </button>
             </div>
           </div>
+
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl p-6">
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{ background: 'none', border: 'none', color: '#4b5563', fontSize: '14px', cursor: 'pointer', padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '4px' }}
+        >
+          ← Return to home
+        </button>
         <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
@@ -144,7 +182,6 @@ export function OrderingPage() {
             <div>
               <div className="mb-2 flex items-center gap-3">
                 <h2 className="text-2xl font-bold">{snapshot.symbol}</h2>
-                <span className="text-gray-600">Apple Inc.</span>
               </div>
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-bold">${currentPrice.toFixed(2)}</span>
@@ -170,11 +207,17 @@ export function OrderingPage() {
 
         <div className="grid grid-cols-3 gap-6">
           <div className="col-span-2 space-y-6">
-            <StockChart symbol={SYMBOL} />
-            <OrderBook symbol={SYMBOL} />
+            <StockChart symbol={symbol} />
+            <OrderBook symbol={symbol} />
           </div>
           <div className="col-span-1">
-            <OrderPanel symbol={SYMBOL} currentPrice={currentPrice} buyingPower={balance} userId={currentUser?.user_id?.toString() ?? ""} onOrderPlaced={handleOrderPlaced} />
+            <OrderPanel
+              symbol={symbol}
+              currentPrice={currentPrice}
+              buyingPower={balance}
+              userId={currentUser?.user_id?.toString() ?? ""}
+              onOrderPlaced={handleOrderPlaced}
+            />
           </div>
         </div>
       </main>
