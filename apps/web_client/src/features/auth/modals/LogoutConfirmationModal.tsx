@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'ui-kit';
+import { Modal, Button } from 'ui-kit';
 import { useAuth } from '../AuthContext';
 
 interface LogoutConfirmationModalProps {
@@ -20,21 +20,14 @@ const LogoutConfirmationModal: React.FC<LogoutConfirmationModalProps> = ({ isOpe
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Log Out" titleId="logout-modal-title">
-      <p className="mt-0 mb-6 text-[15px] text-[#111827]">Are you sure you want to log out?</p>
+      <p className="mt-3 mb-6 text-[15px] text-[#111827] dark:text-[#e2e8f0]">Are you sure you want to log out?</p>
       <div className="flex gap-3">
-        <button
-          onClick={onClose}
-          className="flex-1 px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
-        >
+        <Button variant="ghost" onClick={onClose} className="flex-1">
           Cancel
-        </button>
-        <button
-          onClick={() => { void handleConfirm(); }}
-          className="flex-1 px-4 py-2.5 rounded-md border-none text-sm font-medium text-white cursor-pointer"
-          style={{ background: 'rgb(94, 111, 161)' }}
-        >
+        </Button>
+        <Button variant="primary" onClick={() => { void handleConfirm(); }} className="flex-1">
           Log Out
-        </button>
+        </Button>
       </div>
     </Modal>
   );

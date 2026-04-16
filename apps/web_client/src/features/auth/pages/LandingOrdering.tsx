@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTheme } from '@/ThemeContext';
 import { useNavigate, useSearchParams, Link, Navigate } from "react-router-dom";
 import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
+import { Header } from 'ui-kit';
 import { OrderBook } from "@/features/ordering/components/OrderBook";
 import { StockChart } from "@/features/ordering/components/StockChart";
 import { getStockSnapshot } from "@/features/ordering/api/stocks";
@@ -25,12 +29,9 @@ interface Snapshot {
 export function LandingOrdering() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+  const { dark, toggleDark } = useTheme();
   const [searchParams] = useSearchParams();
-  const initialSymbol = searchParams.get('symbol') ?? 'AAPL'; //NOTE(An): presuming placeholder
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-  }, [dark]);
+  const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
   const [symbol, setSymbol] = useState(initialSymbol);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -62,17 +63,18 @@ export function LandingOrdering() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <div style={{ paddingLeft: '25px' }}>
-            <button
-              onClick={() => navigate('/')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
-            >
-              ORION
-            </button>
-          </div>
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
+      <Header
+        left={
+          <button
+            onClick={() => navigate('/')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+          </button>
+        }
+        right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '240px', flexShrink: 0 }}>
               <TickerSearch
@@ -85,22 +87,22 @@ export function LandingOrdering() {
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
               <button
                 aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                onClick={() => setDark(!dark)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                onClick={toggleDark}
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
               >
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <button
                 onClick={() => navigate('/login')}
                 aria-label="Login"
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
               >
                 <MdLogin size={22} />
               </button>
             </div>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="mx-auto max-w-7xl p-6">
         <Link

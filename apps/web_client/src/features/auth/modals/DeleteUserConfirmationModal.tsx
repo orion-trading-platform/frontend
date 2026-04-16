@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'ui-kit';
+import { Modal, Button } from 'ui-kit';
 import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 
@@ -32,29 +32,20 @@ const DeleteUserConfirmationModal: React.FC<DeleteUserConfirmationModalProps> = 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Delete Account" titleId="delete-user-modal-title">
-      <p className="mt-0 mb-2 text-[15px] text-[#111827]">
+      <p className="mt-0 mb-2 text-[15px] text-[#111827] dark:text-[#e2e8f0]">
         This will permanently delete your account and all associated data.
       </p>
-      <p className="mt-0 mb-6 text-[13px] text-[#6B7280]">This action cannot be undone.</p>
+      <p className="mt-0 mb-6 text-[13px] text-[#6B7280] dark:text-[#8892b0]">This action cannot be undone.</p>
       {error && (
         <p className="mt-0 mb-4 text-[13px] text-red-600" role="alert">{error}</p>
       )}
       <div className="flex gap-3">
-        <button
-          onClick={onClose}
-          disabled={deleting}
-          className="flex-1 px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed"
-        >
+        <Button variant="ghost" onClick={onClose} disabled={deleting} className="flex-1 disabled:opacity-70 disabled:cursor-not-allowed">
           Cancel
-        </button>
-        <button
-          onClick={() => { void handleConfirm(); }}
-          disabled={deleting}
-          className="flex-1 px-4 py-2.5 rounded-md border-none text-sm font-medium text-white cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-          style={{ background: '#dc2626' }}
-        >
+        </Button>
+        <Button variant="danger" onClick={() => { void handleConfirm(); }} disabled={deleting} className="flex-1 disabled:opacity-70 disabled:cursor-not-allowed">
           {deleting ? 'Deleting...' : 'Delete Account'}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

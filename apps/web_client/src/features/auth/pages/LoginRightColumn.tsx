@@ -3,23 +3,12 @@ import React from 'react';
 const LoginRightColumn: React.FC = () => {
   return (
     <>
-      <style>{`
-        @keyframes gridDrift {
-          from { background-position: 0px 0px; }
-          to   { background-position: 60px 60px; }
-        }
-        .grid-drift {
-          animation: gridDrift 40s linear infinite;
-          will-change: background-position;
-        }
-      `}</style>
-
       <aside aria-label="Platform overview" className="hidden md:flex md:w-1/2 min-h-screen bg-[#0d0d14] relative overflow-hidden items-center">
 
-        {/* Drifting grid — covers full column, wraps seamlessly toward bottom-right */}
+        {/* GRID */}
         <div
           aria-hidden="true"
-          className="grid-drift absolute inset-0 w-full h-full pointer-events-none"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           style={{
             backgroundImage:
               'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),' +
@@ -28,7 +17,7 @@ const LoginRightColumn: React.FC = () => {
           }}
         />
 
-        {/* Edge fade — softens grid at all four edges, heavier on corners */}
+        {/* VIGNETTE FADE */}
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"
@@ -42,15 +31,7 @@ const LoginRightColumn: React.FC = () => {
 
         <div className="relative z-10 flex flex-col w-full px-16 py-16">
 
-          {/* Status badge */}
-          <div className="mb-10">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/70 font-sans">
-              <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
-              All systems operational
-            </span>
-          </div>
-
-          {/* Hero text — display serif */}
+          {/* SERIF HERO TEXT */}
           <div className="mb-10 max-w-[440px]">
             <h2 className="font-display text-[3.25rem] font-bold leading-[1.05] mb-5 text-white tracking-tight">
               The Most<br />
@@ -63,7 +44,7 @@ const LoginRightColumn: React.FC = () => {
             </p>
           </div>
 
-          {/* Feature cards */}
+          {/* FEATURE CARDS */}
           <div className="flex flex-col gap-3 mb-10 max-w-[480px]">
             {[
               {
@@ -108,7 +89,7 @@ const LoginRightColumn: React.FC = () => {
             ))}
           </div>
 
-          {/* Stats */}
+          {/* STATS */}
           <div className="inline-flex items-stretch rounded-xl bg-white/[0.04] border border-white/[0.07] max-w-fit overflow-hidden">
             {[
               { value: '$2.4B+', label: 'Daily Volume' },

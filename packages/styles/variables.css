@@ -1,0 +1,14 @@
+:root {
+  --accent: #5B6AD4;
+  --bg-light: #F8FAFC;
+  --bg-dark: #0D0D14;
+  --header-bg: #F8FAFC;
+  --header-border: #E5E7EB;
+  --header-icon-color: #000000;
+}
+
+html.dark {
+  --header-bg: #151622;
+  --header-border: #23243A;
+  --header-icon-color: #ffffff;
+}

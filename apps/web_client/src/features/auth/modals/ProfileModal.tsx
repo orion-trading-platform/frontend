@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from 'ui-kit';
+import { Modal, Button } from 'ui-kit';
 import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 import LogoutConfirmationModal from './LogoutConfirmationModal';
@@ -93,26 +93,26 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} title="Profile" titleId="profile-modal-title">
+      <Modal isOpen={isOpen && !showLogoutModal && !showDeleteModal} onClose={onClose} title="Profile" titleId="profile-modal-title">
 
         {/* User info */}
-        <div className="bg-slate-50 border border-[#BCCCDC] rounded-lg px-[18px] py-4 mb-6">
+        <div className="bg-slate-50 dark:bg-[#141628] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-lg px-[18px] py-4 mb-6">
           <div className="mb-2.5">
-            <span className="text-xs text-[#6B7280] uppercase tracking-[0.05em]">Email</span>
-            <p className="mt-1 mb-0 text-[15px] text-[#111827] font-medium">
+            <span className="text-xs text-[#6B7280] dark:text-[#8892b0] uppercase tracking-[0.05em]">Email</span>
+            <p className="mt-1 mb-0 text-[15px] text-[#111827] dark:text-[#e2e8f0] font-medium">
               {currentUser?.email ?? '—'}
             </p>
           </div>
           <div>
-            <span className="text-xs text-[#6B7280] uppercase tracking-[0.05em]">Member since</span>
-            <p className="mt-1 mb-0 text-[15px] text-[#111827] font-medium">{memberSince}</p>
+            <span className="text-xs text-[#6B7280] dark:text-[#8892b0] uppercase tracking-[0.05em]">Member since</span>
+            <p className="mt-1 mb-0 text-[15px] text-[#111827] dark:text-[#e2e8f0] font-medium">{memberSince}</p>
           </div>
         </div>
 
         {showSetPassword ? (
           <div className="mb-6">
-            <h3 className="mt-0 mb-[6px] text-[15px] font-semibold text-[#111827]">Set Password</h3>
-            <p className="mt-0 mb-[14px] text-[13px] text-[#6B7280]">
+            <h3 className="mt-0 mb-[6px] text-[15px] font-semibold text-[#111827] dark:text-[#e2e8f0]">Set Password</h3>
+            <p className="mt-0 mb-[14px] text-[13px] text-[#6B7280] dark:text-[#8892b0]">
               Add email/password login to your account.
             </p>
             <div className="flex flex-col gap-[10px]">
@@ -122,7 +122,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 readOnly
                 aria-label="Account email address"
                 aria-readonly="true"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#6B7280] outline-none box-border bg-slate-50 cursor-default"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#6B7280] dark:text-[#8892b0] outline-none box-border bg-slate-50 dark:bg-[#141628] cursor-default"
               />
               <input
                 type="password"
@@ -130,7 +130,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={setPassNewPassword}
                 onChange={(e) => setSetPassNewPassword(e.target.value)}
                 aria-label="New password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
             </div>
             {setPassError && (
@@ -139,18 +139,18 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             {setPassMessage && (
               <p className="mt-2 mb-0 text-[13px] text-green-600" role="status">{setPassMessage}</p>
             )}
-            <button
+            <Button
+              variant="primary"
               onClick={() => { void handleSetPassword(); }}
               disabled={settingPassword}
-              className="w-full px-4 py-2.5 rounded-md border-none text-sm font-medium text-white mt-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ background: 'rgb(94, 111, 161)' }}
+              className="w-full mt-3 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {settingPassword ? 'Setting...' : 'Set Password'}
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="mb-6">
-            <h3 className="mt-0 mb-[14px] text-[15px] font-semibold text-[#111827]">Change Password</h3>
+            <h3 className="mt-0 mb-[14px] text-[15px] font-semibold text-[#111827] dark:text-[#e2e8f0]">Change Password</h3>
             <div className="flex flex-col gap-[10px]">
               <input
                 type="password"
@@ -158,7 +158,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 aria-label="Current password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
               <input
                 type="password"
@@ -166,7 +166,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 aria-label="New password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
               <input
                 type="password"
@@ -174,7 +174,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 aria-label="Confirm new password"
-                className="w-full px-3 py-[9px] border border-[#BCCCDC] rounded-md text-sm text-[#111827] outline-none box-border"
+                className="w-full px-3 py-[9px] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-md text-sm text-[#111827] dark:text-[#e2e8f0] outline-none box-border dark:bg-[#141628]"
               />
             </div>
             {passwordError && (
@@ -183,37 +183,28 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             {passwordMessage && (
               <p className="mt-2 mb-0 text-[13px] text-green-600" role="status">{passwordMessage}</p>
             )}
-            <button
+            <Button
+              variant="primary"
               onClick={() => { void handleChangePassword(); }}
               disabled={changingPassword}
-              className="w-full px-4 py-2.5 rounded-md border-none text-sm font-medium text-white mt-3 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ background: 'rgb(94, 111, 161)' }}
+              className="w-full mt-3 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {changingPassword ? 'Updating...' : 'Update Password'}
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Account actions */}
-        <div className="border-t border-[#BCCCDC] pt-5 flex flex-col gap-3">
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="w-full px-4 py-2.5 rounded-md border border-red-200 text-sm font-medium bg-white text-red-600 cursor-pointer hover:bg-red-50"
-          >
+        <div className="border-t border-[#BCCCDC] dark:border-[#2d2f50] pt-5 flex flex-col gap-3">
+          <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
             Delete Account
-          </button>
-          <button
-            onClick={() => { onClose(); navigate('/ledger'); }}
-            className="w-full px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => { onClose(); navigate('/ledger'); }} className="w-full">
             Account Ledger (temp redirect)
-          </button>
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className="w-full px-4 py-2.5 rounded-md border border-[#BCCCDC] text-sm font-medium bg-white text-[#111827] cursor-pointer hover:bg-slate-50"
-          >
+          </Button>
+          <Button variant="ghost" onClick={() => setShowLogoutModal(true)} className="w-full">
             Log Out
-          </button>
+          </Button>
         </div>
 
       </Modal>
