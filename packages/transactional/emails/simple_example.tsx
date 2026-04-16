@@ -11,15 +11,15 @@ import { join } from 'path';
 // For export: use the hardcoded absolute URL — email clients block data URIs.
 function getLogoSrc(): string {
   try {
-    const svg = readFileSync(join(__dirname, '../../../apps/web_client/src/assets/logo-black.svg'));
-    return `data:image/svg+xml;base64,${svg.toString('base64')}`;
+    const svg = readFileSync(join(__dirname, '../../../apps/web_client/public/email-logo-white.svg'));
+    return `data:image/svg+xml;base64,${svg.toString('base64')}`; // Assumes SVG, handled differently for PNG/etc
   } catch {
-    return 'https://oriontrading.pro/logo-black.svg';
+    return 'https://oriontrading.pro/logo-white.svg';
   }
 }
 
 // const logoSrc = getLogoSrc();                               // for local preview (localhost:3000)
-const logoSrc = 'https://oriontrading.pro/logo-black.svg';  // use this for 'npm run export'
+const logoSrc = 'https://oriontrading.pro/logo-white.svg';  // use this for 'npm run export'
 
 interface WelcomeProps {
   // Dynamic URLs (e.g. password reset links) are passed as props.
