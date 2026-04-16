@@ -1,0 +1,26 @@
+.switch {
+    background: #c3afff16;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #bfd5ff5b;
+    box-shadow: inset 1px 1px 20px -1px rgba(193, 178, 255, 0.209);
+    border-radius: 6px;
+    color: white;
+}
+
+.switch:hover {
+    background: #c3afff0a;
+    box-shadow: inset 1px 1px 20px -1px rgba(160, 147, 207, 0.209);
+}
+
+.switchactive {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid #3b5b9c;
+    box-shadow: inset 1px 1px 20px -1px rgba(16, 0, 78, 0.534);
+    background: #2c4975;
+
+}

@@ -177,10 +177,10 @@ export const DashboardPage = () => {
       }
       chart={<PerformanceChart />}
       activity={
-        <div style={{ padding: 20, textAlign: 'left', color: '#000000', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available'}}>
+        <div style={{ padding: 20, textAlign: 'left', color: '#ffffff', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available', backdropFilter:'blur(1px)'}}>
           <div>
-            <h3 style={{marginBlock: '5px', color: '#000000'}}>Recent Activity</h3>
-            <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
+            <h3 style={{marginBlock: '5px', color: '#ffffff'}}>Recent Activity</h3>
+            <p style={{marginBlock: '3px', color: '#d6d6d6'}}>Your recent transactions.</p>
           </div>
           <>
             {rData.slice(0, 5).map((activity) => (

@@ -1,5 +1,4 @@
 .card{
-    background: white;
     border-radius: 12px;
     padding: 20px;
     padding-left: 10px;
@@ -7,12 +6,11 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    border: 1px solid #ffffff;
     width: -webkit-fill-available;
 }
 
 .card:hover{
-    background: 	#eff4f7;
+    background: 	#2c4975;
 }
 
 .icon{
@@ -41,7 +39,7 @@
 
 .label {
   width: max-content;
-  color: hsl(0, 0%, 0%); 
+  color: #c2c5cd; 
   font-size: 14px;
   font-weight: 500;
 }
@@ -53,25 +51,25 @@
 .value {
   font-size: 13px;
   font-weight: 700;
-  color: #111827;
+  color: #c2c5cd;
 }
 .valuePos{
     color: rgb(0, 150, 52);
 }
 .valueNeg{
-    color: rgb(0, 0, 0);
+    color: #c2c5cd;
 }
 .time{
     width: max-content;
     display: flex;
     font-size: 10px;
-    color: #4f4f4f;
+    color: #9fa3ad;
 }
 
 .status{
     border-radius: 7px;
     width: auto;
-    background-color: #ededed;
+    background-color: #2c4975;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -79,6 +77,7 @@
     padding-left: 5px;
     padding-right: 5px;
     margin: 2px;
-    border: 2px solid white;
+    border: 1px solid #c2c5cd54;
     height: min-content;
+    color: #c2c5cd;
 }

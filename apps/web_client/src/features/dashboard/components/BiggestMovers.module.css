@@ -1,39 +1,53 @@
 .wrapper {
-  background: white;
+  background: #0d1426;
   border-radius: 12px;
-  padding: 14px 20px;
-  border: 1px solid #BCCCDC;
-  box-shadow: 4px 4px 5px #9aa6b23c;
+  padding: 10px 10px;
   width: 100%;
   box-sizing: border-box;
+  height: min-content;
 }
 
 .list {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 24px;
+  flex-wrap: nowrap;
+  justify-content:space-evenly;
+  width: 100%;
+  height:min-content;
+  gap: 9px;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item {
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0.01), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.03), rgba(193, 164, 255, 0.08), rgba(229, 218, 255, 0.15));
+  backdrop-filter: blur(20px);
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: #f8fafc;
+  align-items: left;
+  flex-direction: column;
+  padding: 12px 12px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(229, 218, 255, 0.15);
+  width: -webkit-fill-available;
+  box-shadow: inset -1px 1px 2px -1px rgba(229, 218, 255, 0.25)
+
+}
+
+.item:hover{
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01), rgba(193, 164, 255, 0.05), rgba(229, 218, 255, 0.1));
+  backdrop-filter: blur(20px);
 }
 
 .symbol {
   font-weight: 700;
-  font-size: 14px;
-  color: #111827;
+  font-size: 20px;
+  color: #c2c5cd;
 }
 
 .price {
   font-size: 13px;
-  color: #475569;
+  color: #c2c5cd;
 }
 
 .change {
@@ -42,11 +56,11 @@
 }
 
 .up {
-  color: #166534;
+  color: #5fa077;
 }
 
 .down {
-  color: #991b1b;
+  color: #bc5151;
 }
 
 @media (max-width: 1024px) {
