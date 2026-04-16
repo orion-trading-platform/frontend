@@ -22,7 +22,7 @@ export const LandingDashboardGrid = ({
       {header}
 
       {/* BODY */}
-      <div className="flex flex-row flex-1 overflow-hidden">
+      <main className="flex flex-row flex-1 overflow-hidden">
 
         {/* LEFT COL - INFO */}
         <div className="flex flex-col flex-1 overflow-hidden bg-[#F8FAFC] dark:bg-[#0D0D14] gap-5 pl-5 pb-5 pt-5 pr-2.5">
@@ -46,7 +46,7 @@ export const LandingDashboardGrid = ({
           </div>
         </aside>
 
-      </div>
+      </main>
     </div>
   );
 };

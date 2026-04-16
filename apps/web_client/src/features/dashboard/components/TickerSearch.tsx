@@ -52,6 +52,7 @@ export const TickerSearch = ({
     <div ref={containerRef} className={styles.wrapper}>
       <MdSearch size={20} className={styles.icon} aria-hidden />
       <input
+        role="combobox"
         type="search"
         className={styles.input}
         value={value}

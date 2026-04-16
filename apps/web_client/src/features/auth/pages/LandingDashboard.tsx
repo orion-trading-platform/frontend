@@ -17,9 +17,11 @@ import { TickerSearch } from '@/features/dashboard/components/TickerSearch';
 import { BiggestMovers } from '@/features/dashboard/components/BiggestMovers';
 import Papa, { ParseResult } from "papaparse"
 
-// This page is where users initially land at 'oriontrading.pro'.
-// A restricted mirror of the authenticated dashboard: visitors can browse S&P 500 data,
-// search stocks, and navigate to the public ordering page. Auth-required actions redirect to /login.
+/* 
+ * This page is where users initially land at 'oriontrading.pro'.
+ * A restricted mirror of the real dashboard so visitors can view the
+ * market and specific stocks. Auth-required actions redirect to /login.
+ */
 const LandingDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
@@ -145,7 +147,11 @@ const LandingDashboard: React.FC = () => {
         </div>
       }
       assetBottom={
-        <div className="relative isolate w-full h-full overflow-hidden rounded-3xl border-2 border-[#26262C] bg-[#26262C] transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]">
+        <div className="relative isolate w-full h-full overflow-hidden rounded-3xl border-2 transition-transform duration-300 motion-safe:animate-[fadeIn_0.6s_ease_both]"
+          style={{
+            borderColor: dark ? 'rgba(91,106,212,0.35)' : 'rgba(91,106,212,0.22)',
+            backgroundColor: dark ? 'rgba(91,106,212,0.35)' : 'rgba(91,106,212,0.22)',
+          }}>
           <img src={landingBottomAsset} alt="" className="w-full h-full object-cover object-center block brightness-[0.80] contrast-[1.25] saturate-[1.4]" />
         </div>
       }
