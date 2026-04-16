@@ -1,4 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTheme } from '@/ThemeContext';
+import logoWhite from '@/assets/logo-white.svg';
+import orionTextWhite from '@/assets/orion-text-white.svg';
+import { Header } from 'ui-kit';
 import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
@@ -82,25 +86,6 @@ const typeBadge = (type: string | undefined, subtype: string | null | undefined)
   return { label: type || "EVENT", cls: "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]" };
 };
 
-function useDarkMode(): [boolean, () => void] {
-  const [dark, setDark] = useState<boolean>(() => {
-    const stored = localStorage.getItem("ledger-theme");
-    return stored === "dark";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (dark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("ledger-theme", dark ? "dark" : "light");
-  }, [dark]);
-
-  const toggle = useCallback(() => setDark((d) => !d), []);
-  return [dark, toggle];
-}
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
@@ -127,7 +112,7 @@ function TabButton({ active, label, onClick }: { active: boolean; label: string;
       onClick={onClick}
       className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
         active
-          ? "bg-[#00c805] text-black"
+          ? "bg-[#5B6AD4] text-black"
           : "bg-white dark:bg-[#0f1520] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[rgba(148,163,184,0.14)] hover:bg-slate-50 dark:hover:bg-[#121b2a]"
       }`}
     >
@@ -177,7 +162,7 @@ function DetailsDrawer({ open, onClose, loading, detail, drawerError }: DetailsD
       />
 
       <div
-        className={`absolute right-0 top-0 h-full w-full max-w-md transform bg-white dark:bg-[#0b0f14] shadow-2xl transition-transform ${
+        className={`absolute right-0 top-0 h-full w-full max-w-md transform bg-white dark:bg-[#0D0D14] shadow-2xl transition-transform ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -349,7 +334,7 @@ export default function LedgerPage() {
   const [tickerQuery, setTickerQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
-  const [dark, toggleDark] = useDarkMode();
+  const { dark, toggleDark } = useTheme();
 
   // Filters
   const [dateRange, setDateRange] = useState("7D");
@@ -547,29 +532,26 @@ export default function LedgerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f14]">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
       <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
-      <header style={{ background: 'rgb(94, 111, 161)', padding: '15px', fontFamily: '"IBM Plex Serif", serif', display: 'flex', alignItems: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-
-          {/* LEFT: Brand */}
-          <div style={{ paddingLeft: '25px' }}>
-            <button
-              onClick={() => navigate('/dashboard')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
-            >
-              ORION
-            </button>
-          </div>
-
-          {/* RIGHT: Search + Icons */}
+      <Header
+        left={
+          <button
+            onClick={() => navigate('/dashboard')}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+          </button>
+        }
+        right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '240px', flexShrink: 0 }}>
               <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} placeholder="Search..." />
             </div>
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-              <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDark} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+              <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDark} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
@@ -579,14 +561,13 @@ export default function LedgerPage() {
                   <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
                 )}
               </button>
-              <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'white', flexShrink: 0 }}>
+              <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 <MdLogout size={22} />
               </button>
             </div>
           </div>
-
-        </div>
-      </header>
+        }
+      />
 
       <DetailsDrawer
         open={drawerOpen}
@@ -623,7 +604,7 @@ export default function LedgerPage() {
             <button
               onClick={() => window.print()}
               aria-label="Print page"
-              className="rounded-xl bg-[#00c805] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
+              className="rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
             >
               Print
             </button>
@@ -708,7 +689,7 @@ export default function LedgerPage() {
                   fetchActivity();
                 }}
                 aria-label="Refresh data"
-                className="w-full rounded-xl bg-[#00c805] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
+                className="w-full rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
               >
                 Refresh
               </button>

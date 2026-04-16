@@ -9,12 +9,14 @@ import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from '@/features/ordering/OrderingPage';
 import LedgerPage from "@/features/ledger/pages/ledgerPage";
 import { AuthProvider, ProtectedRoute } from '@/features/auth';
+import { ThemeProvider } from '@/ThemeContext';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 const App: React.FC = () => {
   // Wrap protected routes with ProtectedRoute component to require authentication
   return (
     <Router>
+      <ThemeProvider>
       <AuthProvider>
         <div className="app-container">
           <Routes>
@@ -39,6 +41,7 @@ const App: React.FC = () => {
           </Routes>
         </div>
       </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { IoMdClose } from 'react-icons/io';
-
-const ACCENT = 'rgb(94, 111, 161)';
+import { ACCENT } from './constants';
 
 interface ModalProps {
   isOpen: boolean;
@@ -48,7 +47,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, titleId = 'modal-
 
   return (
     <div
-      className="fixed inset-0 bg-black/45 flex items-center justify-center z-[1000]"
+      className="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center z-[1000]"
       onClick={onClose}
     >
       <div
@@ -80,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, titleId = 'modal-
             {title}
           </span>
         </div>
-        <div className="overflow-y-auto px-6 pt-6 pb-7 flex-1 bg-white rounded-xl -mt-3">
+        <div className="overflow-y-auto px-6 pt-6 pb-7 flex-1 bg-white dark:bg-[#1a1d2e] rounded-xl -mt-3">
           {children}
         </div>
       </div>

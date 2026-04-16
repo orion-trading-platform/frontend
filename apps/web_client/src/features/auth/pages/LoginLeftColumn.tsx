@@ -3,7 +3,6 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import Logo from '@/assets/logo-white.svg';
 import { useAuthActions } from '../useAuthActions';
 
 const LoginLeftColumn: React.FC = () => {
@@ -136,7 +135,7 @@ const LoginLeftColumn: React.FC = () => {
         .blob2 { animation: blobFloat2 25s ease-in-out infinite; will-change: transform; }
       `}</style>
 
-      {/* Loading overlay */}
+      {/* SPINNER */}
       {isLoading && (
         <div role="status" aria-label="Loading" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
           <div aria-hidden="true" className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
@@ -145,19 +144,14 @@ const LoginLeftColumn: React.FC = () => {
 
       <main className="relative flex-1 bg-[#0a0a14] overflow-hidden flex items-center justify-center px-10 py-16">
 
-        {/* Background blobs */}
+        {/* BG BLOBS */}
         <div aria-hidden="true" className="blob1 absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[100px] pointer-events-none" />
         <div aria-hidden="true" className="blob2 absolute -bottom-16 -right-16 w-[440px] h-[440px] rounded-full bg-emerald-500/15 blur-[110px] pointer-events-none" />
 
-        {/* Logo */}
-        <div className="absolute top-6 left-7">
-          <img src={Logo} alt="Orion" className="h-[18px] w-auto" />
-        </div>
-
-        {/* Form */}
+        {/* FORM */}
         <div className="relative z-10 w-full max-w-[380px]">
 
-          {/* Heading */}
+          {/* HEADING */}
           <div className="mb-8">
             <h1 className="text-[1.75rem] font-bold text-white leading-tight mb-2">
               {isSignUpMode ? 'Create your account' : 'Welcome back'}
@@ -167,7 +161,7 @@ const LoginLeftColumn: React.FC = () => {
             </p>
           </div>
 
-          {/* Google button */}
+          {/* GOOGLE SSO */}
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 h-11 rounded-lg border border-[#8E918F] bg-[#131314] text-[#E3E3E3] text-sm font-medium transition-colors hover:bg-[#1e1f20] active:bg-[#2a2b2c]"
@@ -183,14 +177,14 @@ const LoginLeftColumn: React.FC = () => {
             {isSignUpMode ? 'Sign up with Google' : 'Continue with Google'}
           </button>
 
-          {/* Divider */}
+          {/* OR DIVIDER */}
           <div className="flex items-center gap-3 my-6" aria-hidden="true">
             <div className="flex-1 h-px bg-white/10" />
             <span className="text-xs text-white/55 tracking-widest uppercase">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          {/* Messages */}
+          {/* SUCCESS/ERROR */}
           {successMessage && (
             <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
               {successMessage}
@@ -202,9 +196,9 @@ const LoginLeftColumn: React.FC = () => {
             </div>
           )}
 
+          {/* FIELDS */}
           <form onSubmit={handleSubmit} noValidate>
 
-            {/* Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
                 Email
@@ -220,7 +214,6 @@ const LoginLeftColumn: React.FC = () => {
               />
             </div>
 
-            {/* Password */}
             <div className="mb-5">
               <div className="flex items-center justify-between mb-2">
                 <label htmlFor="password" className="text-[11px] font-medium uppercase tracking-widest text-white/60">
@@ -256,7 +249,6 @@ const LoginLeftColumn: React.FC = () => {
               </div>
             </div>
 
-            {/* Confirm Password — sign up only */}
             {isSignUpMode && (
               <div className="mb-5">
                 <label htmlFor="confirm-password" className="block text-[11px] font-medium uppercase tracking-widest text-white/60 mb-2">
@@ -284,7 +276,7 @@ const LoginLeftColumn: React.FC = () => {
               </div>
             )}
 
-            {/* Terms — sign up only */}
+            {/* AUXILIARY LINKS */}
             {isSignUpMode && (
               <p className="text-xs text-white/60 leading-relaxed mb-5">
                 By clicking CREATE ACCOUNT, you agree to Orion's{' '}
@@ -307,7 +299,7 @@ const LoginLeftColumn: React.FC = () => {
               />
             </div>
 
-            {/* Submit */}
+            {/* SUBMIT BTN */}
             <button
               type="submit"
               className="w-full h-11 rounded-lg bg-[#5B6AD4] hover:bg-[#4e5cbd] active:bg-[#434fb3] text-white text-sm font-semibold transition-colors mb-6"
@@ -317,7 +309,7 @@ const LoginLeftColumn: React.FC = () => {
 
           </form>
 
-          {/* Toggle */}
+          {/* STATE TOGGLE */}
           <p className="text-sm text-white/60 text-center">
             {isSignUpMode ? (
               <>
