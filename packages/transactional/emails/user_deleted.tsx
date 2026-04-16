@@ -27,12 +27,9 @@ import {
 // PROD
 const logoSrc = 'https://oriontrading.pro/email-logo-white.svg';
 
-// Placeholder constants substituted by the backend at send time
-const RESET_TOKEN    = '{{reset_token}}';
-const EXPIRE_MINUTES = '{{expire_minutes}}';
-const USER_NAME      = '{{user_name}}';
+const USER_NAME = '{{user_name}}';
 
-export default function PasswordReset() {
+export default function UserDeleted() {
   return (
     <Tailwind config={{ theme: { extend: { colors: { accent: '#5B6AD4' } } } }}>
       <Html lang="en">
@@ -72,39 +69,42 @@ export default function PasswordReset() {
               />
             </Section>
 
-            {/* Intro */}
+            {/* Main message */}
             <Section className="px-10 pt-8 pb-6">
               <Text className="text-[18px] font-bold text-[#111827] mt-0 mb-5 leading-[1.5]">
                 Hi {USER_NAME},
               </Text>
+              <Text className="text-[15px] text-[#374151] leading-[1.65] mt-0 mb-4">
+                Your Orion account has been permanently deleted and your data has
+                been removed from our systems.
+              </Text>
               <Text className="text-[15px] text-[#374151] leading-[1.65] mt-0 mb-0">
-                We received a request to reset your Orion account password. Enter
-                the code below to proceed. It expires in {EXPIRE_MINUTES} minutes.
+                If you did not request this deletion, please contact our support
+                team immediately at{' '}
+                <a href="mailto:support@oriontrading.pro" className="text-accent no-underline font-semibold">
+                  support@oriontrading.pro
+                </a>
+                {' '}so we can investigate.
               </Text>
             </Section>
 
             <Hr className="border-[#e5e7eb] mx-10 my-0" />
 
-            {/* Token display */}
-            <Section className="px-10 py-8 text-center">
-              <Text className="text-[12px] font-bold text-[#6b7280] uppercase tracking-[0.1em] mt-0 mb-3">
-                Your reset code
-              </Text>
-              <Text
-                className="text-[32px] font-bold text-[#111827] tracking-[0.25em] mt-0 mb-0"
-                style={{ fontFamily: 'monospace, monospace' }}
-              >
-                {RESET_TOKEN}
+            {/* Closing */}
+            <Section className="px-10 py-8">
+              <Text className="text-[15px] text-[#6b7280] leading-[1.65] mt-0 mb-0">
+                It was a pleasure having you on the platform. The markets will be
+                here when you're ready.
               </Text>
             </Section>
 
-            <Hr className="border-[#e5e7eb] mx-10 my-0" />
-
-            {/* Disclaimer */}
-            <Section className="px-10 pt-6 pb-8">
-              <Text className="text-[14px] text-[#6b7280] leading-[1.65] mt-0 mb-0">
-                If you didn't request a password reset, you can safely ignore this
-                email. Your password will not change unless you enter the code above.
+            {/* Sign-off */}
+            <Section className="px-10 pt-0 pb-9">
+              <Text className="text-[15px] text-[#374151] leading-[1.65] mt-0 mb-1">
+                Best,
+              </Text>
+              <Text className="text-[15px] font-bold text-[#111827] mt-0 mb-0">
+                The Orion Team
               </Text>
             </Section>
 
@@ -114,8 +114,8 @@ export default function PasswordReset() {
                 © {new Date().getFullYear()} Orion Trading. All rights reserved.
               </Text>
               <Text className="text-[12px] text-[#9ca3af] mt-0 mb-0 leading-[1.5]">
-                You're receiving this email because a password reset was requested
-                for your account at oriontrading.pro.
+                You're receiving this email because your account at oriontrading.pro
+                was recently deleted.
               </Text>
             </Section>
 
