@@ -25,7 +25,6 @@ interface Snapshot {
   high: number;
   low: number;
   volume: string;
-  marketCap: string;
   marketStatus: string;
   lastUpdated: string;
 }
@@ -197,7 +196,6 @@ export function OrderingPage() {
             <StatItem label="High" value={`$${snapshot.high.toFixed(2)}`} />
             <StatItem label="Low" value={`$${snapshot.low.toFixed(2)}`} />
             <StatItem label="Volume" value={snapshot.volume} />
-            <StatItem label="Mkt Cap" value={snapshot.marketCap} />
           </div>
         </div>
 
