@@ -23,6 +23,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResponse | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   const shares = Number.parseFloat(quantity) || 0;
   const effectivePrice =
@@ -35,14 +36,18 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (shares > 0 && canAfford) {
-      setOrderResult(null);
-      setShowConfirmation(true);
-    }
+    if (shares <= 0) return;
+    if (!canAfford) return;
+    if ((orderType === "limit" || orderType === "stop_limit") && !limitPrice) return;
+    if ((orderType === "stop" || orderType === "stop_limit") && !stopPrice) return;
+    setOrderResult(null);
+    setOrderError(null);
+    setShowConfirmation(true);
   };
 
   const handleConfirmOrder = async () => {
     setIsSubmitting(true);
+    setOrderError(null);
     try {
       const result = await placeOrder({
         symbol,
@@ -59,6 +64,9 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
       setQuantity("");
       setLimitPrice("");
       setStopPrice("");
+    } catch (err: any) {
+      setOrderError(err?.response?.data?.detail ?? "Order failed. Please try again.");
+      setShowConfirmation(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -68,6 +76,12 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h3 className="mb-4 text-lg font-bold">Place Order</h3>
+
+        {orderError && (
+          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+            {orderError}
+          </div>
+        )}
 
         {orderResult && (
           <div
@@ -239,7 +253,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
 
           <button
             type="submit"
-            disabled={shares === 0 || !canAfford}
+            disabled={shares <= 0 || !canAfford}
             className={`w-full rounded-lg px-4 py-3 font-medium text-white transition-colors disabled:cursor-not-allowed ${
               orderSide === "buy"
                 ? "bg-green-500 hover:bg-green-600 disabled:bg-gray-300"
