@@ -6,11 +6,10 @@ import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
-import { getAccountBalance } from "./api/user";
 import { getStockSnapshot } from "./api/stocks";
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
-import { useAuth } from "../auth";
+import { useAuth, useAccount } from "../auth";
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { Header } from 'ui-kit';
@@ -26,45 +25,49 @@ interface Snapshot {
   high: number;
   low: number;
   volume: string;
-  marketCap: string;
   marketStatus: string;
   lastUpdated: string;
 }
 
 export function OrderingPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
+  // keeping apple as default for now. Should definitely have a real default/error. snapshoterror handles for now.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSymbol = searchParams.get("symbol") ?? "AAPL";
   const { currentUser } = useAuth();
+  const { account } = useAccount();
+  const balance = account ? parseFloat(account.balance) : 0;
   const { dark, toggleDark } = useTheme();
   const [symbol, setSymbol] = useState(initialSymbol);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
-  const [balance, setBalance] = useState<number>(0);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [snapshotError, setSnapshotError] = useState<string | null>(null);
 
-  // Fetch balance once on mount
+  // update symbol. balance is a part of account.
   useEffect(() => {
-    getAccountBalance().then((data) => setBalance(data.balance));
-  }, []);
+    setSymbol(initialSymbol);
+    setTickerQuery(initialSymbol);
+  }, [initialSymbol]);
 
   // Fetch snapshot whenever symbol changes
   useEffect(() => {
     setSnapshot(null);
-    getStockSnapshot(symbol).then((data) => {
-      setSnapshot(data);
-      setCurrentPrice(data.price);
-    });
+    setSnapshotError(null);
+    getStockSnapshot(symbol)
+      .then((data) => {
+        setSnapshot(data);
+        setCurrentPrice(data.price);
+      })
+      .catch((err: unknown) => {
+        setSnapshotError(err instanceof Error ? err.message : "Unknown error");
+      });
   }, [symbol]);
 
-  const handleOrderPlaced = (result: OrderResponse) => {
-    setBalance((prev) =>
-      parseFloat(
-        (result.side === "BUY" ? prev - result.totalAmount : prev + result.totalAmount).toFixed(2)
-      )
-    );
+  const handleOrderPlaced = (_result: OrderResponse) => {
+    // balance is now driven by useAccount — no manual update needed
   };
 
   // Subscribe to live price updates via SSE
@@ -74,6 +77,15 @@ export function OrderingPage() {
     });
     return unsubscribe;
   }, [symbol]);
+
+  // error handling. could possibly be due to bad symbol.
+  if (snapshotError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f8f9fa] px-6">
+        <div className="max-w-md text-center text-sm text-gray-500">{snapshotError}</div>
+      </div>
+    );
+  }
 
   if (!snapshot) {
     return (
@@ -102,7 +114,21 @@ export function OrderingPage() {
         right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ width: '240px', flexShrink: 0 }}>
-              <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => { setSymbol(sym); setTickerQuery(sym); }} placeholder="Search..." />
+              <TickerSearch
+                value={tickerQuery}
+                onChange={setTickerQuery}
+                onSelect={(sym) => {
+                  setTickerQuery(sym);
+                  setSymbol(sym);
+                  // update url with new symbol
+                  setSearchParams((prev) => {
+                    const params = new URLSearchParams(prev);
+                    params.set("symbol", sym);
+                    return params;
+                  });
+                }}
+                placeholder="Search for Stock..."
+              />
             </div>
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
               <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDark} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
@@ -170,7 +196,6 @@ export function OrderingPage() {
             <StatItem label="High" value={`$${snapshot.high.toFixed(2)}`} />
             <StatItem label="Low" value={`$${snapshot.low.toFixed(2)}`} />
             <StatItem label="Volume" value={snapshot.volume} />
-            <StatItem label="Mkt Cap" value={snapshot.marketCap} />
           </div>
         </div>
 
@@ -180,7 +205,13 @@ export function OrderingPage() {
             <OrderBook symbol={symbol} />
           </div>
           <div className="col-span-1">
-            <OrderPanel symbol={symbol} currentPrice={currentPrice} buyingPower={balance} onOrderPlaced={handleOrderPlaced} />
+            <OrderPanel
+              symbol={symbol}
+              currentPrice={currentPrice}
+              buyingPower={balance}
+              userId={currentUser?.user_id?.toString() ?? ""}
+              onOrderPlaced={handleOrderPlaced}
+            />
           </div>
         </div>
       </main>
