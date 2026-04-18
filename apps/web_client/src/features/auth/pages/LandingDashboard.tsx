@@ -59,6 +59,7 @@ const LandingDashboard: React.FC = () => {
     }
   }, [searchQuery, hData]);
 
+  // Redirect if user logged in but accessed this route instead of /dashboard
   if (isLoading) return null;
   if (isAuthenticated) return <Navigate to="/dashboard" replace />;
 
@@ -83,7 +84,7 @@ const LandingDashboard: React.FC = () => {
                   value={dashboardSearchQuery}
                   onChange={setDashboardSearchQuery}
                   onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)}
-                  placeholder="Search..."
+                  placeholder="Search for stocks..."
                 />
               </div>
               <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
