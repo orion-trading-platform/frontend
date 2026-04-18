@@ -21,30 +21,43 @@ interface Snapshot {
   high: number;
   low: number;
   volume: string;
-  marketCap: string;
   marketStatus: string;
   lastUpdated: string;
 }
 
 export function LandingOrdering() {
   const navigate = useNavigate();
+  // keeping apple as default for now. Should definitely have a real default/error. snapshoterror handles for now.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
   const { isAuthenticated, isLoading } = useAuth();
   const { dark, toggleDark } = useTheme();
-  const [searchParams] = useSearchParams();
-  const initialSymbol = searchParams.get('symbol') ?? 'AAPL';
   const [symbol, setSymbol] = useState(initialSymbol);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [snapshotError, setSnapshotError] = useState<string | null>(null);
+
+  // update symbol.
+  useEffect(() => {
+    setSymbol(initialSymbol);
+    setTickerQuery(initialSymbol);
+  }, [initialSymbol]);
 
   useEffect(() => {
     setSnapshot(null);
-    getStockSnapshot(symbol).then((data) => {
-      setSnapshot(data);
-      setCurrentPrice(data.price);
-    });
+    setSnapshotError(null);
+    getStockSnapshot(symbol)
+      .then((data) => {
+        setSnapshot(data);
+        setCurrentPrice(data.price);
+      })
+      .catch((err: unknown) => {
+        setSnapshotError(err instanceof Error ? err.message : "Unknown error");
+      });
   }, [symbol]);
-
+  
+  // Subscribe to live price updates via SSE
   useEffect(() => {
     const unsubscribe = subscribeToStream([symbol], (update) => {
       setCurrentPrice(update.price);
@@ -52,8 +65,7 @@ export function LandingOrdering() {
     return unsubscribe;
   }, [symbol]);
 
-  const isPositive = snapshot ? snapshot.change >= 0 : true;
-
+  // Redirect if user logged in but accessed this route instead of /trade
   if (isLoading) return null;
   if (isAuthenticated) {
     if (symbol != null && symbol != "") {
@@ -61,6 +73,25 @@ export function LandingOrdering() {
     }
     return <Navigate to="/dashboard" replace />;
   }
+
+  // error handling. could possibly be due to bad symbol.
+  if (snapshotError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f8f9fa] px-6">
+        <div className="max-w-md text-center text-sm text-gray-500">{snapshotError}</div>
+      </div>
+    );
+  }
+
+  if (!snapshot) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-[#0D0D14]">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  const isPositive = snapshot.change >= 0;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
@@ -80,8 +111,17 @@ export function LandingOrdering() {
               <TickerSearch
                 value={tickerQuery}
                 onChange={setTickerQuery}
-                onSelect={(sym) => setSymbol(sym)}
-                placeholder="Search stocks..."
+                onSelect={(sym) => {
+                  setTickerQuery(sym);
+                  setSymbol(sym);
+                  // update url with new symbol
+                  setSearchParams((prev) => {
+                    const params = new URLSearchParams(prev);
+                    params.set("symbol", sym);
+                    return params;
+                  });
+                }}
+                placeholder="Search for stocks..."
               />
             </div>
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
@@ -144,7 +184,6 @@ export function LandingOrdering() {
                 <StatItem label="High" value={`$${snapshot.high.toFixed(2)}`} />
                 <StatItem label="Low" value={`$${snapshot.low.toFixed(2)}`} />
                 <StatItem label="Volume" value={snapshot.volume} />
-                <StatItem label="Mkt Cap" value={snapshot.marketCap} />
               </dl>
             </div>
 

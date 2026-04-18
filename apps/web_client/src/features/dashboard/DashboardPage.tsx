@@ -107,7 +107,7 @@ export const DashboardPage = () => {
                 value={dashboardSearchQuery}
                 onChange={setDashboardSearchQuery}
                 onSelect={(sym) => navigate(`/trade?symbol=${sym}`)}
-                placeholder="Search..."
+                placeholder="Search for stocks..."
               />
             </div>
 

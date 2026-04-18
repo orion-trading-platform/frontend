@@ -127,7 +127,7 @@ export function OrderingPage() {
                     return params;
                   });
                 }}
-                placeholder="Search for Stock..."
+                placeholder="Search for stocks..."
               />
             </div>
             <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
