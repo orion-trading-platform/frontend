@@ -164,6 +164,13 @@ export function StockChart({ symbol }: StockChartProps) {
 
       {isLoading ? (
         <div className="flex h-[300px] items-center justify-center text-gray-400">Loading...</div>
+      ) : bars.length === 0 ? (
+        <div
+          role="status"
+          className="flex h-[300px] items-center justify-center px-4 text-center text-gray-500"
+        >
+          No data available for the selected timeframe.
+        </div>
       ) : (
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart
