@@ -685,7 +685,7 @@ export default function LedgerPage() {
             <div className="md:col-span-6 flex items-end gap-2">
               <button
                 onClick={() => {
-                  fetchSummary();
+                  // fetchSummary();
                   fetchActivity();
                 }}
                 aria-label="Refresh data"

@@ -198,8 +198,8 @@ export function StockChart({ symbol }: StockChartProps) {
               <>
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
-                  formatter={(value: number | undefined) =>
-                    value !== undefined ? [`$${value.toFixed(2)}`, "Price"] : ["—", "Price"]
+                  formatter={(value) =>
+                    typeof value === "number" ? [`$${value.toFixed(2)}`, "Price"] : ["—", "Price"]
                   }
                 />
                 <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} />
