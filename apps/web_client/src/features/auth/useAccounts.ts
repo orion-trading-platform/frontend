@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import api from "./api";
+import { ACCOUNTS_REFRESH_EVENT } from "./accountsRefresh";
 
 export interface AccountInfo {
-  account_id: number;
+  /** Bigtable account id (string in API responses). */
+  account_id: string;
   balance: string;
   currency: string;
   version: number;
@@ -12,16 +14,38 @@ export function useAccounts() {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const alive = useRef(true);
 
-  useEffect(() => {
-    let ignore = false;
-    api
-      .get<AccountInfo[]>("/auth/me/accounts")
-      .then((res) => { if (!ignore) setAccounts(res.data); })
-      .catch(() => { if (!ignore) setError(true); })
-      .finally(() => { if (!ignore) setIsLoading(false); });
-    return () => { ignore = true; };
+  const fetchAccounts = useCallback(async (withLoading: boolean) => {
+    if (withLoading) setIsLoading(true);
+    try {
+      const res = await api.get<AccountInfo[]>("/auth/me/accounts");
+      if (!alive.current) return;
+      setAccounts(res.data);
+      setError(false);
+    } catch {
+      if (!alive.current) return;
+      setError(true);
+    } finally {
+      if (!alive.current) return;
+      if (withLoading) setIsLoading(false);
+    }
   }, []);
 
-  return { accounts, isLoading, error };
+  useEffect(() => {
+    alive.current = true;
+    void fetchAccounts(true);
+    const onRefresh = () => {
+      void fetchAccounts(false);
+    };
+    window.addEventListener(ACCOUNTS_REFRESH_EVENT, onRefresh);
+    return () => {
+      alive.current = false;
+      window.removeEventListener(ACCOUNTS_REFRESH_EVENT, onRefresh);
+    };
+  }, [fetchAccounts]);
+
+  const refetch = useCallback(() => fetchAccounts(false), [fetchAccounts]);
+
+  return { accounts, isLoading, error, refetch };
 }

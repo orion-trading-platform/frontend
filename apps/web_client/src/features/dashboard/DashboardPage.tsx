@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '@/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
+import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeaderNavButton';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
 import { useAuth } from '../auth';
@@ -111,7 +112,7 @@ export const DashboardPage = () => {
               />
             </div>
 
-            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
               <button
                 aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
                 onClick={toggleDark}
@@ -119,6 +120,7 @@ export const DashboardPage = () => {
               >
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
+              <WalletHeaderNavButton />
               <button
                 aria-label="Profile"
                 onClick={() => setProfileOpen(true)}
