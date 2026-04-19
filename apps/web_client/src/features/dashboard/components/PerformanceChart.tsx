@@ -1,5 +1,4 @@
-import { useState, useMemo } from 'react';
-import Papa from 'papaparse';
+import { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -9,74 +8,10 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-
-import weekCsv from '../data/ds1_7_days_hourly.csv?raw';
-import yearCsv from '../data/ds2_1_year_daily.csv?raw';
-import fiveYearsCsv from '../data/ds3_5_years_monthly.csv?raw';
+import { fetchGraphData, GraphDataPoint } from '../api/dashboardApi'; // Adjust path to your api.ts
 import styles from './PerformanceChart.module.css';
 
 type Timeline = 'week' | 'year' | '5years';
-
-interface ChartPoint {
-  time: string;
-  value: number;
-}
-
-function parseWeekCsv(csv: string): ChartPoint[] {
-  const parsed = Papa.parse<{ Ticker: string; Day: string; Hour: string; Price: string }>(csv, {
-    header: true,
-    skipEmptyLines: true,
-  });
-  const byDayHour = new Map<string, number>();
-  for (const row of parsed.data) {
-    const key = `${row.Day} ${row.Hour}`;
-    const price = parseFloat(row.Price);
-    byDayHour.set(key, (byDayHour.get(key) ?? 0) + price);
-  }
-  return Array.from(byDayHour.entries())
-    .map(([time, value]) => ({ time, value }))
-    .sort((a, b) => a.time.localeCompare(b.time));
-}
-
-function parseYearCsv(csv: string): ChartPoint[] {
-  const parsed = Papa.parse<{ Ticker: string; Day: string; Price: string }>(csv, {
-    header: true,
-    skipEmptyLines: true,
-  });
-  const byDay = new Map<string, number>();
-  for (const row of parsed.data) {
-    const key = row.Day;
-    const price = parseFloat(row.Price);
-    byDay.set(key, (byDay.get(key) ?? 0) + price);
-  }
-  return Array.from(byDay.entries())
-    .map(([time, value]) => ({ time, value }))
-    .sort((a, b) => a.time.localeCompare(b.time));
-}
-
-function parseFiveYearsCsv(csv: string): ChartPoint[] {
-  const parsed = Papa.parse<{ Ticker: string; Month: string; Price: string }>(csv, {
-    header: true,
-    skipEmptyLines: true,
-  });
-  const byMonth = new Map<string, number>();
-  for (const row of parsed.data) {
-    const key = row.Month;
-    const price = parseFloat(row.Price);
-    byMonth.set(key, (byMonth.get(key) ?? 0) + price);
-  }
-  return Array.from(byMonth.entries())
-    .map(([time, value]) => ({ time, value }))
-    .sort((a, b) => a.time.localeCompare(b.time));
-}
-
-function activate() {
-        const currentActive = document.querySelector('styles.switch.active');
-        console.log(currentActive)
-        if (currentActive) {
-            currentActive.classList.remove('active');
-        }
-        }
 
 const TIMELINE_LABELS: Record<Timeline, string> = {
   week: 'Week',
@@ -84,17 +19,35 @@ const TIMELINE_LABELS: Record<Timeline, string> = {
   '5years': '5 Years',
 };
 
+// Map your timeline strings to the integer days your API expects
+const TIMELINE_DAYS: Record<Timeline, number> = {
+  week: 7,
+  year: 365,
+  '5years': 1825,
+};
+
 export const PerformanceChart = () => {
   const [timeline, setTimeline] = useState<Timeline>('week');
-  const [activeButton, setActiveButton] = useState<Timeline>('week');
+  const [data, setData] = useState<GraphDataPoint[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const dataByTimeline = useMemo(() => ({
-    week: parseWeekCsv(weekCsv),
-    year: parseYearCsv(yearCsv),
-    '5years': parseFiveYearsCsv(fiveYearsCsv),
-  }), []);
+  // Fetch new graph data whenever the user clicks a different timeline tab
+  useEffect(() => {
+    const loadChartData = async () => {
+      setLoading(true);
+      try {
+        const days = TIMELINE_DAYS[timeline];
+        const chartData = await fetchGraphData(days);
+        setData(chartData);
+      } catch (error) {
+        console.error('Failed to fetch chart data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const data = dataByTimeline[timeline];
+    loadChartData();
+  }, [timeline]);
 
   return (
     <div style={{ width: '95%', height: 350, padding: '10px' }}>
@@ -106,11 +59,8 @@ export const PerformanceChart = () => {
               key={key}
               id={key}
               type="button"
-              className = {`${styles.switch} ${activeButton === key && styles.switchactive}`}
-              onClick={function(event){
-                setTimeline(key);
-                setActiveButton(key);
-                }}
+              className={`${styles.switch} ${timeline === key ? styles.switchactive : ''}`}
+              onClick={() => setTimeline(key)}
             >
               {TIMELINE_LABELS[key]}
             </button>
@@ -119,35 +69,43 @@ export const PerformanceChart = () => {
       </div>
 
       <ResponsiveContainer width="100%" height="85%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb70" />
-          <XAxis
-            dataKey="time"
-            tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
-            tickLine={false}
-            axisLine={false}
-            dy={10}
-            interval="preserveStartEnd"
-          />
-          <YAxis
-            tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value) => `$${value}`}
-          />
-          <Tooltip
-            formatter={(value) => [`$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Total value']}
-            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-          />
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke="#5179b2"
-            strokeWidth={3}
-            dot={false}
-            activeDot={{ r: 6 }}
-          />
-        </LineChart>
+        {loading ? (
+          <div style={{ display: 'flex', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#bcc8e1b7' }}>
+            Loading chart data...
+          </div>
+        ) : (
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb70" />
+            <XAxis
+              dataKey="date" // Mapped to the 'date' property from GraphDataPoint
+              tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
+              tickLine={false}
+              axisLine={false}
+              dy={10}
+              interval="preserveStartEnd"
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
+              tickLine={false}
+              axisLine={false}
+              // Formats the Y axis ticks to have a $ sign and commas (e.g. $125,000)
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
+            />
+            <Tooltip
+              formatter={(value) => [`$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 'Total value']}
+              labelFormatter={(label) => `Date: ${label}`} // Adds context to the tooltip
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+            />
+            <Line
+              type="monotone"
+              dataKey="value" // Mapped to the 'value' property from GraphDataPoint
+              stroke="#5179b2"
+              strokeWidth={3}
+              dot={false}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        )}
       </ResponsiveContainer>
     </div>
   );

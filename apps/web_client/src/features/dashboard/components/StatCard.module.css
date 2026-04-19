@@ -2,22 +2,17 @@
 .card {
   position: relative;
   background-image: radial-gradient(farthest-corner at 45% 60%,rgba(110, 144, 152, 0.075), rgba(176, 216, 228, 0.09), rgba(198, 170, 255, 0.11), rgba(228, 205, 255, 0.125), rgba(227, 175, 255, 0.25));
-
   backdrop-filter: blur(20px);
   border-radius: 12px;
   padding: 20px;
-  /* box-shadow: 4px 4px 5px #9aa6b23c; Soft shadow like Figma */
   display: flex;
-  margin-right: 5px;
   gap: 16px;
   align-items: center;
   border: 1px solid rgba(255, 255, 255, 0.127);
-  width: -webkit-fill-available;
-  max-width: 30vw;
-  min-width: max-content;
-  height: -webkit-fill-available;
-  max-height: max-content;
-  box-shadow: inset -2px 1px 5px -1px rgba(255, 255, 255, 0.209)
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  box-shadow: inset -2px 1px 5px -1px rgba(255, 255, 255, 0.209);
 }
 
 .iconBox {
@@ -43,12 +38,16 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 .label {
-  color: #c2c5cd; /* Gray text */
+  color: #c2c5cd;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .value {
@@ -59,10 +58,12 @@
 
 /* Badges */
 .badge {
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .green {

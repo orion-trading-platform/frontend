@@ -1,5 +1,9 @@
 import styles from './StatCard.module.css';
 
+import cashIcon from './icons/CashIcon.png';
+import walletIcon from './icons/WalletIcon.png';
+import graphIcon from './icons/GraphIcon.png';
+
 interface StatCardProps {
   label: string;
   value: string;
@@ -8,13 +12,21 @@ interface StatCardProps {
   icon: string;
 }
 
+const iconMap: Record<string, string> = {
+  Portfolio: walletIcon,
+  Cash: cashIcon,
+  Yield: graphIcon,
+};
+
 export const StatCard = ({ label, value, change, isPositive, icon }: StatCardProps) => {
   return (
     <div className={styles.card}>
       <div className={styles.iconBox}>
-        {/* We'll add real icons later, using a placeholder for now */}
-        <img src = {`/src/features/dashboard/components/icons/${icon}Icon.png`} alt = "Icon" style={{width : '48px', height : '48px',  borderRadius : '8px'}}/>
-        
+        <img
+          src={iconMap[icon] || graphIcon}
+          alt={`${label} Icon`}
+          style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'contain' }}
+        />
       </div>
       <div className={styles.content}>
         <div className={styles.headerRow}>

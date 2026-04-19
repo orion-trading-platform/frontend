@@ -63,33 +63,6 @@ export const fetchCurrentSnapshot = async (): Promise<LedgerSummary> => {
   return fetchLedgerSummary(today, today);
 };
 
-// 4. 30-DAY GRAPH FETCHER (Composition)
-// Fires 30 requests (one for each of the last 30 days) to build the graph data
-export const fetch30DayGraphData = async (daysToFetch: number = 30): Promise<GraphDataPoint[]> => {
-  const promises = [];
-  const currentDate = new Date();
-
-  // Loop backwards from 29 down to 0 so the array is in chronological order (oldest to newest)
-  for (let i = daysToFetch - 1; i >= 0; i--) {
-    // Create a new date object for each day going backward
-    const targetDateObj = new Date();
-    targetDateObj.setDate(currentDate.getDate() - i);
-    
-    // Format to YYYY-MM-DD using your helper
-    const targetDateStr = getFormattedDate(targetDateObj);
-    
-    promises.push(
-      fetchLedgerSummary(targetDateStr, targetDateStr).then(summary => ({
-        date: targetDateStr, // Keeps the full YYYY-MM-DD label for the x-axis
-        value: summary.accountValue
-      }))
-    );
-  }
-
-  // Promise.all fires all 30 requests concurrently
-  return Promise.all(promises); 
-};
-
 
 export interface MarketTick {
   price: number;
@@ -104,35 +77,52 @@ export interface MarketHistoryRead {
   ticks: MarketTick[];
 }
 
-// 1. THE CORE FETCHER
-// Grabs the history for a stock. You can reuse this later if you need to build a chart!
-export const fetchMarketHistory = async (ticker: string, limit: number = 100): Promise<MarketHistoryRead> => {
+
+export interface LedgerHistoryItem {
+  netPL: number;
+  realizedPL: number;
+  unrealizedPL: number;
+  cashBalance: number;
+  accountValue: number;
+  buyingPower: number;
+  date: string;
+}
+
+export interface LedgerHistoryResponse {
+  accountId: string;
+  history: LedgerHistoryItem[];
+}
+
+export const fetchLedgerHistory = async (startDate: string, endDate: string): Promise<LedgerHistoryResponse> => {
   // ==========================================
-  // MOCK DATA MODE
+  // MOCK DATA MODE 
   // ==========================================
   return new Promise((resolve) => {
     setTimeout(() => {
-      const mockPrices: Record<string, number> = {
-        NVDA: 462.80, AAPL: 178.92, MSFT: 332.15,
-        AMZN: 134.20, TSLA: 231.40, GOOGL: 142.60, META: 485.30
-      };
-      
-      const basePrice = mockPrices[ticker] || 100.00;
-      
-      // Generate a fake array of ticks based on the limit requested
-      const fakeTicks: MarketTick[] = Array.from({ length: limit }).map((_, index) => ({
-        price: basePrice - (index * 0.5), // Just faking some slight price movement
-        source: 'NASDAQ',
-        ticker: ticker,
-        timestamp: Date.now() - (index * 60000), // Faking times going backward
-        volume: Math.floor(Math.random() * 5000) + 1000 
-      }));
+      // Generate a quick fake array of history items based on the dates
+      const mockHistory: LedgerHistoryItem[] = [];
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      let current = new Date(start);
+
+      while (current <= end) {
+        mockHistory.push({
+          date: current.toISOString().split('T')[0],
+          netPL: 2500 + Math.random() * 200,
+          realizedPL: 2472.72,
+          unrealizedPL: 1800 + Math.random() * 50,
+          cashBalance: 44476.19,
+          accountValue: 98000 + (Math.random() * 2000), // Wobbly account value for the graph
+          buyingPower: 18684.10
+        });
+        current.setDate(current.getDate() + 1);
+      }
 
       resolve({
-        ticker: ticker,
-        ticks: fakeTicks
+        accountId: "1",
+        history: mockHistory
       });
-    }, 200); 
+    }, 200);
   });
 
   // ==========================================
@@ -140,41 +130,43 @@ export const fetchMarketHistory = async (ticker: string, limit: number = 100): P
   // ==========================================
   /*
   const queryParams = new URLSearchParams({
-    ticker: ticker,
-    limit: limit.toString()
+    account_id: '1', // Hardcoded as requested
+    startDate: startDate,
+    endDate: endDate
   });
-  const response = await fetch(`${BASE_URL}/api/market-data/history?${queryParams}`);
-  if (!response.ok) throw new Error(`Failed to fetch history for ${ticker}`);
+  
+  const response = await fetch(`${BASE_URL}/api/ledger/history?${queryParams}`);
+  if (!response.ok) throw new Error('Failed to fetch ledger history');
   return response.json();
   */
 };
 
-// 2. THE HELPER (Composition)
-// Need just the latest tick? Pass limit=1 to our history fetcher and extract the first item.
-export const fetchLatestTick = async (ticker: string): Promise<MarketTick> => {
-  const history = await fetchMarketHistory(ticker, 1);
+export const fetchGraphData = async (days: number = 30): Promise<GraphDataPoint[]> => {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(end.getDate() - days);
+
+  const startDateStr = getFormattedDate(start);
+  const endDateStr = getFormattedDate(end);
+
+  const response = await fetchLedgerHistory(startDateStr, endDateStr);
   
-  if (!history.ticks || history.ticks.length === 0) {
-    throw new Error(`No data found for ${ticker}`);
-  }
-  
-  return history.ticks[0];
+  // Map the backend's heavy response into a lightweight array for your graph
+  return response.history.map(item => ({
+    date: item.date,
+    value: item.accountValue
+  }));
 };
 
-// 3. THE HEADER FETCHER (Composition)
-// The exact same as before! It doesn't care that the underlying API endpoint changed.
-const BIG_MOVER_TICKERS = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'TSLA', 'GOOGL', 'META'];
-
-export const fetchHeaderBigMovers = async (): Promise<MarketTick[]> => {
-  const fetchPromises = BIG_MOVER_TICKERS.map(ticker => fetchLatestTick(ticker));
-  return Promise.all(fetchPromises);
-};
+// ==========================================
+// ACTIVITY FEED
+// ==========================================
 
 export interface ActivityItem {
   id: string;
   fee: number;
   status: string;
-  timestamp: string; // RFC3339 string
+  timestamp: string; 
   type: string;
   amount?: number | null;
   notes?: string | null;
@@ -200,9 +192,7 @@ export const fetchLedgerActivity = async (
   page: number = 1,
   pageSize: number = 100
 ): Promise<ActivityPage> => {
-  // ==========================================
-  // MOCK DATA MODE 
-  // ==========================================
+  // MOCK DATA MODE
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
@@ -216,17 +206,15 @@ export const fetchLedgerActivity = async (
           { id: 'act_3', timestamp: new Date(Date.now() - 172800000).toISOString(), type: 'TRADE', status: 'COMPLETED', fee: 0.50, symbol: 'AAPL', quantity: -5, price: 178.92, amount: 894.60 },
           { id: 'act_4', timestamp: new Date(Date.now() - 259200000).toISOString(), type: 'DIVIDEND', status: 'COMPLETED', fee: 0, symbol: 'MSFT', amount: 35.50 },
           { id: 'act_5', timestamp: new Date(Date.now() - 345600000).toISOString(), type: 'TRADE', status: 'COMPLETED', fee: 0, symbol: 'TSLA', quantity: 20, price: 231.40, amount: -4628.00 }
-        ].slice(0, pageSize) // Ensures the mock data respects your pageSize limit
+        ].slice(0, pageSize) 
       });
     }, 300);
   });
 
-  // ==========================================
-  // REAL API MODE - Uncomment when ready
-  // ==========================================
+  // REAL API MODE
   /*
   const queryParams = new URLSearchParams({
-    account_id: '1', // Hardcoded as requested
+    account_id: '1', 
     startDate: startDate,
     endDate: endDate,
     page: page.toString(),
@@ -240,11 +228,256 @@ export const fetchLedgerActivity = async (
 };
 
 
+
+export const fetchMarketSnapshots = async (limit: number = 7, sortByChange: boolean = true): Promise<MarketSnapshotList> => {
+  // ==========================================
+  // MOCK DATA MODE
+  // ==========================================
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        total: 500, // Fake total market size
+        snapshots: [
+          { ticker_symbol: 'NVDA', price: '462.80', daily_change_pct: '4.52', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'TSLA', price: '231.40', daily_change_pct: '3.85', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'AMD', price: '112.50', daily_change_pct: '2.91', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'AAPL', price: '178.92', daily_change_pct: '1.24', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'MSFT', price: '332.15', daily_change_pct: '-0.85', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'META', price: '485.30', daily_change_pct: '-1.45', last_updated: new Date().toISOString() },
+          { ticker_symbol: 'AMZN', price: '134.20', daily_change_pct: '-2.10', last_updated: new Date().toISOString() },
+        ].slice(0, limit)
+      });
+    }, 200);
+  });
+
+  // ==========================================
+  // REAL API MODE - Uncomment when ready
+  // ==========================================
+  /*
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    offset: '0',
+    sort_by_change: sortByChange.toString()
+  });
+  
+  const response = await fetch(`${BASE_URL}/api/snapshots?${queryParams}`);
+  if (!response.ok) throw new Error('Failed to fetch market snapshots');
+  return response.json();
+  */
+};
+
+// Activity Helper (Composition)
 export const fetchRecentActivity = async (): Promise<ActivityItem[]> => {
   const today = getFormattedDate(new Date());
   const year2000 = '2000-01-01'; // Safe start date to grab all history
 
+  // Get just page 1, size 5
   const activityPage = await fetchLedgerActivity(year2000, today, 1, 5);
-  
   return activityPage.items;
+};
+
+export interface MarketSnapshot {
+  ticker_symbol: string;
+  price: string;
+  daily_change_pct: string | null;
+  last_updated: string | null;
+}
+
+export interface MarketSnapshotList {
+  total: number;
+  snapshots: MarketSnapshot[];
+}
+
+// The UI interface stays exactly the same!
+export interface MoverItem {
+  symbol: string;
+  price: number;
+  changePercent: number;
+}
+// ==========================================
+// CACHE SETUP
+// ==========================================
+let cachedMovers: MoverItem[] | null = null;
+let lastMoversFetchTime = 0;
+const CACHE_TTL = 60 * 1000; // 60 seconds
+
+export const fetchHeaderBigMovers = async (): Promise<MoverItem[]> => {
+  const now = Date.now();
+
+  // 1. Return cached data if it's fresh
+  if (cachedMovers && (now - lastMoversFetchTime < CACHE_TTL)) {
+    return cachedMovers;
+  }
+
+  // 2. Fetch the top 7 dynamically from the new endpoint
+  const snapshotData = await fetchMarketSnapshots(7, true);
+
+  // 3. Map the backend schema to your React component's exact needs
+  const freshMovers: MoverItem[] = snapshotData.snapshots.map(snap => ({
+    symbol: snap.ticker_symbol,
+    price: parseFloat(snap.price),
+    // If daily_change_pct is null for some reason, default to 0
+    changePercent: snap.daily_change_pct ? parseFloat(snap.daily_change_pct) : 0 
+  }));
+
+  // 4. Save to cache
+  cachedMovers = freshMovers;
+  lastMoversFetchTime = now;
+
+  return freshMovers;
+};
+
+// ==========================================
+// HOLDINGS / POSITIONS
+// ==========================================
+
+// 1. The Real Backend Schemas
+export interface BackendHolding {
+  cost_basis: number;
+  quantity: number;
+  ticker: string;
+}
+
+export interface PortfolioRead {
+  account_id: string;
+  holdings: BackendHolding[];
+}
+
+// 2. The Trimmed UI Interface
+export interface Holding {
+  ticker: string;
+  currentPrice: number;
+  costBasis: number;
+  changeDaily: number;
+  quantity: number;
+  totalReturn: number;
+}
+
+// 1. The "Raw" Fetcher (Exactly matching the backend schema)
+export const fetchRawHoldings = async (accountId: string = '1'): Promise<PortfolioRead> => {
+  // MOCK MODE
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        account_id: accountId,
+        holdings: [
+          { ticker: 'AAPL', cost_basis: 150.00, quantity: 50 },
+          { ticker: 'MSFT', cost_basis: 290.00, quantity: 30 },
+          { ticker: 'NVDA', cost_basis: 120.50, quantity: 15 },
+          { ticker: 'TSLA', cost_basis: 250.00, quantity: 20 },
+        ]
+      });
+    }, 200);
+  });
+
+  // REAL API MODE
+  /*
+  const response = await fetch(`${BASE_URL}/api/holdings/${accountId}`);
+  if (!response.ok) throw new Error('Failed to fetch raw holdings');
+  return response.json();
+  */
+};
+
+// 2. The "Enriched" Fetcher (What your React component actually calls)
+export const fetchHoldings = async (): Promise<Holding[]> => {
+  // Step 1: Get the barebones portfolio data
+  const portfolio = await fetchRawHoldings('1');
+
+  // Step 2: Get the live market snapshots
+  const marketData = await fetchMarketSnapshots(500, false); 
+
+  // Step 3: Mash them together!
+  return portfolio.holdings.map((holding) => {
+    const snapshot = marketData.snapshots.find(s => s.ticker_symbol === holding.ticker);
+
+    const currentPrice = snapshot ? parseFloat(snapshot.price) : holding.cost_basis;
+    const changeDaily = snapshot && snapshot.daily_change_pct ? parseFloat(snapshot.daily_change_pct) : 0;
+    const totalReturn = (currentPrice - holding.cost_basis) * holding.quantity;
+
+    return {
+      ticker: holding.ticker,
+      currentPrice: currentPrice,
+      costBasis: holding.cost_basis,
+      changeDaily: changeDaily,
+      quantity: holding.quantity,
+      totalReturn: parseFloat(totalReturn.toFixed(2))
+    };
+  });
+};
+
+// ==========================================
+// ACCOUNT BALANCE & STATS
+// ==========================================
+
+// The exact schema from your backend docs
+export interface BalanceRead {
+  account_id: string;
+  balance: string; // Comes in as a string regex!
+  currency: string;
+  version: number;
+}
+
+export interface AccountStats {
+  portfolioValue: number;
+  dayChangeAmt: number;
+  dayChangePct: number;
+  buyingPower: number;
+  totalYield: number;
+}
+
+export const fetchCashBalance = async (accountId: string = '1'): Promise<number> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(15000.25);
+    }, 150);
+  });
+
+  /*
+  const response = await fetch(`${BASE_URL}/accounts/${accountId}/balance`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch account balance');
+  }
+
+  const data: BalanceRead = await response.json();
+  return parseFloat(data.balance);
+  */
+};
+
+// 2. The Composition Function (No Mocks!)
+export const fetchAccountStats = async (): Promise<AccountStats> => {
+  // Execute our API calls in parallel so the UI loads faster
+  const [cashBalance, graphData, holdings] = await Promise.all([
+    fetchCashBalance(),
+    fetchGraphData(1), // Assuming 1 day to get today's start/current value
+    fetchHoldings()
+  ]);
+
+  // --- DO THE MATH ---
+
+  // Portfolio Value: The most recent point on our graph
+  const currentPortfolioValue = graphData.length > 0 ? graphData[graphData.length - 1].value : 0;
+  
+  // Day Change: Current Value minus the first point on today's graph
+  const startOfDayValue = graphData.length > 0 ? graphData[0].value : currentPortfolioValue;
+  const dayChangeAmt = currentPortfolioValue - startOfDayValue;
+  const dayChangePct = startOfDayValue > 0 ? (dayChangeAmt / startOfDayValue) * 100 : 0;
+
+  // Total Yield: Calculate Total Return across all holdings vs Total Cost
+  let totalCostBasis = 0;
+  let totalReturn = 0;
+
+  holdings.forEach(h => {
+    totalCostBasis += (h.costBasis * h.quantity);
+    totalReturn += h.totalReturn; 
+  });
+
+  const totalYield = totalCostBasis > 0 ? (totalReturn / totalCostBasis) * 100 : 0;
+
+  return {
+    portfolioValue: currentPortfolioValue,
+    dayChangeAmt: parseFloat(dayChangeAmt.toFixed(2)),
+    dayChangePct: parseFloat(dayChangePct.toFixed(2)),
+    buyingPower: cashBalance, // Directly from your new endpoint
+    totalYield: parseFloat(totalYield.toFixed(2)),
+  };
 };
