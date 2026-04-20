@@ -33,6 +33,7 @@ export async function getStockSnapshot(symbol: string) {
     high: daily_bar.high,
     low: daily_bar.low,
     volume: daily_bar.volume.toLocaleString(),
+    marketCap: "—",
     marketStatus: "Open",
     lastUpdated: new Date(daily_bar.timestamp).toLocaleString(),
   };
