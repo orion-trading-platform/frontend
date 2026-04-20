@@ -46,7 +46,7 @@ export async function getStockBars(symbol: string, timeframe: string, start: str
   const res = await marketApi.get(`/api/stocks/${symbol}/bars`, { params });
   const bars = res.data.data?.[symbol] ?? [];
   return bars.map((b: any) => ({
-    time: new Date(b.timestamp).toLocaleTimeString(),
+    timestamp: new Date(b.timestamp).getTime(),
     open: b.open,
     high: b.high,
     low: b.low,
