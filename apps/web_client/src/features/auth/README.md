@@ -1,9 +1,19 @@
 # Auth Feature
 
+## API clients — all three backends
+
+| Client | Env var | Service | Port (local) | Used for |
+|---|---|---|---|---|
+| `api` | `VITE_BACKEND_URL` | Database API (api-go) | 8000 | Auth, order history, holdings, accounts, transactions |
+| `tradingApi` | `VITE_TRADING_ENGINE_URL` | Trading Engine | 8002 | Place orders, cancel orders |
+| `marketApi` | `VITE_MARKET_DATA_URL` | Market Data API | 8001 | Quotes, bars, SSE stream (internal to ordering feature) |
+
+`api` and `tradingApi` are exported from this feature. `marketApi` is internal to `features/ordering`.
+
 ## For other teams
 
 ```tsx
-import { AuthProvider, useAuth, useAccount, useAccounts, ProtectedRoute, api } from "@/features/auth";
+import { AuthProvider, useAuth, useAccount, useAccounts, ProtectedRoute, api, tradingApi } from "@/features/auth";
 import type { AuthUser, AccountInfo } from "@/features/auth";
 ```
 
@@ -26,14 +36,14 @@ const { currentUser, isAuthenticated, isLoading, setTokens, refreshToken, logout
 | `refreshToken` | `() => Promise<boolean>` | Manually refresh the access token; returns `true` on success |
 | `logout` | `() => Promise` | Revoke refresh token, clear localStorage, reset state |
 
-### `api` (axios instance)
+### `api` (axios instance — Database API)
 
 Pre-configured axios instance with:
 - `baseURL` set to `VITE_BACKEND_URL`
 - Request interceptor: auto-attaches `Authorization: Bearer <token>` header
 - Response interceptor: auto-refreshes on 401 and retries the failed request; on permanent failure clears localStorage and navigates to `/login`
 
-**Use this for all backend requests** — auth headers are handled automatically:
+Use for auth endpoints, holdings, accounts, and order history:
 
 ```tsx
 import { api } from "@/features/auth";
@@ -42,6 +52,23 @@ const res = await api.get("/holdings/123");
 ```
 
 > **Note:** Any request made with this `api` instance that returns a 401 (and cannot be recovered by refresh) will trigger a forced logout and redirect to `/login`. Do not use it for optional/unauthenticated requests.
+
+### `tradingApi` (axios instance — Trading Engine)
+
+Pre-configured axios instance with:
+- `baseURL` set to `VITE_TRADING_ENGINE_URL`
+- Request interceptor: auto-attaches `Authorization: Bearer <token>` header
+- No 401 interceptor — the trading engine identifies users via `user_id`/`account_id` in the request body, not JWT
+
+Use for placing and cancelling orders:
+
+```tsx
+import { tradingApi } from "@/features/auth";
+
+const res = await tradingApi.post("/api/orders", { symbol, user_id, account_id, side, type, qty });
+```
+
+In practice, use the functions in `features/ordering/api/orders.ts` (`placeOrder`, `cancelOrder`) rather than calling `tradingApi` directly.
 
 ### `useAccount()` and `useAccounts()`
 

@@ -8,18 +8,18 @@ interface OrderPanelProps {
   currentPrice: number;
   buyingPower: number;
   userId: string;
+  accountId: string;
   onOrderPlaced: (result: OrderResponse) => void;
 }
 
 type OrderSide = "buy" | "sell";
-type OrderType = "market" | "limit" | "stop" | "stop_limit";
+type OrderType = "market" | "limit";
 
-export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderPlaced }: OrderPanelProps) {
+export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountId, onOrderPlaced }: OrderPanelProps) {
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
   const [orderType, setOrderType] = useState<OrderType>("market");
   const [quantity, setQuantity] = useState<string>("");
   const [limitPrice, setLimitPrice] = useState<string>("");
-  const [stopPrice, setStopPrice] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResponse | null>(null);
@@ -38,8 +38,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
     event.preventDefault();
     if (shares <= 0) return;
     if (!canAfford) return;
-    if ((orderType === "limit" || orderType === "stop_limit") && !limitPrice) return;
-    if ((orderType === "stop" || orderType === "stop_limit") && !stopPrice) return;
+    if (orderType === "limit" && !limitPrice) return;
     setOrderResult(null);
     setOrderError(null);
     setShowConfirmation(true);
@@ -52,18 +51,17 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
       const result = await placeOrder({
         symbol,
         userId,
+        accountId,
         side: orderSide.toUpperCase() as "BUY" | "SELL",
-        type: orderType,
+        type: orderType.toUpperCase() as "MARKET" | "LIMIT",
         qty: shares,
         limit_price: limitPrice ? Number.parseFloat(limitPrice) : undefined,
-        stop_price: stopPrice ? Number.parseFloat(stopPrice) : undefined,
       });
       setOrderResult(result);
       onOrderPlaced(result);
       setShowConfirmation(false);
       setQuantity("");
       setLimitPrice("");
-      setStopPrice("");
     } catch (err: any) {
       setOrderError(err?.response?.data?.detail ?? "Order failed. Please try again.");
       setShowConfirmation(false);
@@ -141,14 +139,10 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
             >
               <option value="market">Market Order</option>
               <option value="limit">Limit Order</option>
-              <option value="stop">Stop Loss</option>
-              <option value="stop_limit">Stop Limit</option>
             </select>
             <p className="mt-1 text-xs text-gray-500">
               {orderType === "market" && "Execute immediately at current market price"}
               {orderType === "limit" && "Execute only at specified price or better"}
-              {orderType === "stop" && "Trigger market order when price reaches stop price"}
-              {orderType === "stop_limit" && "Trigger limit order when price reaches stop price"}
             </p>
           </div>
 
@@ -179,7 +173,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
             )}
           </div>
 
-          {(orderType === "limit" || orderType === "stop_limit") && (
+          {orderType === "limit" && (
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">Limit Price</label>
               <div className="relative">
@@ -190,24 +184,6 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, onOrderP
                   step="0.01"
                   value={limitPrice}
                   onChange={(event) => setLimitPrice(event.target.value)}
-                  placeholder={currentPrice.toFixed(2)}
-                  className="w-full rounded-lg border border-gray-300 py-2 pl-7 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          )}
-
-          {(orderType === "stop" || orderType === "stop_limit") && (
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">Stop Price</label>
-              <div className="relative">
-                <span className="absolute left-3 top-2 text-gray-500">$</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={stopPrice}
-                  onChange={(event) => setStopPrice(event.target.value)}
                   placeholder={currentPrice.toFixed(2)}
                   className="w-full rounded-lg border border-gray-300 py-2 pl-7 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />

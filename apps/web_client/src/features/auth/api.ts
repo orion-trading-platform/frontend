@@ -121,3 +121,20 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+// ---------------------------------------------------------------------------
+// Trading Engine client
+// ---------------------------------------------------------------------------
+
+const TRADING_ENGINE_URL =
+  import.meta.env.VITE_TRADING_ENGINE_URL ?? "http://localhost:8002";
+
+export const tradingApi = axios.create({ baseURL: TRADING_ENGINE_URL });
+
+tradingApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});

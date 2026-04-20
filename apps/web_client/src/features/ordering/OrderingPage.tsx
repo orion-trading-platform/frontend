@@ -210,6 +210,7 @@ export function OrderingPage() {
               currentPrice={currentPrice}
               buyingPower={balance}
               userId={currentUser?.user_id?.toString() ?? ""}
+              accountId={account?.account_id?.toString() ?? ""}
               onOrderPlaced={handleOrderPlaced}
             />
           </div>

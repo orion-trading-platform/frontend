@@ -36,6 +36,7 @@ jobs:
             --build-arg VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }} \
             --build-arg VITE_RECAPTCHA_SITE_KEY=${{ vars.VITE_RECAPTCHA_SITE_KEY }} \
             --build-arg VITE_MARKET_DATA_URL=${{ vars.VITE_MARKET_DATA_URL }} \
+            --build-arg VITE_TRADING_ENGINE_URL=${{ vars.VITE_TRADING_ENGINE_URL }} \
             -t $IMAGE:${{ github.sha }} \
             -t $IMAGE:latest .
           docker push $IMAGE:${{ github.sha }}
