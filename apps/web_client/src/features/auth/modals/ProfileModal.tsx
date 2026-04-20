@@ -5,6 +5,7 @@ import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 import LogoutConfirmationModal from './LogoutConfirmationModal';
 import DeleteUserConfirmationModal from './DeleteUserConfirmationModal';
+import AccountSelectorModal from './AccountSelectorModal';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -93,7 +95,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      <Modal isOpen={isOpen && !showLogoutModal && !showDeleteModal} onClose={onClose} title="Profile" titleId="profile-modal-title">
+      <Modal isOpen={isOpen && !showLogoutModal && !showDeleteModal && !showAccountModal} onClose={onClose} title="Profile" titleId="profile-modal-title">
 
         {/* User info */}
         <div className="bg-slate-50 dark:bg-[#141628] border border-[#BCCCDC] dark:border-[#2d2f50] rounded-lg px-[18px] py-4 mb-6">
@@ -196,11 +198,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
         {/* Account actions */}
         <div className="border-t border-[#BCCCDC] dark:border-[#2d2f50] pt-5 flex flex-col gap-3">
-          <Button variant="ghost" onClick={() => { onClose(); navigate('/wallet'); }} className="w-full">
-            Wallet
-          </Button>
           <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
             Delete Account
+          </Button>
+          <Button variant="ghost" onClick={() => setShowAccountModal(true)} className="w-full">
+            Select Account
           </Button>
           <Button variant="ghost" onClick={() => { onClose(); navigate('/ledger'); }} className="w-full">
             Account Ledger (temp redirect)
@@ -219,6 +221,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
       <DeleteUserConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+      />
+      <AccountSelectorModal
+        isOpen={showAccountModal}
+        onClose={() => setShowAccountModal(false)}
       />
     </>
   );
