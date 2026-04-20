@@ -7,6 +7,12 @@ COPY packages/transactional/package.json packages/transactional/package.json
 RUN npm install
 COPY apps/ apps/
 COPY packages/ packages/
+ARG VITE_BACKEND_URL
+ARG VITE_GOOGLE_CLIENT_ID
+ARG VITE_RECAPTCHA_SITE_KEY
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
+ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
 RUN npm run build --workspace=apps/web_client
 
 FROM nginx:alpine
