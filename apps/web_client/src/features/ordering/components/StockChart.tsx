@@ -16,7 +16,7 @@ type ChartFormat = "line" | "candlestick";
 
 // from stub API, may need to change with API integration
 interface OHLCBar {
-  time: string;
+  timestamp: number;
   open: number;
   high: number;
   low: number;
@@ -25,6 +25,7 @@ interface OHLCBar {
 }
 
 interface ChartBar extends OHLCBar {
+  barIndex: number;
   price: number;
   bodyBottom: number;
   bodyHeight: number;
@@ -45,14 +46,40 @@ const TOOLTIP_STYLE = {
   color: "#fff",
 };
 
+function formatStockAxisTick(ts: number, timeframe: string): string {
+  const d = new Date(ts);
+  switch (timeframe) {
+    case "1D":
+      return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    case "1W":
+      return d.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
+    case "1M":
+    case "3M":
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    case "1Y":
+    case "ALL":
+      return d.toLocaleDateString(undefined, { month: "short", year: "2-digit" });
+    default:
+      return d.toLocaleString();
+  }
+}
+
+function formatStockTooltipTime(ts: number, timeframe: string): string {
+  const d = new Date(ts);
+  if (timeframe === "1D" || timeframe === "1W") {
+    return d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  }
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+}
+
 function CandlestickTooltipContent({
   active,
   payload,
-  label,
+  timeframe,
 }: {
   active?: boolean;
-  payload?: Array<{ payload?: ChartBar }>;
-  label?: string;
+  payload?: readonly { payload?: ChartBar }[];
+  timeframe: string;
 }) {
   if (!active || !payload?.length) return null;
 
@@ -60,9 +87,10 @@ function CandlestickTooltipContent({
 
   if (!p) return null;
   const ohlcColor = p.close >= p.open ? "#10b981" : "#ef4444";
+  const timeLabel = formatStockTooltipTime(p.timestamp, timeframe);
   return (
     <div style={{ ...TOOLTIP_STYLE, padding: "8px 12px" }}>
-      {label != null && label !== "" && <div style={{ marginBottom: "4px", color: "#fff" }}>{label}</div>}
+      {timeLabel !== "" && <div style={{ marginBottom: "4px", color: "#fff" }}>{timeLabel}</div>}
       <div style={{ color: ohlcColor, display: "flex", flexDirection: "column", gap: "2px" }}>
         <div>Open: ${p.open.toFixed(2)}</div>
         <div>High: ${p.high.toFixed(2)}</div>
@@ -92,13 +120,14 @@ export function StockChart({ symbol }: StockChartProps) {
   }, [symbol, timeframe]);
 
   const chartData = useMemo((): ChartBar[] => {
-    return bars.map((bar) => {
+    return bars.map((bar, barIndex) => {
       const bodyBottom = Math.min(bar.open, bar.close);
       const bodyTop = Math.max(bar.open, bar.close);
       const bodyHeight = bodyTop - bodyBottom || 0.01;
       const isUp = bar.close >= bar.open;
       return {
         ...bar,
+        barIndex,
         price: bar.close,
         bodyBottom,
         bodyHeight,
@@ -107,11 +136,11 @@ export function StockChart({ symbol }: StockChartProps) {
         upBody: isUp ? bodyHeight : 0,
         downBody: isUp ? 0 : bodyHeight,
       };
-    }, [bars]);
+    });
   }, [bars]);
 
   const lineData = useMemo(
-    () => chartData.map((d) => ({ time: d.time, price: d.price })),
+    () => chartData.map((d) => ({ timestamp: d.timestamp, price: d.price })),
     [chartData]
   );
 
@@ -179,7 +208,18 @@ export function StockChart({ symbol }: StockChartProps) {
             barCategoryGap={0}
           >
             <XAxis
-              dataKey="time"
+              dataKey={chartFormat === "candlestick" ? "barIndex" : "timestamp"}
+              type={chartFormat === "candlestick" ? "category" : "number"}
+              {...(chartFormat === "line"
+                ? { scale: "time" as const, domain: ["dataMin", "dataMax"] as const }
+                : {})}
+              tickFormatter={(v) => {
+                if (chartFormat === "candlestick") {
+                  const row = chartData[Number(v)];
+                  return row ? formatStockAxisTick(row.timestamp, timeframe) : "";
+                }
+                return formatStockAxisTick(Number(v), timeframe);
+              }}
               tick={{ fontSize: 12, fill: "#6b7280" }}
               tickLine={false}
               axisLine={{ stroke: "#e5e7eb" }}
@@ -198,17 +238,22 @@ export function StockChart({ symbol }: StockChartProps) {
               <>
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
-                  formatter={(value: number | undefined) =>
-                    value !== undefined ? [`$${value.toFixed(2)}`, "Price"] : ["—", "Price"]
+                  labelFormatter={(label) =>
+                    typeof label === "number" && !Number.isNaN(label)
+                      ? formatStockTooltipTime(label, timeframe)
+                      : ""
                   }
+                  formatter={(value: unknown) => {
+                    const n = typeof value === "number" && !Number.isNaN(value) ? value : undefined;
+                    return n !== undefined ? [`$${n.toFixed(2)}`, "Price"] : ["—", "Price"];
+                  }}
                 />
                 <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} />
               </>
             ) : (
               <>
                 <Tooltip
-                  content={<CandlestickTooltipContent />}
-                  labelFormatter={(_, p) => (Array.isArray(p) && p[0]?.payload?.time) ?? ""}
+                  content={(props) => <CandlestickTooltipContent {...props} timeframe={timeframe} />}
                 />
                 <Bar dataKey="bodyBottom" stackId="candle" fill="transparent" barSize={14} />
                 <Bar
