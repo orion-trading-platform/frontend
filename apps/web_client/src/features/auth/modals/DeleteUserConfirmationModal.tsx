@@ -25,15 +25,15 @@ const DeleteUserConfirmationModal: React.FC<DeleteUserConfirmationModalProps> = 
       onClose();
       navigate('/login');
     } catch {
-      setError('Failed to delete account. Please try again.');
+      setError('Failed to delete user. Please try again.');
       setDeleting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Delete Account" titleId="delete-user-modal-title">
+    <Modal isOpen={isOpen} onClose={onClose} title="Delete User" titleId="delete-user-modal-title">
       <p className="mt-0 mb-2 text-[15px] text-[#111827] dark:text-[#e2e8f0]">
-        This will permanently delete your account and all associated data.
+        This will permanently delete your user and all associated data.
       </p>
       <p className="mt-0 mb-6 text-[13px] text-[#6B7280] dark:text-[#8892b0]">This action cannot be undone.</p>
       {error && (
@@ -44,7 +44,7 @@ const DeleteUserConfirmationModal: React.FC<DeleteUserConfirmationModalProps> = 
           Cancel
         </Button>
         <Button variant="danger" onClick={() => { void handleConfirm(); }} disabled={deleting} className="flex-1 disabled:opacity-70 disabled:cursor-not-allowed">
-          {deleting ? 'Deleting...' : 'Delete Account'}
+          {deleting ? 'Deleting...' : 'Delete User'}
         </Button>
       </div>
     </Modal>

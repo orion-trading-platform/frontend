@@ -199,7 +199,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         {/* Account actions */}
         <div className="border-t border-[#BCCCDC] dark:border-[#2d2f50] pt-5 flex flex-col gap-3">
           <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
-            Delete Account
+            Delete User
           </Button>
           <Button variant="ghost" onClick={() => setShowAccountModal(true)} className="w-full">
             Select Account
