@@ -7,3 +7,4 @@ export { default as api, tradingApi } from "./api";
 export { useAccounts } from "./useAccounts";
 export { useAccount } from "./useAccount";
 export type { AccountInfo } from "./useAccounts";
+export { emitAccountsRefresh } from "./accountsRefresh";

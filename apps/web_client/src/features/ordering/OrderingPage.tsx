@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from '@/ThemeContext';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { WalletHeaderNavButton } from "@/features/wallet/components/WalletHeaderNavButton";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
@@ -130,10 +131,11 @@ export function OrderingPage() {
                 placeholder="Search for stocks..."
               />
             </div>
-            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
               <button aria-label={dark ? "Switch to light mode" : "Switch to dark mode"} onClick={toggleDark} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
+              <WalletHeaderNavButton />
               <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
                 {currentUser?.profile_picture_url ? (
                   <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />

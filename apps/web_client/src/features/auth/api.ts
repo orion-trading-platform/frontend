@@ -122,6 +122,10 @@ api.interceptors.response.use(
 
 export default api;
 
+export async function deleteAccount(accountId: string | number): Promise<void> {
+  await api.delete(`/accounts/${accountId}`);
+}
+
 // ---------------------------------------------------------------------------
 // Trading Engine client
 // ---------------------------------------------------------------------------

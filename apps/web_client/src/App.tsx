@@ -8,6 +8,7 @@ import { LandingOrdering } from '@/features/auth/pages/LandingOrdering';
 import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from '@/features/ordering/OrderingPage';
 import LedgerPage from "@/features/ledger/pages/ledgerPage";
+import WalletPage from "@/features/wallet/pages/WalletPage";
 import { AuthProvider, ProtectedRoute } from '@/features/auth';
 import { ThemeProvider } from '@/ThemeContext';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -34,6 +35,9 @@ const App: React.FC = () => {
               } />
             <Route path="/ledger" element={
               <ProtectedRoute><LedgerPage /></ProtectedRoute>
+              } />
+            <Route path="/wallet" element={
+              <ProtectedRoute><WalletPage /></ProtectedRoute>
               } />
             <Route path="*" element={
               <Navigate to="/dashboard" replace />
