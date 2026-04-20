@@ -13,7 +13,7 @@ const AccountSelectorModal: React.FC<AccountSelectorModalProps> = ({ isOpen, onC
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const selectedId = localStorage.getItem('selectedAccountId');
 
@@ -31,12 +31,12 @@ const AccountSelectorModal: React.FC<AccountSelectorModalProps> = ({ isOpen, onC
     if (isOpen) fetchAccounts();
   }, [isOpen]);
 
-  const handleSelect = (accountId: number) => {
+  const handleSelect = (accountId: string) => {
     setSelectedAccountId(accountId);
     onClose();
   };
 
-  const handleDelete = async (accountId: number) => {
+  const handleDelete = async (accountId: string) => {
     setDeletingId(accountId);
     setError('');
     try {
@@ -85,7 +85,7 @@ const AccountSelectorModal: React.FC<AccountSelectorModalProps> = ({ isOpen, onC
                   {!isActive && (
                     <Button
                       variant="primary"
-                      onClick={() => handleSelect(account.account_id)}
+                      onClick={() => handleSelect(String(account.account_id))}
                       className="text-[13px] py-1 px-3"
                     >
                       Select
@@ -93,7 +93,7 @@ const AccountSelectorModal: React.FC<AccountSelectorModalProps> = ({ isOpen, onC
                   )}
                   <Button
                     variant="danger"
-                    onClick={() => { void handleDelete(account.account_id); }}
+                    onClick={() => { void handleDelete(String(account.account_id)); }}
                     disabled={accounts.length === 1 || deletingId === account.account_id}
                     className="text-[13px] py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
