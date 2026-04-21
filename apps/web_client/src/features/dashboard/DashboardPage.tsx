@@ -33,7 +33,7 @@ export const DashboardPage = () => {
   const [hData, sethData] = useState<Holding[]>([]);
 
   useEffect(() => {
-    fetch('/src/features/dashboard/data/ds5_recent_actions.csv')
+    fetch('/data/ds5_recent_actions.csv')
       .then((response) => response.text())
       .then((csvString) => {
         Papa.parse(csvString, {
@@ -54,7 +54,7 @@ export const DashboardPage = () => {
   }, []);
 
   useEffect(()=> {
-    fetch('/src/features/dashboard/data/ds4_holdings.csv')
+    fetch('/data/ds4_holdings.csv')
       .then((response) => response.text())
       .then((csvString) => {
         Papa.parse(csvString, {

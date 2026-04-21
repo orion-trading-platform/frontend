@@ -13,7 +13,7 @@ export const StatCard = ({ label, value, change, isPositive, icon }: StatCardPro
     <div className={styles.card}>
       <div className={styles.iconBox}>
         {/* We'll add real icons later, using a placeholder for now */}
-        <img src = {`/src/features/dashboard/components/icons/${icon}Icon.png`} alt = "Icon" style={{width : '48px', height : '48px',  borderRadius : '8px'}}/>
+        <img src={`/icons/${icon}Icon.png`} alt="Icon" style={{width : '48px', height : '48px',  borderRadius : '8px'}}/>
         
       </div>
       <div className={styles.content}>

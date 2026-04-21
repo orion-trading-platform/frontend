@@ -33,7 +33,7 @@ const LandingDashboard: React.FC = () => {
   const [hData, sethData] = useState<Holding[]>([]);
 
   useEffect(() => {
-    fetch('/src/features/dashboard/data/ds4_holdings.csv')
+    fetch('/data/ds4_holdings.csv')
       .then((response) => response.text())
       .then((csvString) => {
         Papa.parse(csvString, {

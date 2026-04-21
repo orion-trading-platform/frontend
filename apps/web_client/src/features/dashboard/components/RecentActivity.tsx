@@ -17,7 +17,7 @@ export const RecentActivity = ({ticker, date, quantity, type, price, totalPrice,
         <div className = {styles.card}>
 
             <div className = {styles.icon}>
-                <img src = {`/src/features/dashboard/components/icons/${type}Icon.png`} alt = "Icon" style={{width : '36px', height : '36px',  borderRadius : '12px'}}/>
+                <img src={`/icons/${type}Icon.png`} alt="Icon" style={{width : '36px', height : '36px',  borderRadius : '12px'}}/>
               
             </div>
             <div className = {styles.content}>
