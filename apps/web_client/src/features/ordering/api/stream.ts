@@ -63,12 +63,15 @@ function pickPrice(s: AlpacaSnapshot | undefined): number | null {
   return null;
 }
 
+const MARKET_DATA_URL =
+  import.meta.env.VITE_MARKET_DATA_URL ?? "http://localhost:8001";
+
 export function subscribeToStream(
   symbols: string[],
   onUpdate: (update: PriceUpdate) => void
 ): () => void {
   const normalized = symbols.map((s) => s.toUpperCase());
-  const streamUrl = `/api/stream?symbols=${encodeURIComponent(normalized.join(","))}`;
+  const streamUrl = `${MARKET_DATA_URL}/api/stream?symbols=${encodeURIComponent(normalized.join(","))}`;
   const source = new EventSource(streamUrl);
 
   source.onmessage = (event) => {
