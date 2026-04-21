@@ -5,9 +5,10 @@ on:
     branches: [main]
 
 env:
-  PROJECT_ID: rice-comp-539-spring-2022
+  PROJECT_ID: orion-trading-dev
+  PROJECT_NUMBER: 273043831761
   REGION: us-central1
-  IMAGE: us-central1-docker.pkg.dev/rice-comp-539-spring-2022/orion-images/frontend
+  IMAGE: us-central1-docker.pkg.dev/orion-trading-dev/frontend-images/frontend
   SERVICE: orion-frontend
 
 jobs:
@@ -21,8 +22,8 @@ jobs:
 
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/904917579142/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: github-ci@rice-comp-539-spring-2022.iam.gserviceaccount.com
+          workload_identity_provider: projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-ci@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
 
       - uses: google-github-actions/setup-gcloud@v2
 
@@ -42,10 +43,11 @@ jobs:
           docker push $IMAGE:${{ github.sha }}
           docker push $IMAGE:latest
 
-      - name: Deploy to Cloud Run
+      - name: Deploy
         run: |
           gcloud run deploy $SERVICE \
             --image $IMAGE:${{ github.sha }} \
             --region $REGION \
             --allow-unauthenticated \
-            --service-account=orion-frontend-sa@rice-comp-539-spring-2022.iam.gserviceaccount.com
+            --service-account=orion-frontend-sa@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
+            --port=8080
