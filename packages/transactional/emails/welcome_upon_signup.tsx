@@ -28,7 +28,7 @@ import {
 
 // PROD
 const logoSrc      = 'https://oriontrading.pro/email-logo-white.svg';
-const DASHBOARD_URL = 'https://www.oriontrading.pro/#/dashboard';
+const DASHBOARD_URL = 'https://oriontrading.pro/#/dashboard';
 
 const USER_NAME = '{{user_name}}';
 

@@ -28,7 +28,6 @@ import {
 
 // PROD
 const logoSrc     = 'https://oriontrading.pro/email-logo-white.svg';
-const SUPPORT_URL = 'https://www.oriontrading.pro/#/support';
 
 const USER_NAME = '{{user_name}}';
 
@@ -96,18 +95,6 @@ export default function PasswordResetConfirmation() {
                 Please contact our support team immediately so we can secure your
                 account.
               </Text>
-            </Section>
-
-            <Hr className="border-[#e5e7eb] mx-10 my-0" />
-
-            {/* Contact support CTA */}
-            <Section className="px-10 py-7 text-center">
-              <Button
-                href={SUPPORT_URL}
-                className="bg-accent text-white text-[13px] font-bold tracking-[0.08em] no-underline py-[14px] px-9 rounded-lg"
-              >
-                CONTACT SUPPORT
-              </Button>
             </Section>
 
             <Hr className="border-[#e5e7eb] mx-10 my-0" />

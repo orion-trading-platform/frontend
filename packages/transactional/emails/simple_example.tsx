@@ -18,8 +18,8 @@ function getLogoSrc(): string {
   }
 }
 
-// const logoSrc = getLogoSrc();                               // for local preview (localhost:3000)
-const logoSrc = 'https://oriontrading.pro/logo-white.svg';  // use this for 'npm run export'
+// const logoSrc = getLogoSrc();                                     // for local preview (localhost:3000)
+const logoSrc = 'https://oriontrading.pro/email-logo-white.svg';  // use this for 'npm run export'
 
 interface WelcomeProps {
   // Dynamic URLs (e.g. password reset links) are passed as props.
