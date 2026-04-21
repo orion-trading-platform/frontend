@@ -41,11 +41,13 @@ export interface ActivityPage {
 }
 
 interface GetSummaryParams {
+  accountId: string,
   startDate: string;
   endDate: string;
 }
 
 interface GetActivityParams {
+  accountId: string,
   startDate: string;
   endDate: string;
   type: string;
@@ -57,8 +59,7 @@ interface GetActivityParams {
 
 // ── API helper ─────────────────────────────────────────────────────────────
 
-const API_BASE = "";
-const ACCOUNT_ID = "2000000000"; // will change once auth is integrated
+const API_BASE = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
 
 async function apiGet<T>(path: string, params: Record<string, string | number | undefined | null> = {}): Promise<T> {
   const url = new URL(`${API_BASE}${path}`, window.location.origin);
@@ -69,10 +70,14 @@ async function apiGet<T>(path: string, params: Record<string, string | number | 
     }
   });
 
+  const token = localStorage.getItem("accessToken");
   const res = await fetch(url.toString(), {
     method: "GET",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
 
   if (!res.ok) {
@@ -86,19 +91,21 @@ async function apiGet<T>(path: string, params: Record<string, string | number | 
 // ── Service ────────────────────────────────────────────────────────────────
 
 export const ledgerService = {
-  getSummary: (params: GetSummaryParams): Promise<LedgerSummary> =>
+  getSummary: ({ accountId, ...params }: GetSummaryParams): Promise<LedgerSummary> =>
     apiGet<LedgerSummary>("/api/ledger/summary", {
-      account_id: ACCOUNT_ID,
+      account_id: accountId,
       ...params,
     }),
 
-  getActivity: (params: GetActivityParams): Promise<ActivityPage> =>
+  getActivity: ({ accountId, ...params }: GetActivityParams): Promise<ActivityPage> =>
     apiGet<ActivityPage>("/api/ledger/activity", {
-      account_id: ACCOUNT_ID,
+      account_id: accountId,
       ...params,
       sort: "timestamp_desc",
     }),
 
-  getActivityDetail: (id: string): Promise<ActivityDetail> =>
-    apiGet<ActivityDetail>(`/api/ledger/activity/${id}`),
+  getActivityDetail: (accountId: string, id: string): Promise<ActivityDetail> =>
+    apiGet<ActivityDetail>(`/api/ledger/activity/${id}`, {
+      account_id: accountId,
+    }),
 };
