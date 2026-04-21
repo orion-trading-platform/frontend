@@ -331,7 +331,8 @@ const DEFAULT_PAGE_SIZE = 25;
 
 export default function LedgerPage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, isAuthenticated, isLoading } = useAuth();
+  const { account, isLoading: accountLoading } = useAccount();
   const [tickerQuery, setTickerQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -450,8 +451,11 @@ export default function LedgerPage() {
     setLoadingSummary(true);
     setError("");
     try {
+      if (!account) return;
+
       // Fetch all activity (unfiltered by type/status/symbol) for summary computation
       const allData = await ledgerService.getActivity({
+        accountId: account.account_id,
         startDate,
         endDate,
         type: "",
@@ -465,6 +469,7 @@ export default function LedgerPage() {
 
       // Fetch the filtered + paginated activity for the table
       const data = await ledgerService.getActivity({
+        accountId: account.account_id,
         startDate,
         endDate,
         type: effectiveType === "ALL" ? "" : effectiveType,
@@ -491,7 +496,8 @@ export default function LedgerPage() {
     setDrawerError("");
 
     try {
-      const data = await ledgerService.getActivityDetail(activityId);
+      if (!account) return;
+      const data = await ledgerService.getActivityDetail(account.account_id, activityId);
       setDetail(data);
     } catch (e: unknown) {
       setDrawerError(String((e as Error).message || e));
@@ -501,9 +507,10 @@ export default function LedgerPage() {
   }
 
   useEffect(() => {
+    if (!account) return;
     fetchActivity();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate, effectiveType, status, symbol, page, pageSize]);
+  }, [account, startDate, endDate, effectiveType, status, symbol, page, pageSize]);
 
   function exportCSV() {
     const headers = ["timestamp", "type", "subtype", "symbol", "quantity", "price", "amount", "fee", "status", "notes"] as const;
@@ -532,6 +539,23 @@ export default function LedgerPage() {
     { title: "Cash Balance", value: summary ? formatMoney(summary.cashBalance) : "--" },
   ];
 
+  if (isLoading) {
+    return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-slate-500">Loading session...</div>
+    </div>
+  );}
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (accountLoading) {
+    return (<div className="min-h-screen flex items-center justify-center">
+      <div className="text-slate-500">Loading session...</div>
+    </div>
+  );}
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
@@ -558,7 +582,7 @@ export default function LedgerPage() {
               <WalletHeaderNavButton />
               <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
                 {currentUser?.profile_picture_url ? (
-                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={currentUser?.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
                 )}
@@ -687,7 +711,6 @@ export default function LedgerPage() {
             <div className="md:col-span-6 flex items-end gap-2">
               <button
                 onClick={() => {
-                  // fetchSummary();
                   fetchActivity();
                 }}
                 aria-label="Refresh data"
