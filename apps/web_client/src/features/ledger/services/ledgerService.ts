@@ -73,7 +73,6 @@ async function apiGet<T>(path: string, params: Record<string, string | number | 
   const token = localStorage.getItem("accessToken");
   const res = await fetch(url.toString(), {
     method: "GET",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
