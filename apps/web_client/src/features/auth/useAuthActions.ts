@@ -12,11 +12,8 @@ export function useAuthActions() {
   const register = useCallback(
     async (email: string, password: string, recaptchaToken: string) => {
       await api.post("/auth/register", { email, password, recaptcha_token: recaptchaToken });
-      const res = await api.post("/auth/login", { email, password, recaptcha_token: recaptchaToken });
-      const { access_token, refresh_token } = res.data;
-      await setTokens(access_token, refresh_token);
     },
-    [setTokens]
+    []
   );
 
   const login = useCallback(

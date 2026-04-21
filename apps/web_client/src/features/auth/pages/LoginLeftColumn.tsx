@@ -80,9 +80,12 @@ const LoginLeftColumn: React.FC = () => {
     try {
       if (isSignUpMode) {
         await authRegister(email, password, recaptchaToken);
-        localStorage.setItem('orion_returning_user', '1');
-        setSuccessMessage("Account created. Redirecting...");
-        setTimeout(() => navigate("/dashboard"), 800);
+        setSuccessMessage("Account created! Please sign in.");
+        setIsSignUpMode(false);
+        setPassword("");
+        setConfirmPassword("");
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
       }
       await authLogin(email, password, recaptchaToken);
