@@ -146,7 +146,7 @@ export const DashboardPage = () => {
           </div>
         </div>
       }
-      movers={<BiggestMovers />}
+      movers={<BiggestMovers onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} />}
       stats={
         <>
           {MOCK_STATS.map((stat) => (
@@ -163,7 +163,7 @@ export const DashboardPage = () => {
           </div>
           <>
             {rData.slice(0, 5).map((activity) => (
-              <RecentActivity key={activity.id} {...activity} />
+              <RecentActivity key={activity.id} {...activity} onClick={() => navigate('/ledger')} />
             ))}
         </>
         </div>
@@ -171,7 +171,7 @@ export const DashboardPage = () => {
       holdings={
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <HoldingsTable holdings={filteredHoldings??emptyTable}/>
+          <HoldingsTable holdings={filteredHoldings??emptyTable} onSelect={(ticker) => navigate(`/trade?symbol=${ticker}`)} />
         </div>
       }
     />

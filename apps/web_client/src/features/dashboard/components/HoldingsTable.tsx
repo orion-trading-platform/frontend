@@ -15,10 +15,11 @@ export interface Holding {
 export interface HoldingsTableProps {
   holdings: Holding[];
   publicOnly?: boolean;
+  onSelect?: (ticker: string) => void;
 }
 
 
-export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
+export const HoldingsTable = ({ holdings, publicOnly, onSelect }: HoldingsTableProps) => {
   if (holdings.length === 0) {
     return (
       <div className={styles.empty}>
@@ -45,7 +46,7 @@ export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
         </thead>
         <tbody>
           {holdings.map((h) => (
-            <tr key={h.ticker} className={styles.row}>
+            <tr key={h.ticker} className={styles.row} onClick={() => onSelect?.(h.ticker)}>
               <td className={styles.tdSymbol}>{h.ticker}</td>
               <td className={styles.td}>{h.companyName}</td>
               <td className={styles.td}>${h.currentPrice}</td>
