@@ -368,6 +368,13 @@ export default function LedgerPage() {
   const [detail, setDetail] = useState<ActivityDetail | null>(null);
   const [drawerError, setDrawerError] = useState("");
 
+  // Get real-time account balance
+  const balanceNum = useMemo(() => {
+    if (!account) return 0;
+    const n = parseFloat(account.balance);
+    return Number.isFinite(n) ? n : 0;
+  }, [account]);
+
   const { startDate, endDate } = useMemo(() => {
     // Build a local-time window so the backend filter matches the dates users
     // see in the table (timestamps render in local time). Send full ISO-8601
@@ -423,52 +430,52 @@ export default function LedgerPage() {
     setPage(1);
   }, [dateRange, customStart, customEnd, tab, type, status, symbol]);
 
-  function computeSummary(items: ActivityItem[]): LedgerSummary {
-    let realizedPL = 0;
-    let cashBalance = 0;
 
-    for (const item of items) {
-      const amt = Number(item.amount) || 0;
-      const fee = Number(item.fee) || 0;
+  async function getCompleteSummary() {
+    try {
+      if (!account) return null;
 
-      if (item.type === "TRADE") {
-        realizedPL += amt - fee;
-      }
-      cashBalance += amt - fee;
+      const summary = await ledgerService.getSummary({
+        accountId: account.account_id,
+        startDate,
+        endDate
+      });
+
+      return {
+        ...summary,
+        cashBalance: balanceNum,
+        // Total performance = banked + what is still fluctuating
+        netPL: (summary.realizedPL || 0) + (summary.unrealizedPL || 0),
+        // Total value = Cash on hand + value of open positions
+        accountValue: balanceNum + (summary.unrealizedPL || 0)
+      };
+    } catch (e: unknown) {
+      // Reuse your error formatter if available
+      setError(String((e as Error).message || e));
+      return {
+        netPL: 0, realizedPL: 0, unrealizedPL: 0,
+        cashBalance: balanceNum,
+        accountValue: balanceNum,
+        buyingPower: 0,
+      };
     }
-
-    return {
-      netPL: realizedPL, // unrealizedPL is 0 — needs market prices
-      realizedPL,
-      unrealizedPL: 0,
-      cashBalance,
-      accountValue: 0,
-      buyingPower: 0,
-    };
   }
 
   async function fetchActivity() {
     setLoadingActivity(true);
     setLoadingSummary(true);
     setError("");
+    
     try {
       if (!account) return;
 
-      // Fetch all activity (unfiltered by type/status/symbol) for summary computation
-      const allData = await ledgerService.getActivity({
-        accountId: account.account_id,
-        startDate,
-        endDate,
-        type: "",
-        status: "",
-        symbol: "",
-        page: 1,
-        pageSize: 100,
-      });
-      const allItems = Array.isArray(allData.items) ? allData.items : [];
-      setSummary(computeSummary(allItems));
+      // 1. Fetch Summary Data (Replaces the old computeSummary loop)
+      const summaryData = await getCompleteSummary();
+      if (summaryData) {
+        setSummary(summaryData);
+      }
 
-      // Fetch the filtered + paginated activity for the table
+      // 2. Fetch the filtered + paginated activity for the table display
       const data = await ledgerService.getActivity({
         accountId: account.account_id,
         startDate,
