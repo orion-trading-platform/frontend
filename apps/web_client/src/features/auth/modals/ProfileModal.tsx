@@ -5,7 +5,7 @@ import { useAuth } from '../AuthContext';
 import { useAuthActions } from '../useAuthActions';
 import LogoutConfirmationModal from './LogoutConfirmationModal';
 import DeleteUserConfirmationModal from './DeleteUserConfirmationModal';
-import AccountSelectorModal from './AccountSelectorModal';
+// import AccountSelectorModal from './AccountSelectorModal';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -202,9 +202,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             Delete User
           </Button>
           {/* NOTE: This isn't necessary with a single account in the final design and can be removed */}
-          <Button variant="ghost" onClick={() => setShowAccountModal(true)} className="w-full">
+          {/* <Button variant="ghost" onClick={() => setShowAccountModal(true)} className="w-full">
             Select Account
-          </Button>
+          </Button> */}
           <Button variant="ghost" onClick={() => { onClose(); navigate('/ledger'); }} className="w-full">
             Account Ledger (temp redirect)
           </Button>
@@ -223,10 +223,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
       />
-      <AccountSelectorModal
+      {/* <AccountSelectorModal
         isOpen={showAccountModal}
         onClose={() => setShowAccountModal(false)}
-      />
+      /> */}
     </>
   );
 };
