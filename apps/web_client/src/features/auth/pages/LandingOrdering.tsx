@@ -5,7 +5,7 @@ import { MdLogin, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useAuth } from '@/features/auth';
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
-import { Header } from 'ui-kit';
+import { Header, Spinner } from 'ui-kit';
 import { OrderBook } from "@/features/ordering/components/OrderBook";
 import { StockChart } from "@/features/ordering/components/StockChart";
 import { getStockSnapshot } from "@/features/ordering/api/stocks";
@@ -86,7 +86,7 @@ export function LandingOrdering() {
   if (!snapshot) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-[#0D0D14]">
-        <div className="text-gray-500">Loading...</div>
+        <Spinner />
       </div>
     );
   }

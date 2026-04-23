@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import api, { setUnauthorizedHandler, attemptRefresh } from "./api";
+import api, { setUnauthorizedHandler, setRefreshingStateCallback, attemptRefresh } from "./api";
 
 export interface AuthUser {
   user_id: number;
@@ -14,6 +14,7 @@ interface AuthContextValue {
   currentUser: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isRefreshingSession: boolean;
   /** Call after a successful login/register to store tokens and load the user. */
   setTokens: (accessToken: string, refreshToken: string) => Promise<void>;
   /** Refresh the access token using the stored refresh token. Returns true on success. */
@@ -30,16 +31,22 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshingSession, setIsRefreshingSession] = useState(false);
   const navigate = useNavigate();
 
   // Register the unauthorized handler so forceLogout in api.ts goes through React Router.
+  // Register the refreshing-state callback so the UI can show a reconnecting indicator.
   useEffect(() => {
-    const handler = () => {
+    const handler = (reason?: string) => {
       setCurrentUser(null);
-      navigate("/login", { replace: true });
+      navigate("/login", { replace: true, state: reason ? { reason } : undefined });
     };
     setUnauthorizedHandler(handler);
-    return () => setUnauthorizedHandler(null);
+    setRefreshingStateCallback(setIsRefreshingSession);
+    return () => {
+      setUnauthorizedHandler(null);
+      setRefreshingStateCallback(null);
+    };
   }, [navigate]);
 
   const fetchCurrentUser = useCallback(async (): Promise<AuthUser | null> => {
@@ -139,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentUser,
         isAuthenticated: currentUser !== null,
         isLoading,
+        isRefreshingSession,
         setTokens,
         refreshToken,
         logout,

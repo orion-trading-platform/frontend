@@ -59,7 +59,7 @@ const LoginRightColumn: React.FC = () => {
               },
               {
                 title: 'Security protected',
-                desc: 'Two-factor authentication, cold storage, and real-time threat monitoring on all assets.',
+                desc: 'OWASP security compliance, account safety email alerts, and worry-free asset protection.',
                 icon: (
                   <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                     <path strokeLinejoin="round" d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z" />

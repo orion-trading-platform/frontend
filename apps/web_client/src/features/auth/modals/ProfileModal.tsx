@@ -201,6 +201,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
           <Button variant="ghost" onClick={() => setShowDeleteModal(true)} className="w-full">
             Delete User
           </Button>
+          {/* NOTE: This isn't necessary with a single account in the final design and can be removed */}
           <Button variant="ghost" onClick={() => setShowAccountModal(true)} className="w-full">
             Select Account
           </Button>

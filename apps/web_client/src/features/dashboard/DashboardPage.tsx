@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '@/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
+import { FaUserAlt } from 'react-icons/fa';
 import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeaderNavButton';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
-import { useAuth } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
+import { Header } from 'ui-kit';
 import { StatCard } from './components/StatCard';
 import { RecentActivity, RecentActivityProps } from './components/RecentActivity';
 import { PerformanceChart } from './components/PerformanceChart';
@@ -22,7 +23,6 @@ import orionTextWhite from '@/assets/orion-text-white.svg';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
   const { dark, toggleDark } = useTheme();
   var emptyTable: Holding[] = [];
   const [profileOpen, setProfileOpen] = useState(false);
@@ -89,62 +89,53 @@ export const DashboardPage = () => {
     <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
     <DashboardGrid
       header={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-
-          {/* LEFT SECTION: Brand */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-          >
-            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-          </button>
-
-          {/* RIGHT SECTION: Search & Icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-
-            <div style={{ width: '240px', flexShrink: 0 }}>
-              <TickerSearch
-                value={dashboardSearchQuery}
-                onChange={setDashboardSearchQuery}
-                onSelect={(sym) => navigate(`/trade?symbol=${sym}`)}
-                placeholder="Search for stocks..."
-              />
+        <Header
+          left={
+            <button
+              onClick={() => navigate('/dashboard')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+            >
+              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+            </button>
+          }
+          right={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ width: '240px', flexShrink: 0 }}>
+                <TickerSearch
+                  value={dashboardSearchQuery}
+                  onChange={setDashboardSearchQuery}
+                  onSelect={(sym) => navigate(`/trade?symbol=${sym}`)}
+                  placeholder="Search for stocks..."
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
+                <button
+                  aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+                  onClick={toggleDark}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
+                >
+                  {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+                </button>
+                <WalletHeaderNavButton />
+                <button
+                  aria-label="Profile"
+                  onClick={() => setProfileOpen(true)}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
+                >
+                  <FaUserAlt size={21} />
+                </button>
+                <button
+                  aria-label="Logout"
+                  onClick={() => setLogoutOpen(true)}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
+                >
+                  <MdLogout size={22} />
+                </button>
+              </div>
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
-              <button
-                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                onClick={toggleDark}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
-              >
-                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
-              </button>
-              <WalletHeaderNavButton />
-              <button
-                aria-label="Profile"
-                onClick={() => setProfileOpen(true)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}
-              >
-                {currentUser?.profile_picture_url ? (
-                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
-                    👤
-                  </div>
-                )}
-              </button>
-              <button
-                aria-label="Logout"
-                onClick={() => setLogoutOpen(true)}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
-              >
-                <MdLogout size={22} />
-              </button>
-            </div>
-
-          </div>
-        </div>
+          }
+        />
       }
       movers={<BiggestMovers />}
       stats={

@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useTheme } from '@/ThemeContext';
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { FaUserAlt } from 'react-icons/fa';
 import { WalletHeaderNavButton } from "@/features/wallet/components/WalletHeaderNavButton";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
 import { StockChart } from "./components/StockChart";
 import { getStockSnapshot } from "./api/stocks";
+import { Spinner } from 'ui-kit';
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth, useAccount } from "../auth";
@@ -91,7 +93,7 @@ export function OrderingPage() {
   if (!snapshot) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-[#0D0D14]">
-        <div className="text-gray-500">Loading...</div>
+        <Spinner />
       </div>
     );
   }
@@ -136,12 +138,8 @@ export function OrderingPage() {
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <WalletHeaderNavButton />
-              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
-                {currentUser?.profile_picture_url ? (
-                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
-                )}
+              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
+                <FaUserAlt size={21} />
               </button>
               <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 <MdLogout size={22} />

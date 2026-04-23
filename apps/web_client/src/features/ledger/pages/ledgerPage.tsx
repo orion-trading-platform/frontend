@@ -5,6 +5,7 @@ import orionTextWhite from '@/assets/orion-text-white.svg';
 import { Header } from 'ui-kit';
 import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { FaUserAlt } from 'react-icons/fa';
 import { WalletHeaderNavButton } from "@/features/wallet/components/WalletHeaderNavButton";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { useAuth, useAccount, useAccounts, api } from "@/features/auth";
@@ -331,7 +332,7 @@ const DEFAULT_PAGE_SIZE = 25;
 
 export default function LedgerPage() {
   const navigate = useNavigate();
-  const { currentUser, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const { account, isLoading: accountLoading } = useAccount();
   const [tickerQuery, setTickerQuery] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
@@ -580,12 +581,8 @@ export default function LedgerPage() {
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <WalletHeaderNavButton />
-              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden', flexShrink: 0 }}>
-                {currentUser?.profile_picture_url ? (
-                  <img src={currentUser?.profile_picture_url} alt="Profile" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>👤</div>
-                )}
+              <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
+                <FaUserAlt size={21} />
               </button>
               <button aria-label="Logout" onClick={() => setLogoutOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 <MdLogout size={22} />

@@ -4,11 +4,14 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useAuthActions } from '../useAuthActions';
+import { Spinner } from 'ui-kit';
 
 const LoginLeftColumn: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login: authLogin, register: authRegister, loginWithGoogle } = useAuthActions();
+
+  const sessionExpired = (location.state as { reason?: string } | null)?.reason === 'session_expired';
 
   const [isSignUpMode, setIsSignUpMode] = useState(() => {
     const stateMode = (location.state as { mode?: string } | null)?.mode;
@@ -118,12 +121,6 @@ const LoginLeftColumn: React.FC = () => {
   return (
     <>
       <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .spinner { animation: spin 2s linear infinite; }
-
         @keyframes blobFloat1 {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
           33%  { transform: translate(40px, -70px) scale(1.1); }
@@ -138,12 +135,7 @@ const LoginLeftColumn: React.FC = () => {
         .blob2 { animation: blobFloat2 25s ease-in-out infinite; will-change: transform; }
       `}</style>
 
-      {/* SPINNER */}
-      {isLoading && (
-        <div role="status" aria-label="Loading" className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
-          <div aria-hidden="true" className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
-        </div>
-      )}
+      {isLoading && <Spinner overlay />}
 
       <main className="relative flex-1 bg-[#0a0a14] overflow-hidden flex items-center justify-center px-10 py-16">
 
@@ -187,7 +179,12 @@ const LoginLeftColumn: React.FC = () => {
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          {/* SUCCESS/ERROR */}
+          {/* SESSION EXPIRED / SUCCESS / ERROR */}
+          {sessionExpired && (
+            <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm">
+              Your session expired. Please sign in again.
+            </div>
+          )}
           {successMessage && (
             <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm">
               {successMessage}
