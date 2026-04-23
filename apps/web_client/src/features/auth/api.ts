@@ -6,15 +6,6 @@ export const API_URL =
 /** Pre-configured axios instance for all auth/backend requests. */
 const api = axios.create({ baseURL: API_URL });
 
-// Attach the access token to every outgoing request.
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 // ---------------------------------------------------------------------------
 // 401 interceptor with refresh-queue (prevents concurrent refresh races)
 // ---------------------------------------------------------------------------
@@ -52,10 +43,22 @@ export async function attemptRefresh(): Promise<string | null> {
 }
 
 // Registered by AuthProvider so logout can go through React Router instead of hard navigation.
-let unauthorizedHandler: (() => void) | null = null;
+// The optional reason is forwarded to the login page via router state.
+let unauthorizedHandler: ((reason?: string) => void) | null = null;
 
-export function setUnauthorizedHandler(handler: (() => void) | null) {
+export function setUnauthorizedHandler(handler: ((reason?: string) => void) | null) {
   unauthorizedHandler = handler;
+}
+
+// Registered by AuthProvider to surface in-flight refresh state to the UI.
+let refreshingStateCallback: ((refreshing: boolean) => void) | null = null;
+
+export function setRefreshingStateCallback(cb: ((refreshing: boolean) => void) | null) {
+  refreshingStateCallback = cb;
+}
+
+function notifyRefreshing(refreshing: boolean) {
+  refreshingStateCallback?.(refreshing);
 }
 
 /** Force a full logout: clear storage and invoke the registered handler (or hard-redirect as fallback). */
@@ -64,15 +67,60 @@ function forceLogout() {
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("loggedInUserEmail");
   if (unauthorizedHandler) {
-    unauthorizedHandler();
+    unauthorizedHandler("session_expired");
   } else {
-    window.location.href = "/"; //NOTE: currently routes to Login but should be LandingPage in final design
+    window.location.href = "/";
+  }
+}
+
+/** Returns true if the JWT access token is expired (or missing/malformed). */
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
   }
 }
 
 interface RetryableRequest extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
+
+// Proactively refresh an expired token before sending the request.
+// This eliminates the round-trip 401 when we can determine expiry locally.
+api.interceptors.request.use(async (config) => {
+  let token = localStorage.getItem("accessToken");
+  if (!token) return config;
+
+  if (isTokenExpired(token)) {
+    if (isRefreshing) {
+      // Another request already kicked off a refresh — wait for it.
+      token = await new Promise<string>((resolve, reject) => {
+        pendingQueue.push({ resolve, reject });
+      });
+    } else {
+      isRefreshing = true;
+      notifyRefreshing(true);
+      const newToken = await attemptRefresh();
+      if (newToken) {
+        processQueue(newToken);
+        token = newToken;
+      } else {
+        processQueue(null, new Error("Session expired"));
+        isRefreshing = false;
+        notifyRefreshing(false);
+        forceLogout();
+        return Promise.reject(new Error("Session expired"));
+      }
+      isRefreshing = false;
+      notifyRefreshing(false);
+    }
+  }
+
+  config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 api.interceptors.response.use(
   (response) => response,
@@ -103,11 +151,13 @@ api.interceptors.response.use(
 
     // First 401 — start the refresh.
     isRefreshing = true;
+    notifyRefreshing(true);
     const newToken = await attemptRefresh();
 
     if (newToken) {
       processQueue(newToken);
       isRefreshing = false;
+      notifyRefreshing(false);
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return api(originalRequest);
     }
@@ -115,6 +165,7 @@ api.interceptors.response.use(
     // Refresh failed permanently — force logout.
     processQueue(null, error);
     isRefreshing = false;
+    notifyRefreshing(false);
     forceLogout();
     return Promise.reject(error);
   }

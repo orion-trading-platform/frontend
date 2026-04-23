@@ -9,16 +9,23 @@ import Dashboard from '@/features/dashboard/DashboardPage';
 import { OrderingPage } from '@/features/ordering/OrderingPage';
 import LedgerPage from "@/features/ledger/pages/ledgerPage";
 import WalletPage from "@/features/wallet/pages/WalletPage";
-import { AuthProvider, ProtectedRoute } from '@/features/auth';
+import { AuthProvider, ProtectedRoute, useAuth } from '@/features/auth';
 import { ThemeProvider } from '@/ThemeContext';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
+// Slim pulsing bar shown while an in-flight token refresh is in progress.
+const SessionRefreshBanner: React.FC = () => {
+  const { isRefreshingSession } = useAuth();
+  if (!isRefreshingSession) return null;
+  return <div aria-hidden="true" className="fixed top-0 inset-x-0 z-50 h-1 bg-indigo-500 animate-pulse" />;
+};
+
 const App: React.FC = () => {
-  // Wrap protected routes with ProtectedRoute component to require authentication
   return (
     <Router>
       <ThemeProvider>
       <AuthProvider>
+        <SessionRefreshBanner />
         <div className="app-container">
           <Routes>
             <Route path="/" element={<LandingDashboard />} />

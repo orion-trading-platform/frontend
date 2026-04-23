@@ -3,10 +3,11 @@ import { isAxiosError } from "axios";
 import { useTheme } from "@/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { FaUserAlt } from 'react-icons/fa';
 import { Header, Button } from "ui-kit";
 import ProfileModal from "@/features/auth/modals/ProfileModal";
 import LogoutConfirmationModal from "@/features/auth/modals/LogoutConfirmationModal";
-import { useAuth, useAccount, emitAccountsRefresh } from "@/features/auth";
+import { useAccount, emitAccountsRefresh } from "@/features/auth";
 import { WalletHeaderNavButton } from "../components/WalletHeaderNavButton";
 import {
   patchAccountBalance,
@@ -25,7 +26,6 @@ function parseAmountInput(raw: string): number | null {
 
 export default function WalletPage() {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
   const { account, isLoading: accountLoading } = useAccount();
   const { dark, toggleDark } = useTheme();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -148,13 +148,9 @@ export default function WalletPage() {
                 type="button"
                 aria-label="Profile"
                 onClick={() => setProfileOpen(true)}
-                style={{ background: "none", border: "none", borderRadius: "50%", width: "36px", height: "36px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, overflow: "hidden", flexShrink: 0 }}
+                style={{ background: "none", border: "none", borderRadius: "50%", width: "36px", height: "36px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, color: "var(--header-icon-color)", flexShrink: 0 }}
               >
-                {currentUser?.profile_picture_url ? (
-                  <img src={currentUser.profile_picture_url} alt="Profile" style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }} />
-                ) : (
-                  <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>👤</div>
-                )}
+                <FaUserAlt size={21} />
               </button>
               <button
                 type="button"
@@ -175,7 +171,7 @@ export default function WalletPage() {
           onClick={() => navigate("/dashboard")}
           className="mb-6 border-0 bg-transparent p-0 text-sm text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200"
         >
-          ← Back to dashboard
+          ← Return to home
         </button>
 
         <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 dark:border-[#2d2f50] dark:bg-[#141628]">

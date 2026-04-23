@@ -9,6 +9,7 @@ interface AccountSelectorModalProps {
   onClose: () => void;
 }
 
+//NOTE: This isn't necessary with a single account in the final design and can be removed
 const AccountSelectorModal: React.FC<AccountSelectorModalProps> = ({ isOpen, onClose }) => {
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Spinner } from 'ui-kit';
 import Logo from '@/assets/logo-white.svg';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -95,12 +96,6 @@ const ResetPassword: React.FC = () => {
   return (
     <>
       <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .spinner { animation: spin 2s linear infinite; }
-
         @keyframes blobFloat1 {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
           33%  { transform: translate(40px, -70px) scale(1.1); }
@@ -115,12 +110,7 @@ const ResetPassword: React.FC = () => {
         .blob2 { animation: blobFloat2 25s ease-in-out infinite; will-change: transform; }
       `}</style>
 
-      {/* Loading overlay */}
-      {isLoading && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
-          <div className="spinner border-[3px] border-white/20 border-t-white rounded-full w-10 h-10" />
-        </div>
-      )}
+      {isLoading && <Spinner overlay />}
 
       <div className="flex flex-row min-h-screen bg-[#0a0a14]">
 

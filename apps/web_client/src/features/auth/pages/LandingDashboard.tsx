@@ -145,7 +145,7 @@ const LandingDashboard: React.FC = () => {
             borderColor: dark ? 'rgba(91,106,212,0.35)' : 'rgba(91,106,212,0.22)',
           }}
         >
-          {/* LOADING SHIMMER — animate-pulse only while loading; removing it lets opacity-0 take effect */}
+          {/* LOADING SHIMMER */}
           <div
             aria-hidden="true"
             className={`absolute inset-0 z-20 rounded-3xl pointer-events-none transition-opacity duration-700 ${assetTopReady ? 'opacity-0' : 'opacity-100 animate-pulse'}`}

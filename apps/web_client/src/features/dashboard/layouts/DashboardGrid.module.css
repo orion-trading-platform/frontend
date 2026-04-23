@@ -21,18 +21,7 @@
 /* Assigning the rooms to the floor plan */
 
 .headerArea {
-  padding: 15px 25px;
-  margin: 0;
-  display: flex;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--header-border);
   grid-area: header;
-  justify-content: left;
-  flex-direction: row;
-  align-items: left;
-  width: -webkit-fill-available;
-  height: -webkit-fill-available;
-  font-family: "IBM Plex Serif", serif;
 }
 
 .moversArea {
