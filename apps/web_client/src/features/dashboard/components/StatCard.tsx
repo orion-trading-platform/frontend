@@ -6,9 +6,11 @@ interface StatCardProps {
   change: string;
   isPositive: boolean;
   icon: string;
+  /** When true, omits the change badge (e.g. live data with no period comparison). */
+  hideChange?: boolean;
 }
 
-export const StatCard = ({ label, value, change, isPositive, icon }: StatCardProps) => {
+export const StatCard = ({ label, value, change, isPositive, icon, hideChange }: StatCardProps) => {
   return (
     <div className={styles.card}>
       <div className={styles.iconBox}>
@@ -19,11 +21,13 @@ export const StatCard = ({ label, value, change, isPositive, icon }: StatCardPro
       <div className={styles.content}>
         <div className={styles.headerRow}>
           <span className={styles.label}>{label}</span>
-          <span className={`${styles.badge} ${isPositive ? styles.green : styles.red}`}>
-            {change}
-          </span>
+          {!hideChange ? (
+            <span className={`${styles.badge} ${isPositive ? styles.green : styles.red}`}>
+              {change}
+            </span>
+          ) : null}
         </div>
-        <div className={styles.value}>{value}</div>
+        <div className={`${styles.value} ${styles.valueBalance}`}>{value}</div>
       </div>
     </div>
   );

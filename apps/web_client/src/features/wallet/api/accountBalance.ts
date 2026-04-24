@@ -21,6 +21,21 @@ export async function patchAccountBalance(
   return res.data;
 }
 
+/**
+ * Deposit cash via POST /accounts/{id}/deposit — updates balance and records a DEPOSIT ledger row (backend).
+ * `amount` must be a positive decimal string (e.g. "100.00") matching FastAPI `DepositRequest.amount`.
+ */
+export async function postAccountDeposit(
+  accountId: string,
+  amount: string
+): Promise<BalanceReadResponse> {
+  const res = await api.post<BalanceReadResponse>(
+    `/accounts/${encodeURIComponent(accountId)}/deposit`,
+    { amount }
+  );
+  return res.data;
+}
+
 export function formatAccountBalanceError(err: unknown): string {
   if (isAxiosError(err)) {
     const data = err.response?.data as { detail?: unknown } | undefined;

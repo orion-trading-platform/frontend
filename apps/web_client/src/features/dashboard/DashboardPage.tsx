@@ -3,7 +3,9 @@ import { useTheme } from '@/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
+import { useAccount } from '@/features/auth';
 import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeaderNavButton';
+import { accountBalanceToNumber, formatUsdCash } from '@/features/wallet/utils/accountCash';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
 import { DashboardGrid } from './layouts/DashboardGrid';
@@ -24,6 +26,7 @@ import orionTextWhite from '@/assets/orion-text-white.svg';
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { dark, toggleDark } = useTheme();
+  const { account, isLoading: accountsLoading } = useAccount();
   var emptyTable: Holding[] = [];
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -81,6 +84,12 @@ export const DashboardPage = () => {
       );}
 
   }, [searchQuery, hData]);
+
+  const cashInWalletDisplay = useMemo(() => {
+    if (accountsLoading && !account) return '…';
+    const n = account ? accountBalanceToNumber(account.balance) : 0;
+    return formatUsdCash(n, account?.currency ?? 'USD');
+  }, [account, accountsLoading]);
 
 
   return (
@@ -140,9 +149,13 @@ export const DashboardPage = () => {
       movers={<BiggestMovers />}
       stats={
         <>
-          {MOCK_STATS.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
-          ))}
+          {MOCK_STATS.map((stat) =>
+            stat.label === 'Cash in Wallet' ? (
+              <StatCard key={stat.label} {...stat} value={cashInWalletDisplay} hideChange />
+            ) : (
+              <StatCard key={stat.label} {...stat} />
+            )
+          )}
         </>
       }
       chart={<PerformanceChart />}
