@@ -13,6 +13,7 @@ import { Spinner } from 'ui-kit';
 import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth, useAccount } from "../auth";
+import { accountBalanceToNumber, formatUsdCash } from "@/features/wallet/utils/accountCash";
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { Header } from 'ui-kit';
@@ -39,7 +40,8 @@ export function OrderingPage() {
   const initialSymbol = searchParams.get("symbol") ?? "AAPL";
   const { currentUser } = useAuth();
   const { account } = useAccount();
-  const balance = account ? parseFloat(account.balance) : 0;
+  const balance = account ? accountBalanceToNumber(account.balance) : 0;
+  const cashLabel = formatUsdCash(balance, account?.currency ?? "USD");
   const { dark, toggleDark } = useTheme();
   const [symbol, setSymbol] = useState(initialSymbol);
   const [tickerQuery, setTickerQuery] = useState(initialSymbol);
@@ -163,10 +165,10 @@ export function OrderingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="text-sm text-gray-500">Cash in Wallet</div>
-              <div className="text-2xl font-bold">
-                ${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              <div className="break-words text-2xl font-bold" title={cashLabel}>
+                {cashLabel}
               </div>
             </div>
           </div>

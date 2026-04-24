@@ -52,6 +52,12 @@
   color: #111827;
 }
 
+.valueBalance {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
 /* Badges */
 .badge {
   padding: 4px 8px;
