@@ -158,7 +158,25 @@ export const DashboardPage = () => {
       activity={
         <div style={{ padding: 20, textAlign: 'left', color: '#000000', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available'}}>
           <div>
-            <h3 style={{marginBlock: '5px', color: '#000000'}}>Recent Activity</h3>
+            <button
+              type="button"
+              onClick={() => navigate('/ledger')}
+              style={{
+                marginBlock: '5px',
+                color: '#000000',
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer',
+                font: 'inherit',
+                fontSize: '1.17em',
+                fontWeight: 600,
+                textAlign: 'left',
+              }}
+              title="View full ledger"
+            >
+              Recent Activity
+            </button>
             <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
           </div>
           <>

@@ -102,11 +102,15 @@ const LandingDashboard: React.FC = () => {
 
         </div>
       }
-      movers={<BiggestMovers />}
+      movers={<BiggestMovers onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />}
       holdings={
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <HoldingsTable holdings={filteredHoldings ?? emptyTable} publicOnly={true} />
+          <HoldingsTable
+            holdings={filteredHoldings ?? emptyTable}
+            publicOnly={true}
+            onSelect={(ticker) => navigate(`/tickerview?symbol=${ticker}`)}
+          />
         </div>
       }
     />
