@@ -68,13 +68,10 @@ const typeBadge = (type: string | undefined, subtype: string | null | undefined)
     return { label: "TRADE", cls: "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]" };
   }
 
-  if (t === "TRANSFER") {
-    if (st === "DEPOSIT")
-      return { label: "DEPOSIT", cls: "bg-[rgba(34,197,94,0.10)] text-green-600 dark:text-green-300 border border-[rgba(34,197,94,0.18)]" };
-    if (st === "WITHDRAW" || st === "WITHDRAWAL")
-      return { label: "WITHDRAW", cls: "bg-[rgba(249,115,22,0.12)] text-orange-500 dark:text-orange-300 border border-[rgba(249,115,22,0.18)]" };
-    return { label: "TRANSFER", cls: "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]" };
-  }
+  if (t === "DEPOSIT")
+    return { label: "DEPOSIT", cls: "bg-[rgba(34,197,94,0.10)] text-green-600 dark:text-green-300 border border-[rgba(34,197,94,0.18)]" };
+  if (t === "WITHDRAW" || t === "WITHDRAWAL")
+    return { label: "WITHDRAW", cls: "bg-[rgba(249,115,22,0.12)] text-orange-500 dark:text-orange-300 border border-[rgba(249,115,22,0.18)]" };
 
   if (t === "DIVIDEND")
     return { label: "DIVIDEND", cls: "bg-[rgba(20,184,166,0.12)] text-teal-600 dark:text-teal-300 border border-[rgba(20,184,166,0.18)]" };
@@ -418,7 +415,7 @@ export default function LedgerPage() {
   const effectiveType = useMemo(() => {
     if (type !== "ALL") return type;
     if (tab === "TRADES") return "TRADE";
-    if (tab === "TRANSFERS") return "TRANSFER";
+    if (tab === "DEPOSITS") return "DEPOSIT";
     if (tab === "DIVIDENDS") return "DIVIDEND";
     if (tab === "FEES") return "FEE";
     if (tab == "REJECTED") return "REJECTED";
@@ -687,7 +684,7 @@ export default function LedgerPage() {
               options={[
                 { label: "All", value: "ALL" },
                 { label: "Trades", value: "TRADE" },
-                { label: "Transfers", value: "TRANSFER" },
+                { label: "Deposits", value: "DEPOSIT" },
                 { label: "Dividends", value: "DIVIDEND" },
                 { label: "Fees", value: "FEE" },
                 { label: "Interest", value: "INTEREST" },
@@ -741,7 +738,7 @@ export default function LedgerPage() {
         <div className="mt-8 flex flex-wrap gap-2">
           <TabButton active={tab === "ALL"} onClick={() => setTab("ALL")} label="All" />
           <TabButton active={tab === "TRADES"} onClick={() => setTab("TRADES")} label="Trades" />
-          <TabButton active={tab === "TRANSFERS"} onClick={() => setTab("TRANSFERS")} label="Transfers" />
+          <TabButton active={tab === "DEPOSITS"} onClick={() => setTab("DEPOSITS")} label="Deposits" />
           <TabButton active={tab === "DIVIDENDS"} onClick={() => setTab("DIVIDENDS")} label="Dividends" />
           <TabButton active={tab === "FEES"} onClick={() => setTab("FEES")} label="Fees" />
           <TabButton active={tab === "REJECTED"} onClick={() => setTab("REJECTED")} label="Rejected" />
