@@ -31,7 +31,8 @@ export async function postAccountDeposit(
 ): Promise<BalanceReadResponse> {
   const res = await api.post<BalanceReadResponse>(
     `/accounts/${encodeURIComponent(accountId)}/deposit`,
-    { amount }
+    // Convert string to float
+    { amount: parseFloat(amount) }
   );
   return res.data;
 }
