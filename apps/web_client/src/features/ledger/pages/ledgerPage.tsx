@@ -51,9 +51,7 @@ const pillClass = (status: string | undefined): string => {
     return "bg-[rgba(0,200,5,0.12)] text-[#00c805] border border-[rgba(0,200,5,0.18)]";
   if (s === "PENDING")
     return "bg-[rgba(245,158,11,0.12)] text-amber-600 dark:text-amber-300 border border-[rgba(245,158,11,0.18)]";
-  if (s === "CANCELLED")
-    return "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]";
-  if (s === "FAILED")
+  if (s === "REJECTED")
     return "bg-[rgba(239,68,68,0.12)] text-red-500 dark:text-red-300 border border-[rgba(239,68,68,0.18)]";
   return "bg-[rgba(148,163,184,0.10)] text-slate-500 dark:text-slate-300 border border-[rgba(148,163,184,0.18)]";
 };
@@ -423,6 +421,7 @@ export default function LedgerPage() {
     if (tab === "TRANSFERS") return "TRANSFER";
     if (tab === "DIVIDENDS") return "DIVIDEND";
     if (tab === "FEES") return "FEE";
+    if (tab == "REJECTED") return "REJECTED";
     return "ALL";
   }, [tab, type]);
 
@@ -450,7 +449,6 @@ export default function LedgerPage() {
         accountValue: balanceNum + (summary.unrealizedPL || 0)
       };
     } catch (e: unknown) {
-      // Reuse your error formatter if available
       setError(String((e as Error).message || e));
       return {
         netPL: 0, realizedPL: 0, unrealizedPL: 0,
@@ -693,6 +691,7 @@ export default function LedgerPage() {
                 { label: "Dividends", value: "DIVIDEND" },
                 { label: "Fees", value: "FEE" },
                 { label: "Interest", value: "INTEREST" },
+                {label: "Rejected", value: "REJECTED" },
               ]}
               className="md:col-span-3"
             />
@@ -704,10 +703,8 @@ export default function LedgerPage() {
               options={[
                 { label: "All", value: "ALL" },
                 { label: "Pending", value: "PENDING" },
-                { label: "Filled", value: "FILLED" },
                 { label: "Completed", value: "COMPLETED" },
-                { label: "Cancelled", value: "CANCELLED" },
-                { label: "Failed", value: "FAILED" },
+                { label: "Rejected", value: "REJECTED"}
               ]}
               className="md:col-span-3"
             />
@@ -747,6 +744,7 @@ export default function LedgerPage() {
           <TabButton active={tab === "TRANSFERS"} onClick={() => setTab("TRANSFERS")} label="Transfers" />
           <TabButton active={tab === "DIVIDENDS"} onClick={() => setTab("DIVIDENDS")} label="Dividends" />
           <TabButton active={tab === "FEES"} onClick={() => setTab("FEES")} label="Fees" />
+          <TabButton active={tab === "REJECTED"} onClick={() => setTab("REJECTED")} label="Rejected" />
         </div>
 
         {/* Error – dismissible */}
