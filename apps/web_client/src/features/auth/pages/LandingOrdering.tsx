@@ -6,8 +6,8 @@ import { useAuth } from '@/features/auth';
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { Header, Spinner } from 'ui-kit';
-import { OrderBook } from "@/features/ordering/components/OrderBook";
-import { StockChart } from "@/features/ordering/components/StockChart";
+import { LandingOrderBook } from "./LandingOrderBook";
+import { LandingStockChart } from "./LandingStockChart";
 import { getStockSnapshot } from "@/features/ordering/api/stocks";
 import { subscribeToStream } from "@/features/ordering/api/stream";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
@@ -77,8 +77,8 @@ export function LandingOrdering() {
   // error handling. could possibly be due to bad symbol.
   if (snapshotError) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f8f9fa] px-6">
-        <div className="max-w-md text-center text-sm text-gray-500">{snapshotError}</div>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#F8FAFC] dark:bg-[#0D0D14] px-6">
+        <div className="max-w-md text-center text-sm text-gray-500 dark:text-slate-400">{snapshotError}</div>
       </div>
     );
   }
@@ -148,7 +148,7 @@ export function LandingOrdering() {
           to="/"
           aria-label="Return to home"
           style={{
-            color: '#4b5563',
+            color: dark ? 'rgba(148,163,184,0.7)' : '#4b5563',
             fontSize: '14px',
             textDecoration: 'none',
             display: 'inline-block',
@@ -159,26 +159,26 @@ export function LandingOrdering() {
         </Link>
         {snapshot ? (
           <>
-            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
+            <div className="mb-6 rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="mb-2 flex items-center gap-3">
-                    <h2 className="text-2xl font-bold">{snapshot.symbol}</h2>
+                    <h2 className="text-2xl font-bold dark:text-slate-100">{snapshot.symbol}</h2>
                   </div>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold">${currentPrice.toFixed(2)}</span>
+                    <span className="text-3xl font-bold dark:text-slate-100">${currentPrice.toFixed(2)}</span>
                     <span className={`text-lg font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
                       {isPositive ? "+" : ""}${snapshot.change.toFixed(2)} ({isPositive ? "+" : ""}{snapshot.changePercent.toFixed(2)}%)
                     </span>
                   </div>
                 </div>
-                <div className="text-right text-sm text-gray-500">
+                <div className="text-right text-sm text-gray-500 dark:text-slate-400">
                   <div>{snapshot.marketStatus}</div>
                   <div>{snapshot.lastUpdated}</div>
                 </div>
               </div>
 
-              <dl className="grid grid-cols-5 gap-4 border-t border-gray-200 pt-4">
+              <dl className="grid grid-cols-5 gap-4 border-t border-gray-200 dark:border-[rgba(148,163,184,0.10)] pt-4">
                 <StatItem label="Open" value={`$${snapshot.open.toFixed(2)}`} />
                 <StatItem label="High" value={`$${snapshot.high.toFixed(2)}`} />
                 <StatItem label="Low" value={`$${snapshot.low.toFixed(2)}`} />
@@ -188,13 +188,13 @@ export function LandingOrdering() {
 
             <div className="grid grid-cols-3 gap-6">
               <div className="col-span-2 space-y-6">
-                <StockChart symbol={symbol} />
-                <OrderBook symbol={symbol} />
+                <LandingStockChart symbol={symbol} />
+                <LandingOrderBook symbol={symbol} />
               </div>
               <div className="col-span-1">
-                <div className="rounded-xl border border-gray-200 bg-white p-6">
-                  <h3 className="mb-4 text-lg font-bold">Trade {symbol}</h3>
-                  <p className="mb-6 text-sm text-gray-600">
+                <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
+                  <h3 className="mb-4 text-lg font-bold dark:text-slate-100">Trade {symbol}</h3>
+                  <p className="mb-6 text-sm text-gray-600 dark:text-slate-400">
                     Sign in to place buy and sell orders.
                   </p>
                   <button
@@ -209,7 +209,7 @@ export function LandingOrdering() {
           </>
         ) : (
           <div role="status" aria-label="Loading stock data" className="flex min-h-[400px] items-center justify-center">
-            <span className="text-gray-500">Loading...</span>
+            <span className="text-gray-500 dark:text-slate-400">Loading...</span>
           </div>
         )}
       </main>
@@ -220,8 +220,8 @@ export function LandingOrdering() {
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-sm text-gray-500">{label}</dt>
-      <dd className="font-semibold">{value}</dd>
+      <dt className="text-sm text-gray-500 dark:text-slate-400">{label}</dt>
+      <dd className="font-semibold dark:text-slate-100">{value}</dd>
     </div>
   );
 }
