@@ -38,9 +38,9 @@ export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
             {!publicOnly && <th className={styles.th}>Cost Basis</th>}
             <th className={styles.th}>Change Daily</th>
             {!publicOnly && <th className={styles.th}>Quantity</th>}
-            <th className={styles.th}>P/E Ratio</th>
+            {!publicOnly && <th className={styles.th}>P/E Ratio</th>}
             {!publicOnly && <th className={styles.th}>Total Return</th>}
-            <th className={styles.th}>Trading Volume</th>
+            {!publicOnly && <th className={styles.th}>Trading Volume</th>}
           </tr>
         </thead>
         <tbody>
@@ -54,10 +54,10 @@ export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
                 {h.changeDaily}%
               </td>
               {!publicOnly && <td className={styles.td}>{h.quantity}</td>}
-              <td className={styles.td}>{h.peRatio}</td>
+              {!publicOnly && <td className={styles.td}>{h.peRatio}</td>}
               {!publicOnly && <td className={`${styles.td} ${h.totalReturn >= 0 ? styles.positive : styles.negative}`}>
                 ${h.totalReturn}</td>}
-              <td className={styles.td}>{h.tradingVolume}</td>
+              {!publicOnly && <td className={styles.td}>{h.tradingVolume}</td>}
             </tr>
           ))}
         </tbody>

@@ -2,18 +2,18 @@ import { ReactNode } from 'react';
 
 interface LandingDashboardGridProps {
   header: ReactNode;
+  heroText: ReactNode;
+  marketingPanel: ReactNode;
   movers: ReactNode;
   holdings: ReactNode;
-  assetTop?: ReactNode;
-  assetBottom?: ReactNode;
 }
 
 export const LandingDashboardGrid = ({
   header,
+  heroText,
+  marketingPanel,
   movers,
   holdings,
-  assetTop,
-  assetBottom,
 }: LandingDashboardGridProps) => {
   return (
     <div className="flex flex-col h-screen font-['Noto_Sans',Roboto,sans-serif] bg-[#F8FAFC] dark:bg-[#0D0D14]">
@@ -22,29 +22,21 @@ export const LandingDashboardGrid = ({
       {header}
 
       {/* BODY */}
-      <main className="flex flex-row flex-1 overflow-hidden">
+      <main className="flex flex-row flex-1 overflow-hidden mx-[20%]">
 
-        {/* LEFT COL - INFO */}
-        <div className="flex flex-col flex-1 overflow-hidden bg-[#F8FAFC] dark:bg-[#0D0D14] gap-5 pl-5 pb-5 pt-5 pr-2.5">
-          <div>{movers}</div>
-          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">{holdings}</div>
+        {/* LEFT COL */}
+        <div className="flex-[4] flex flex-col min-w-0 overflow-hidden pl-5 pr-2.5 pt-5 pb-5 gap-5">
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-row gap-5">
+            <div className="flex-1 min-w-0 overflow-hidden">{heroText}</div>
+            <div className="flex-1 min-w-0 overflow-hidden flex flex-col">{holdings}</div>
+          </div>
+          <div className="flex-1 min-h-0 overflow-hidden">{marketingPanel}</div>
         </div>
 
-        {/* RIGHT COL - MARKETING */}
-        <aside
-          aria-label="Orion trading platform marketing"
-          className="hidden min-[1152px]:flex flex-col w-1/2 flex-shrink-0 overflow-hidden"
-        >
-          {/* TOP ASSET */}
-          <div className="flex-1 min-h-0 max-h-[calc(50vh-2.5rem)] overflow-hidden bg-[#F8FAFC] dark:bg-[#0D0D14] pl-2.5 pb-2.5 pt-5 pr-5">
-            {assetTop}
-          </div>
-
-          {/* BOTTOM ASSET */}
-          <div className="flex-1 min-h-0 max-h-[calc(50vh-2.5rem)] overflow-hidden bg-[#F8FAFC] dark:bg-[#0D0D14] pl-2.5 pt-2.5 pb-5 pr-5">
-            {assetBottom}
-          </div>
-        </aside>
+        {/* RIGHT COL */}
+        <div className="flex-[1] min-w-0 overflow-hidden pl-2.5 pr-5 pt-5 pb-5">
+          {movers}
+        </div>
 
       </main>
     </div>

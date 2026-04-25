@@ -97,48 +97,47 @@ export function LandingOrdering() {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
       <Header
         left={
-          <button
-            onClick={() => navigate('/')}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
-          >
-            <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-            <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-          </button>
-        }
-        right={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '240px', flexShrink: 0 }}>
-              <TickerSearch
-                value={tickerQuery}
-                onChange={setTickerQuery}
-                onSelect={(sym) => {
-                  setTickerQuery(sym);
-                  setSymbol(sym);
-                  // update url with new symbol
-                  setSearchParams((prev) => {
-                    const params = new URLSearchParams(prev);
-                    params.set("symbol", sym);
-                    return params;
-                  });
-                }}
-                placeholder="Search for stocks..."
-              />
-            </div>
-            <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-              <button
-                aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-                onClick={toggleDark}
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
-              >
-                {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                aria-label="Login"
-                style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
-              >
-                <MdLogin size={22} />
-              </button>
+          <div style={{ width: '60%', marginLeft: 'auto', marginRight: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <button
+              onClick={() => navigate('/')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+            >
+              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ width: '240px', flexShrink: 0 }}>
+                <TickerSearch
+                  value={tickerQuery}
+                  onChange={setTickerQuery}
+                  onSelect={(sym) => {
+                    setTickerQuery(sym);
+                    setSymbol(sym);
+                    setSearchParams((prev) => {
+                      const params = new URLSearchParams(prev);
+                      params.set("symbol", sym);
+                      return params;
+                    });
+                  }}
+                  placeholder="Search for stocks..."
+                />
+              </div>
+              <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+                <button
+                  aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+                  onClick={toggleDark}
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
+                >
+                  {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  aria-label="Login"
+                  style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}
+                >
+                  <MdLogin size={22} />
+                </button>
+              </div>
             </div>
           </div>
         }
