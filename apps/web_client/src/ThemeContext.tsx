@@ -14,7 +14,11 @@ const ThemeContext = createContext<ThemeContextValue>({ dark: false, toggleDark:
  * User preference persists in localStorage under the key 'orion-theme'
  */
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [dark, setDark] = useState<boolean>(() => localStorage.getItem(STORAGE_KEY) === 'dark');
+  const [dark, setDark] = useState<boolean>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored !== null) return stored === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);

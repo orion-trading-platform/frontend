@@ -27,10 +27,6 @@ html.dark, html.dark body {
   box-sizing: border-box;
 }
 
-::selection {
-  background: rgba(0, 200, 5, 0.25);
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }

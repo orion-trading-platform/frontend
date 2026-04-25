@@ -1,0 +1,56 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #F8FAFC;
+  border: 1px solid rgba(91, 106, 212, 0.22);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wrapper:focus-within {
+  border-color: rgba(91, 106, 212, 0.55);
+  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.12);
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+  color: rgba(13, 13, 20, 0.40);
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #0d0d14;
+  outline: none;
+}
+
+.input::placeholder {
+  color: rgba(13, 13, 20, 0.35);
+}
+
+:global(.dark) .wrapper {
+  background: rgba(13, 13, 20, 0.35);
+  border-color: rgba(91, 106, 212, 0.35);
+}
+
+:global(.dark) .wrapper:focus-within {
+  border-color: rgba(91, 106, 212, 0.70);
+  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.15);
+}
+
+:global(.dark) .icon {
+  color: rgba(194, 197, 205, 0.60);
+}
+
+:global(.dark) .input {
+  color: #c2c5cd;
+}
+
+:global(.dark) .input::placeholder {
+  color: rgba(194, 197, 205, 0.40);
+}

@@ -14,11 +14,11 @@ export interface Holding {
 
 export interface HoldingsTableProps {
   holdings: Holding[];
-  publicOnly?: boolean;
+  onSelect?: (ticker: string) => void;
 }
 
 
-export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
+export const HoldingsTable = ({ holdings, onSelect }: HoldingsTableProps) => {
   if (holdings.length === 0) {
     return (
       <div className={styles.empty}>
@@ -33,31 +33,26 @@ export const HoldingsTable = ({ holdings, publicOnly }: HoldingsTableProps) => {
         <thead>
           <tr>
             <th className={styles.th}>Ticker</th>
-            <th className={styles.th}>Company Name</th>
             <th className={styles.th}>Current Price</th>
-            {!publicOnly && <th className={styles.th}>Cost Basis</th>}
+            <th className={styles.th}>Cost Basis</th>
             <th className={styles.th}>Change Daily</th>
-            {!publicOnly && <th className={styles.th}>Quantity</th>}
-            <th className={styles.th}>P/E Ratio</th>
-            {!publicOnly && <th className={styles.th}>Total Return</th>}
-            <th className={styles.th}>Trading Volume</th>
+            <th className={styles.th}>Quantity</th>
+            <th className={styles.th}>Total Return</th>
           </tr>
         </thead>
         <tbody>
           {holdings.map((h) => (
-            <tr key={h.ticker} className={styles.row}>
+            <tr key={h.ticker} className={styles.row} onClick={() => onSelect?.(h.ticker)}>
               <td className={styles.tdSymbol}>{h.ticker}</td>
-              <td className={styles.td}>{h.companyName}</td>
               <td className={styles.td}>${h.currentPrice}</td>
-              {!publicOnly && <td className={styles.td}>${h.costBasis}</td>}
+              <td className={styles.td}>${h.costBasis}</td>
               <td className={`${styles.td} ${h.changeDaily >= 0 ? styles.positive : styles.negative}`}>
-                {h.changeDaily}%
+                {h.changeDaily >= 0 ? '+' : ''}{h.changeDaily}%
               </td>
-              {!publicOnly && <td className={styles.td}>{h.quantity}</td>}
-              <td className={styles.td}>{h.peRatio}</td>
-              {!publicOnly && <td className={`${styles.td} ${h.totalReturn >= 0 ? styles.positive : styles.negative}`}>
-                ${h.totalReturn}</td>}
-              <td className={styles.td}>{h.tradingVolume}</td>
+              <td className={styles.td}>{h.quantity}</td>
+              <td className={`${styles.td} ${h.totalReturn >= 0 ? styles.positive : styles.negative}`}>
+                {h.totalReturn >= 0 ? '+' : ''}${Math.abs(h.totalReturn).toFixed(2)}
+              </td>
             </tr>
           ))}
         </tbody>
