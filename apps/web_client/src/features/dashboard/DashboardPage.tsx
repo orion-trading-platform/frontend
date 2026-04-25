@@ -5,6 +5,7 @@ import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { FaUserAlt } from 'react-icons/fa';
 import { useAccount } from '@/features/auth';
 import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeaderNavButton';
+import { LedgerHeaderNavButton } from '../ledger/LedgerHeaderNavButon';
 import { accountBalanceToNumber, formatUsdCash } from '@/features/wallet/utils/accountCash';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
@@ -127,6 +128,7 @@ export const DashboardPage = () => {
                   {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
                 </button>
                 <WalletHeaderNavButton />
+                <LedgerHeaderNavButton />
                 <button
                   aria-label="Profile"
                   onClick={() => setProfileOpen(true)}

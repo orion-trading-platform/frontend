@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { FaUserAlt } from 'react-icons/fa';
 import { WalletHeaderNavButton } from "@/features/wallet/components/WalletHeaderNavButton";
+import { LedgerHeaderNavButton } from "../LedgerHeaderNavButon";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { useAuth, useAccount, useAccounts, api } from "@/features/auth";
 import ProfileModal from "@/features/auth/modals/ProfileModal";
@@ -583,6 +584,7 @@ export default function LedgerPage() {
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <WalletHeaderNavButton />
+              <LedgerHeaderNavButton />
               <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 <FaUserAlt size={21} />
               </button>

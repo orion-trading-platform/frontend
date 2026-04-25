@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { FaUserAlt } from 'react-icons/fa';
 import { WalletHeaderNavButton } from "@/features/wallet/components/WalletHeaderNavButton";
+import { LedgerHeaderNavButton } from "../ledger/LedgerHeaderNavButon";
 import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
 import { OrderBook } from "./components/OrderBook";
 import { OrderPanel } from "./components/OrderPanel";
@@ -140,6 +141,7 @@ export function OrderingPage() {
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <WalletHeaderNavButton />
+              <LedgerHeaderNavButton />
               <button aria-label="Profile" onClick={() => setProfileOpen(true)} style={{ background: 'none', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, color: 'var(--header-icon-color)', flexShrink: 0 }}>
                 <FaUserAlt size={21} />
               </button>
