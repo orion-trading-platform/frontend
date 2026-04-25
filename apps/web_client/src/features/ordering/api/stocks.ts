@@ -21,7 +21,7 @@ marketApi.interceptors.request.use((config) => {
 marketApi.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && localStorage.getItem("accessToken")) {
       signalSessionExpired();
     }
     return Promise.reject(error);
