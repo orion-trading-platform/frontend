@@ -9,6 +9,7 @@ import ProfileModal from "@/features/auth/modals/ProfileModal";
 import LogoutConfirmationModal from "@/features/auth/modals/LogoutConfirmationModal";
 import { useAccount, emitAccountsRefresh } from "@/features/auth";
 import { WalletHeaderNavButton } from "../components/WalletHeaderNavButton";
+import { LedgerHeaderNavButton } from "@/features/ledger/LedgerHeaderNavButon";
 import {
   postAccountDeposit,
   formatAccountBalanceError,
@@ -115,6 +116,7 @@ export default function WalletPage() {
                 {dark ? <MdLightMode size={22} /> : <MdDarkMode size={22} />}
               </button>
               <WalletHeaderNavButton />
+              <LedgerHeaderNavButton />
               <button
                 type="button"
                 aria-label="Profile"
