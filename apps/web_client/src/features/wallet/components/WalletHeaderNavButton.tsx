@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { BiWallet } from "react-icons/bi";
+import { BiSolidWallet } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 
 const iconButtonStyle: CSSProperties = {
@@ -26,7 +26,7 @@ export function WalletHeaderNavButton() {
       onClick={() => navigate("/wallet")}
       style={iconButtonStyle}
     >
-      <BiWallet size={24} aria-hidden />
+      <BiSolidWallet size={24} aria-hidden />
     </button>
   );
 }
