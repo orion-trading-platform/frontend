@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { signalSessionExpired } from "@/features/auth/api";
 
 function marketApiBaseURL(): string {
   return String(import.meta.env.VITE_MARKET_DATA_URL ?? "").replace(/\/$/, "");
@@ -16,6 +17,16 @@ marketApi.interceptors.request.use((config) => {
   }
   return config;
 });
+
+marketApi.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      signalSessionExpired();
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Maps to GET /api/stocks/:symbol
 export async function getStockSnapshot(symbol: string) {

@@ -180,7 +180,7 @@ const LoginLeftColumn: React.FC = () => {
           </div>
 
           {/* SESSION EXPIRED / SUCCESS / ERROR */}
-          {sessionExpired && (
+          {sessionExpired && !successMessage && !errorMessage && (
             <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm">
               Your session expired. Please sign in again.
             </div>
