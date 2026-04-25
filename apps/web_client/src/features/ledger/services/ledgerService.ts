@@ -1,3 +1,5 @@
+import api from "@/features/auth/api";
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface LedgerSummary {
@@ -59,32 +61,16 @@ interface GetActivityParams {
 
 // ── API helper ─────────────────────────────────────────────────────────────
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL ?? "http://localhost:8080";
-
 async function apiGet<T>(path: string, params: Record<string, string | number | undefined | null> = {}): Promise<T> {
-  const url = new URL(`${API_BASE}${path}`, window.location.origin);
-
+  const filteredParams: Record<string, string | number> = {};
   Object.entries(params).forEach(([k, v]) => {
     if (v !== undefined && v !== null && v !== "") {
-      url.searchParams.set(k, String(v));
+      filteredParams[k] = typeof v === "number" ? v : String(v);
     }
   });
-
-  const token = localStorage.getItem("accessToken");
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`GET ${path} failed (${res.status}) ${text}`);
-  }
-
-  return res.json();
+  //An: fetch() had no axios interceptor and 401 flows weren't working, so I had to change to api
+  const res = await api.get<T>(path, { params: filteredParams });
+  return res.data;
 }
 
 // ── Service ────────────────────────────────────────────────────────────────
