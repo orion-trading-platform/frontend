@@ -177,6 +177,11 @@ export async function deleteAccount(accountId: string | number): Promise<void> {
   await api.delete(`/accounts/${accountId}`);
 }
 
+/** Exposed for tradingApi, marketApi to trigger the auth expiry flow. */
+export function signalSessionExpired() {
+  forceLogout();
+}
+
 // ---------------------------------------------------------------------------
 // Trading Engine client
 // ---------------------------------------------------------------------------
@@ -193,3 +198,13 @@ tradingApi.interceptors.request.use((config) => {
   }
   return config;
 });
+
+tradingApi.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status === 401) {
+      forceLogout();
+    }
+    return Promise.reject(error);
+  }
+);

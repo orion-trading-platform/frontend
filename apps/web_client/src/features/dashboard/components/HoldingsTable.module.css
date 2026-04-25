@@ -18,6 +18,7 @@
 
 .row {
   border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
 }
 
 .row:hover {

@@ -11,10 +11,14 @@ export interface RecentActivityProps {
     status: string;
 }
 
-export const RecentActivity = ({ticker, date, quantity, type, price, totalPrice, status}: RecentActivityProps) => {
+interface RecentActivityCardProps extends RecentActivityProps {
+    onClick?: () => void;
+}
+
+export const RecentActivity = ({ticker, date, quantity, type, price, totalPrice, status, onClick}: RecentActivityCardProps) => {
     const isNeg = type == "Buy";
     return (
-        <div className = {styles.card}>
+        <button type="button" className = {styles.card} onClick={onClick}>
 
             <div className = {styles.icon}>
                 <img src={`/icons/${type}Icon.png`} alt="Icon" style={{width : '36px', height : '36px',  borderRadius : '12px'}}/>
@@ -39,7 +43,7 @@ export const RecentActivity = ({ticker, date, quantity, type, price, totalPrice,
                 </div>
             </div>
 
-        </div>
+        </button>
 
     )
 }

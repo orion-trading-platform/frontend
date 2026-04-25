@@ -9,6 +9,8 @@
     align-items: center;
     border: 1px solid #ffffff;
     width: -webkit-fill-available;
+    text-align: left;
+    cursor: pointer;
 }
 
 .card:hover{
