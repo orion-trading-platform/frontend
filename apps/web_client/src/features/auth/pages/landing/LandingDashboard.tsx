@@ -10,13 +10,13 @@ import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { LandingDashboardGrid } from './LandingDashboardGrid';
 import { Header } from 'ui-kit';
-import { SearchBar } from '@/features/dashboard/components/SearchBar';
-import { HoldingsTable, Holding } from '@/features/dashboard/components/HoldingsTable';
+import { LandingSearchBar } from './LandingSearchBar';
+import { LandingHoldingsTable } from './LandingHoldingsTable';
 import { TickerSearch } from '@/features/dashboard/components/TickerSearch';
-import { BiggestMovers } from '@/features/dashboard/components/BiggestMovers';
-import Papa, { ParseResult } from "papaparse"
+import { LandingBiggestMovers } from './LandingBiggestMovers';
+import { fetchSP500Holdings, type Holding } from './api/landingDashboardApi';
 
-/* 
+/*
  * This page is where users initially land at 'oriontrading.pro'.
  * A restricted mirror of the real dashboard so visitors can view the
  * market and specific stocks. Auth-required actions redirect to /login.
@@ -51,30 +51,15 @@ const LandingDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetch('/data/ds4_holdings.csv')
-      .then((response) => response.text())
-      .then((csvString) => {
-        Papa.parse(csvString, {
-          header: true,
-          dynamicTyping: true,
-          complete: (results: ParseResult<Holding>) => {
-            sethData(results.data);
-          },
-        });
-      })
-      .catch((error) => console.error('Error fetching or parsing data:', error));
+    fetchSP500Holdings()
+      .then(sethData)
+      .catch(err => console.error('Failed to load S&P 500:', err));
   }, []);
 
   const filteredHoldings = useMemo(() => {
     if (!searchQuery) return hData;
     const q = searchQuery.trim().toLowerCase();
-    if (hData.length !== 0) {
-      return hData.filter(
-        (h) =>
-          h.ticker.toLowerCase().includes(q) ||
-          h.companyName.toLowerCase().includes(q)
-      );
-    }
+    return hData.filter(h => h.ticker.toLowerCase().includes(q));
   }, [searchQuery, hData]);
 
   // Redirect if user logged in but accessed this route instead of /dashboard
@@ -126,12 +111,12 @@ const LandingDashboard: React.FC = () => {
           }
         />
       }
-      movers={<BiggestMovers />}
+      movers={<LandingBiggestMovers onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />}
       holdings={
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            <HoldingsTable holdings={filteredHoldings ?? emptyTable} publicOnly={true} />
+          <LandingSearchBar value={searchQuery} onChange={setSearchQuery} />
+          <div className="flex-1 min-h-0 overflow-y-auto" tabIndex={-1}>
+            <LandingHoldingsTable holdings={(filteredHoldings ?? emptyTable).slice(0, 10)} publicOnly={true} onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />
           </div>
         </div>
       }
@@ -180,21 +165,9 @@ const LandingDashboard: React.FC = () => {
         <div
           className="relative isolate w-full h-full overflow-hidden rounded-3xl motion-safe:animate-[fadeIn_0.6s_ease_both]"
           style={{
-            //  borderColor: dark ? 'rgba(91,106,212,0.35)' : 'rgba(91,106,212,0.22)',
             backgroundColor: dark ? '#0d0d14' : '#F8FAFC',
           }}
         >
-          {/* GRID */}
-          {/* <div
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{
-              backgroundImage: dark
-                ? 'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)'
-                : 'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)',
-              backgroundSize: '60px 60px',
-            }}
-          /> */}
           {/* VIGNETTE FADE */}
           <div
             aria-hidden="true"
@@ -224,7 +197,7 @@ const LandingDashboard: React.FC = () => {
                 className="font-sans leading-relaxed"
                 style={{ color: dark ? 'rgba(255,255,255,0.70)' : 'rgba(13,13,20,0.70)', fontSize: 'clamp(0.6rem, 0.85vw, 1.25rem)' }}
               >
-                Every transaction, fee, and decision,<br />
+                Every transaction, fee, and decision—<br />
                 Completely in the open.<br />
                 Trade with full confidence.
               </p>

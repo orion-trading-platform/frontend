@@ -159,7 +159,7 @@ export function LandingStockChart({ symbol }: StockChartProps) {
   const axisLineStroke = dark ? "rgba(148,163,184,0.15)" : "#e5e7eb";
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
+    <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6 transition-[background-color,border-color] duration-300">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-lg font-bold dark:text-slate-100">Price Chart</h3>
         <div className="flex flex-wrap items-center gap-2">
@@ -253,7 +253,7 @@ export function LandingStockChart({ symbol }: StockChartProps) {
                     return n !== undefined ? [`$${n.toFixed(2)}`, "Price"] : ["—", "Price"];
                   }}
                 />
-                <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="price" stroke="#10b981" strokeWidth={2} dot={false} isAnimationActive={false} />
               </>
             ) : (
               <>

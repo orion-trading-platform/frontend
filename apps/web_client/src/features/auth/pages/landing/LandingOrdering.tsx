@@ -94,7 +94,7 @@ export function LandingOrdering() {
   const isPositive = snapshot.change >= 0;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14]">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14] transition-colors duration-300">
       <Header
         left={
           <div style={{ width: '60%', marginLeft: 'auto', marginRight: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -143,7 +143,7 @@ export function LandingOrdering() {
         }
       />
 
-      <main className="mx-auto max-w-7xl p-6">
+      <main className="mx-auto max-w-[min(80rem,60vw)] p-6">
         <Link
           to="/"
           aria-label="Return to home"
@@ -159,7 +159,7 @@ export function LandingOrdering() {
         </Link>
         {snapshot ? (
           <>
-            <div className="mb-6 rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
+            <div className="mb-6 rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6 transition-[background-color,border-color] duration-300">
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="mb-2 flex items-center gap-3">
@@ -192,7 +192,7 @@ export function LandingOrdering() {
                 <LandingOrderBook symbol={symbol} />
               </div>
               <div className="col-span-1">
-                <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
+                <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6 transition-[background-color,border-color] duration-300">
                   <h3 className="mb-4 text-lg font-bold dark:text-slate-100">Trade {symbol}</h3>
                   <p className="mb-6 text-sm text-gray-600 dark:text-slate-400">
                     Sign in to place buy and sell orders.
