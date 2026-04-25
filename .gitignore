@@ -36,3 +36,4 @@ build
 *.njsproj
 *.sln
 *.sw?
+apps/web_client/comp413frontend.env
