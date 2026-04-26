@@ -1,12 +1,38 @@
-import { MoverItem, MOCK_BIGGEST_MOVERS } from '../data/biggestMoversData';
+import { useEffect, useState } from 'react';
+import { fetchHeaderBigMovers, MoverItem } from '../api/dashboardApi'; // Adjust path if your api.ts is elsewhere
 import styles from './BiggestMovers.module.css';
 
-interface BiggestMoversProps {
-  movers?: MoverItem[];
-  onSelect?: (symbol: string) => void;
-}
+export const BiggestMovers = () => {
+  const [movers, setMovers] = useState<MoverItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-export const BiggestMovers = ({ movers = MOCK_BIGGEST_MOVERS, onSelect }: BiggestMoversProps) => {
+  useEffect(() => {
+    const loadMovers = async () => {
+      try {
+        // This will hit the API the first time, and use our 60s cache after that!
+        const data = await fetchHeaderBigMovers();
+        setMovers(data);
+      } catch (error) {
+        console.error('Failed to fetch big movers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMovers();
+  }, []);
+
+  // Optional: A minimal loading state so the layout doesn't jump
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.list}>
+          <span>Loading market data...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.list}>
