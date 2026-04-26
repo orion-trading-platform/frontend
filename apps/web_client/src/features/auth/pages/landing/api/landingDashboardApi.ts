@@ -31,6 +31,6 @@ export async function fetchHeaderBigMovers(): Promise<MoverItem[]> {
   const holdings = await fetchSP500Holdings();
   return [...holdings]
     .sort((a, b) => Math.abs(b.changeDaily) - Math.abs(a.changeDaily))
-    .slice(0, 6)
+    .slice(0, 20)
     .map(h => ({ symbol: h.ticker, price: h.currentPrice, changePercent: h.changeDaily }));
 }
