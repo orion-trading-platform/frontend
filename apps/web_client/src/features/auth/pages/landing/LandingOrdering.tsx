@@ -10,7 +10,7 @@ import { LandingOrderBook } from "./LandingOrderBook";
 import { LandingStockChart } from "./LandingStockChart";
 import { getStockSnapshot } from "@/features/ordering/api/stocks";
 import { subscribeToStream } from "@/features/ordering/api/stream";
-import { TickerSearch } from "@/features/dashboard/components/TickerSearch";
+import { LandingTickerSearch } from './LandingTickerSearch';
 
 interface Snapshot {
   symbol: string;
@@ -97,17 +97,17 @@ export function LandingOrdering() {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0D0D14] transition-colors duration-300">
       <Header
         left={
-          <div style={{ width: '60%', marginLeft: 'auto', marginRight: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="max-w-[84rem] mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button
               onClick={() => navigate('/')}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
             >
               <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100 hidden md:block" />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={{ width: '240px', flexShrink: 0 }}>
-                <TickerSearch
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0px, 1.5vw, 16px)', flexShrink: 1, minWidth: 0 }}>
+              <div style={{ flex: '1 1 240px', maxWidth: '240px', minWidth: '58px' }}>
+                <LandingTickerSearch
                   value={tickerQuery}
                   onChange={setTickerQuery}
                   onSelect={(sym) => {
@@ -122,7 +122,7 @@ export function LandingOrdering() {
                   placeholder="Search for stocks..."
                 />
               </div>
-              <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
                 <button
                   aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
                   onClick={toggleDark}
@@ -143,7 +143,7 @@ export function LandingOrdering() {
         }
       />
 
-      <main className="mx-auto max-w-[min(80rem,60vw)] p-6">
+      <main className="max-w-[84rem] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
         <Link
           to="/"
           aria-label="Return to home"

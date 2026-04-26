@@ -72,17 +72,17 @@ const LandingDashboard: React.FC = () => {
       header={
         <Header
           left={
-            <div style={{ width: '60%', marginLeft: 'auto', marginRight: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="max-w-[84rem] mx-auto w-full px-4 sm:px-6 lg:px-8" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button
                 onClick={() => navigate('/')}
                 aria-label="Orion home"
                 style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
               >
                 <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-                <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+                <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100 hidden md:block" />
               </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '240px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0px, 1.5vw, 9px)', flexShrink: 1, minWidth: 0 }}>
+                <div style={{ flex: '1 1 240px', maxWidth: '240px', minWidth: '58px' }}>
                   <LandingTickerSearch
                     value={dashboardSearchQuery}
                     onChange={setDashboardSearchQuery}
@@ -90,7 +90,7 @@ const LandingDashboard: React.FC = () => {
                     placeholder="Search for stocks..."
                   />
                 </div>
-                <div style={{ width: '140px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
                   <button
                     aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
                     onClick={toggleDark}
@@ -113,10 +113,10 @@ const LandingDashboard: React.FC = () => {
       }
       movers={<LandingBiggestMovers onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />}
       holdings={
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: 'calc(100% - 44px)' }}>
           <LandingSearchBar value={searchQuery} onChange={setSearchQuery} />
-          <div className="flex-1 min-h-0 overflow-y-auto" tabIndex={-1}>
-            <LandingHoldingsTable holdings={(filteredHoldings ?? emptyTable).slice(0, 10)} publicOnly={true} onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />
+          <div className="flex-1 min-h-0 overflow-y-auto [@media(max-height:940px)]:max-h-[240px]" tabIndex={-1}>
+            <LandingHoldingsTable holdings={filteredHoldings ?? emptyTable} publicOnly={true} onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)} />
           </div>
         </div>
       }
@@ -147,9 +147,9 @@ const LandingDashboard: React.FC = () => {
             </filter>
             <rect width="100%" height="100%" filter="url(#lp-top-noise)"/>
           </svg>
-          <img decoding="async" src={landingCtaAccent} alt="" className="w-full h-full object-cover object-center block transition-transform duration-300 group-hover:scale-[1.005]" onLoad={() => setAssetTopLoaded(n => n + 1)} />
-          <img decoding="async" src={landingCtaResponsive} alt="" className="absolute inset-0 w-full h-full object-cover object-center block brightness-0 dark:brightness-100 transition-transform duration-300 group-hover:scale-[1.005]" onLoad={() => setAssetTopLoaded(n => n + 1)} />
-          <img decoding="async" src={landingCtaTitle} alt="" className="absolute inset-0 w-full h-full object-cover object-center block transition-transform duration-300 group-hover:scale-[1.02]" onLoad={() => setAssetTopLoaded(n => n + 1)} />
+          <img decoding="async" src={landingCtaAccent} alt="" className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.005]" style={{ objectPosition: '90% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
+          <img decoding="async" src={landingCtaResponsive} alt="" className="absolute inset-0 w-full h-full object-cover block brightness-0 dark:brightness-100 transition-transform duration-300 group-hover:scale-[1.005]" style={{ objectPosition: '90% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
+          <img decoding="async" src={landingCtaTitle} alt="" className="absolute inset-0 w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.02]" style={{ objectPosition: '50% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
           <button
             onClick={() => navigate('/login')}
             className="absolute left-1/2 -translate-x-1/2 top-[64.5%] z-10 rounded-lg border px-6 py-3 text-sm font-semibold tracking-widest transition duration-300 group-hover:scale-[1.03]"
@@ -163,31 +163,17 @@ const LandingDashboard: React.FC = () => {
       }
       heroText={
         <div
-          className="relative isolate w-full h-full overflow-hidden rounded-3xl motion-safe:animate-[fadeIn_0.6s_ease_both]"
+          className="relative isolate w-full h-full overflow-hidden motion-safe:animate-[fadeIn_0.6s_ease_both]"
           style={{
             backgroundColor: dark ? '#0d0d14' : '#F8FAFC',
           }}
         >
-          {/* VIGNETTE FADE */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: dark ? [
-                'linear-gradient(to right, #0d0d14 0%, transparent 12%, transparent 88%, #0d0d14 100%)',
-                'linear-gradient(to bottom, #0d0d14 0%, transparent 10%, transparent 90%, #0d0d14 100%)',
-              ].join(', ') : [
-                'linear-gradient(to right, #F8FAFC 0%, transparent 12%, transparent 88%, #F8FAFC 100%)',
-                'linear-gradient(to bottom, #F8FAFC 0%, transparent 10%, transparent 90%, #F8FAFC 100%)',
-              ].join(', '),
-            }}
-          />
           <div className="relative z-10 flex h-full items-center px-0 py-5">
             {/* SERIF HERO TEXT */}
             <div className="flex flex-col justify-center w-full min-w-0">
               <h2
                 className="font-display font-bold tracking-tight"
-                style={{ color: dark ? '#ffffff' : '#0d0d14', fontSize: 'clamp(1.8rem, 4vw, 6.25rem)', lineHeight: 1.05, marginBottom: 'clamp(0.5rem, 0.625vw, 1rem)' }}
+                style={{ color: dark ? '#ffffff' : '#0d0d14', fontSize: 'clamp(1.8rem, 4vw, 4.5rem)', lineHeight: 1.05, marginBottom: 'clamp(0.5rem, 0.625vw, 1rem)' }}
               >
                 The Most<br />
                 <span style={{ fontStyle: 'italic', color: '#7C8FF5' }}>Transparent</span><br />
@@ -195,7 +181,7 @@ const LandingDashboard: React.FC = () => {
               </h2>
               <p
                 className="font-sans leading-relaxed"
-                style={{ color: dark ? 'rgba(255,255,255,0.70)' : 'rgba(13,13,20,0.70)', fontSize: 'clamp(0.6rem, 0.85vw, 1.25rem)' }}
+                style={{ color: dark ? 'rgba(255,255,255,0.70)' : 'rgba(13,13,20,0.70)', fontSize: 'clamp(0.8rem, 0.85vw, 1.25rem)' }}
               >
                 Every transaction, fee, and decision—<br />
                 Completely in the open.<br />

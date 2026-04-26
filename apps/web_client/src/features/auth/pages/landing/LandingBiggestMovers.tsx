@@ -29,7 +29,7 @@ export const LandingBiggestMovers = ({ onSelect }: LandingBiggestMoversProps) =>
   return (
     <div className={styles.wrapper}>
       <div className={styles.list}>
-        {movers.slice(0, 6).map((m) => {
+        {movers.map((m) => {
           const isPositive = m.changePercent >= 0;
           return (
             <button
