@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
-import { fetchHeaderBigMovers, MoverItem } from '../api/dashboardApi'; // Adjust path if your api.ts is elsewhere
+import { fetchHeaderBigMovers, MoverItem } from '../api/dashboardApi'; 
 import styles from './BiggestMovers.module.css';
 
-export const BiggestMovers = () => {
+// 1. We only need onSelect here now, since data comes strictly from the API
+interface BiggestMoversProps {
+  onSelect?: (symbol: string) => void;
+}
+
+// 2. Destructure onSelect from the props
+export const BiggestMovers = ({ onSelect }: BiggestMoversProps) => {
   const [movers, setMovers] = useState<MoverItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadMovers = async () => {
       try {
-        // This will hit the API the first time, and use our 60s cache after that!
+        // The API handles its own fallbacks, so we just trust the data it returns
         const data = await fetchHeaderBigMovers();
         setMovers(data);
       } catch (error) {
@@ -22,7 +28,6 @@ export const BiggestMovers = () => {
     loadMovers();
   }, []);
 
-  // Optional: A minimal loading state so the layout doesn't jump
   if (loading) {
     return (
       <div className={styles.wrapper}>
@@ -43,6 +48,7 @@ export const BiggestMovers = () => {
               key={m.symbol}
               type="button"
               className={styles.item}
+              // 3. onSelect works beautifully here now
               onClick={() => onSelect?.(m.symbol)}
               title={`Open ${m.symbol} on trade page`}
             >
