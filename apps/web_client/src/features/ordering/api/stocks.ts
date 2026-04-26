@@ -78,3 +78,9 @@ export async function getStockQuote(symbol: string) {
     askSize: res.data.ask_size ?? 0,
   };
 }
+
+// Maps to GET /api/stocks/search?q=:query
+export async function searchStocks(query: string) {
+  const res = await marketApi.get("/api/stocks/search", { params: { q: query } });
+  return (res.data.results ?? []) as { symbol: string; name: string; exchange: string; tradable: boolean }[];
+}

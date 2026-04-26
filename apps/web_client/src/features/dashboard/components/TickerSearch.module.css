@@ -14,7 +14,10 @@
 
 .wrapper:focus-within {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input:focus-visible {
+  outline: none;
 }
 
 .icon {
@@ -67,8 +70,10 @@
   border-bottom: none;
 }
 
-.option:hover {
+.option:hover,
+.option:focus {
   background: #f3f4f6;
+  outline: none;
 }
 
 .optionSymbol {
@@ -90,7 +95,6 @@
 
 :global(.dark) .wrapper:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.2);
 }
 
 :global(.dark) .icon {
@@ -115,7 +119,8 @@
   border-bottom-color: #252845;
 }
 
-:global(.dark) .option:hover {
+:global(.dark) .option:hover,
+:global(.dark) .option:focus {
   background: #1f2240;
 }
 

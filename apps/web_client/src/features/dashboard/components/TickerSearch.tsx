@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { MdSearch } from 'react-icons/md';
 import { DUMMY_TICKERS } from '../data/tickerSearchData';
+import { searchStocks } from '@/features/ordering/api/stocks';
 import styles from './TickerSearch.module.css';
 
 interface TickerSearchProps {
@@ -19,15 +20,23 @@ export const TickerSearch = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const filteredOptions = useMemo(() => {
-    const q = value.trim().toLowerCase();
-    if (!q) return DUMMY_TICKERS;
-    return DUMMY_TICKERS.filter(
-      (t) =>
-        t.symbol.toLowerCase().includes(q) ||
-        t.name.toLowerCase().includes(q)
-    );
-  }, [value]);
+  const [apiResults, setApiResults] = useState<{ symbol: string; name: string }[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const query = value.trim();
+  const filteredOptions = query ? apiResults : DUMMY_TICKERS;
+
+  useEffect(() => {
+    if (!query) {
+      setApiResults([]);
+      return;
+    }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      searchStocks(query).then(setApiResults).catch(() => setApiResults([]));
+    }, 250);
+    return () => clearTimeout(debounceRef.current);
+  }, [query]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -64,13 +73,15 @@ export const TickerSearch = ({
         aria-autocomplete="list"
       />
       {showDropdown && (
-        <ul className={styles.dropdown} role="listbox">
+        <ul className={styles.dropdown} role="listbox" tabIndex={-1}>
           {filteredOptions.map((ticker) => (
             <li
               key={ticker.symbol}
               role="option"
               className={styles.option}
+              tabIndex={0}
               onClick={() => handleSelect(ticker.symbol)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect(ticker.symbol); } }}
             >
               <span className={styles.optionSymbol}>{ticker.symbol}</span>
               <span className={styles.optionName}>{ticker.name}</span>

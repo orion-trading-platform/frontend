@@ -76,7 +76,8 @@ const LandingDashboard: React.FC = () => {
               <button
                 onClick={() => navigate('/')}
                 aria-label="Orion home"
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+                className="p-0 pr-3 md:pr-0"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
               >
                 <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
                 <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100 hidden md:block" />
@@ -149,7 +150,7 @@ const LandingDashboard: React.FC = () => {
           </svg>
           <img decoding="async" src={landingCtaAccent} alt="" className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.005]" style={{ objectPosition: '90% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
           <img decoding="async" src={landingCtaResponsive} alt="" className="absolute inset-0 w-full h-full object-cover block brightness-0 dark:brightness-100 transition-transform duration-300 group-hover:scale-[1.005]" style={{ objectPosition: '90% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
-          <img decoding="async" src={landingCtaTitle} alt="" className="absolute inset-0 w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.02]" style={{ objectPosition: '50% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
+          <img decoding="async" src={landingCtaTitle} alt="" className="absolute inset-0 w-full h-full object-contain block transition-transform duration-300 group-hover:scale-[1.02]" style={{ objectPosition: '50% 30%' }} onLoad={() => setAssetTopLoaded(n => n + 1)} />
           <button
             onClick={() => navigate('/login')}
             className="absolute left-1/2 -translate-x-1/2 top-[64.5%] z-10 rounded-lg border px-6 py-3 text-sm font-semibold tracking-widest transition duration-300 group-hover:scale-[1.03]"
