@@ -21,11 +21,15 @@
 /* Assigning the rooms to the floor plan */
 
 .headerArea {
-  padding: 15px;
+  padding: 0;
   margin: 0;
-  display: flex;
-  background: #2c4975;
+  display: block;
+  background: transparent;
   grid-area: header;
+}
+
+.headerArea > * {
+  width: 100%;
 }
 
 .moversArea {

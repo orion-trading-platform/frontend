@@ -8,8 +8,8 @@
   border-radius: 8px;
   padding: 10px 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  /* Added a min-width to ensure it takes up 3x the original space */
-  min-width: 600px;
+  width: 100%;
+  min-width: 0;
 }
 
 .wrapper:focus-within {
