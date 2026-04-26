@@ -2,13 +2,11 @@
   position: relative;
   display: flex;
   align-items: center;
-  /* 10px * 3 = 30px gap between icon and text */
-  gap: 30px;
+  gap: 10px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  /* Vertical padding stays 10px, Horizontal padding: 14px * 3 = 42px */
-  padding: 10px 42px;
+  padding: 10px 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   /* Added a min-width to ensure it takes up 3x the original space */
   min-width: 600px;
@@ -35,7 +33,7 @@
 }
 
 .input::placeholder {
-  color: #9ca3af;
+  color: #6B7280;  /* Darkened from #9CA3AF */
 }
 
 .dropdown {
@@ -58,10 +56,8 @@
 .option {
   display: flex;
   align-items: center;
-  /* 12px * 3 = 36px gap between symbol and name */
-  gap: 36px;
-  /* Vertical padding: 10px, Horizontal padding: 42px */
-  padding: 10px 42px;
+  gap: 12px;
+  padding: 10px 14px;
   cursor: pointer;
   font-size: 14px;
   border-bottom: 1px solid #f3f4f6;
@@ -78,8 +74,8 @@
 .optionSymbol {
   font-weight: 700;
   color: #111827;
-  /* 48px * 3 = 144px width for the ticker column */
-  min-width: 144px;
+  /* keeps the ticker column clean but not huge */
+  min-width: 80px;
 }
 
 .optionName {
@@ -106,7 +102,7 @@
 }
 
 :global(.dark) .input::placeholder {
-  color: #6b7280;
+  color: #94A3B8; /* Brightened from #6B7280 */
 }
 
 :global(.dark) .dropdown {
