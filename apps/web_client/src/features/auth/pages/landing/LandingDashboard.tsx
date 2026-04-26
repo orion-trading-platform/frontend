@@ -12,7 +12,7 @@ import { LandingDashboardGrid } from './LandingDashboardGrid';
 import { Header } from 'ui-kit';
 import { LandingSearchBar } from './LandingSearchBar';
 import { LandingHoldingsTable } from './LandingHoldingsTable';
-import { TickerSearch } from '@/features/dashboard/components/TickerSearch';
+import { LandingTickerSearch } from './LandingTickerSearch';
 import { LandingBiggestMovers } from './LandingBiggestMovers';
 import { fetchSP500Holdings, type Holding } from './api/landingDashboardApi';
 
@@ -83,7 +83,7 @@ const LandingDashboard: React.FC = () => {
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ width: '240px', flexShrink: 0 }}>
-                  <TickerSearch
+                  <LandingTickerSearch
                     value={dashboardSearchQuery}
                     onChange={setDashboardSearchQuery}
                     onSelect={(sym) => navigate(`/tickerview?symbol=${sym}`)}
