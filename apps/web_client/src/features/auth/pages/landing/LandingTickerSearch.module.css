@@ -1,0 +1,125 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.icon {
+  font-size: 16px;
+  line-height: 1;
+  color: #6b7280;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.option:last-child {
+  border-bottom: none;
+}
+
+.option:hover {
+  background: #f3f4f6;
+}
+
+.optionSymbol {
+  font-weight: 700;
+  color: #111827;
+  min-width: 48px;
+}
+
+.optionName {
+  color: #6b7280;
+}
+
+/* Dark mode */
+:global(.dark) .wrapper {
+  background: #1a1d2e;
+  border-color: #2d2f50;
+}
+
+:global(.dark) .wrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.2);
+}
+
+:global(.dark) .icon {
+  color: #8892b0;
+}
+
+:global(.dark) .input {
+  color: #e2e8f0;
+}
+
+:global(.dark) .input::placeholder {
+  color: #6b7280;
+}
+
+:global(.dark) .dropdown {
+  background: #141628;
+  border-color: #2d2f50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+:global(.dark) .option {
+  border-bottom-color: #252845;
+}
+
+:global(.dark) .option:hover {
+  background: #1f2240;
+}
+
+:global(.dark) .optionSymbol {
+  color: #e2e8f0;
+}
+
+:global(.dark) .optionName {
+  color: #8892b0;
+}
