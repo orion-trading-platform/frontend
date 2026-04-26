@@ -21,7 +21,8 @@ export async function fetchSP500Holdings(): Promise<Holding[]> {
   }
   const res = await fetch(`${MARKET_URL}/api/indices/sp500`);
   if (!res.ok) throw new Error('Failed to fetch S&P 500 data');
-  const data: Holding[] = await res.json();
+  const json = await res.json();
+  const data: Holding[] = Array.isArray(json) ? json : json.data;
   sp500Cache = { data, fetchedAt: Date.now() };
   return data;
 }
