@@ -11,10 +11,12 @@ html, body {
   height: 100%;
   font-family: "Noto Sans", sans-serif;
   background-color: var(--bg-light);
+  color-scheme: light;
 }
 
 html.dark, html.dark body {
   background-color: var(--bg-dark);
+  color-scheme: dark;
 }
 
 #root {
