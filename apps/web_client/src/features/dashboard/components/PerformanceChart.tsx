@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAccount } from '@/features/auth';
 import {
   LineChart,
   Line,
@@ -27,6 +28,8 @@ const TIMELINE_DAYS: Record<Timeline, number> = {
 };
 
 export const PerformanceChart = () => {
+  const { account, isLoading: accountLoading } = useAccount();
+
   const [timeline, setTimeline] = useState<Timeline>('week');
   const [data, setData] = useState<GraphDataPoint[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,20 +37,43 @@ export const PerformanceChart = () => {
   // Fetch new graph data whenever the user clicks a different timeline tab
   useEffect(() => {
     const loadChartData = async () => {
+      if (!account?.account_id) {
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const days = TIMELINE_DAYS[timeline];
-        const chartData = await fetchGraphData(days);
+        const chartData = await fetchGraphData(String(account.account_id), days);
         setData(chartData);
       } catch (error) {
         console.error('Failed to fetch chart data:', error);
+        setData([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadChartData();
-  }, [timeline]);
+  }, [timeline, account?.account_id]);
+
+  if (accountLoading) {
+    return (
+      <div style={{ width: '95%', height: 350, padding: '10px', color: '#bcc8e1b7' }}>
+        Loading account...
+      </div>
+    );
+  }
+
+  if (!account?.account_id) {
+    return (
+      <div style={{ width: '95%', height: 350, padding: '10px', color: '#bcc8e1b7' }}>
+        No account selected.
+      </div>
+    );
+  }
 
   return (
     <div style={{ width: '95%', height: 350, padding: '10px' }}>

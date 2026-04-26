@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
-import { useAuth } from '../auth';
+import { useAuth, useAccount } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { SearchBar } from './components/SearchBar';
 import { TickerSearch } from './components/TickerSearch';
@@ -21,6 +21,7 @@ import { fetchHoldings, Holding } from './api/dashboardApi'; // Adjust path to y
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { account, isLoading: accountLoading } = useAccount();
   var emptyTable: Holding[] = [];
 
   const [dark, setDark] = useState(false);
@@ -38,15 +39,24 @@ export const DashboardPage = () => {
   // Fetch holdings via our API instead of PapaParse!
   useEffect(() => {
     const loadHoldings = async () => {
+      if (!account?.account_id) {
+        sethData([]);
+        return;
+      }
+
       try {
-        const data = await fetchHoldings();
+        const data = await fetchHoldings(String(account.account_id));
         sethData(data);
       } catch (error) {
         console.error('Error fetching holdings:', error);
+        sethData([]);
       }
     };
-    loadHoldings();
-  }, []);
+
+    if (!accountLoading) {
+      loadHoldings();
+    }
+  }, [account?.account_id, accountLoading]);
 
   // Filter holdings based on search bar
   const filteredHoldings = useMemo(() => {

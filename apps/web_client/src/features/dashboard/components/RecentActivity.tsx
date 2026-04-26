@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAccount } from '@/features/auth';
 import { fetchRecentActivity, ActivityItem } from '../api/dashboardApi'; // Adjust path
 import styles from './RecentActivity.module.css';
 
@@ -70,23 +71,41 @@ export interface RecentActivityFeedProps {
 
 // 2. Destructure onClick in the component parameters
 export const RecentActivityFeed = ({ onClick }: RecentActivityFeedProps) => {
+  const { account, isLoading: accountLoading } = useAccount();
+
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadActivity = async () => {
+      if (!account?.account_id) {
+        setActivities([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await fetchRecentActivity();
+        setLoading(true);
+        const data = await fetchRecentActivity(String(account.account_id));
         setActivities(data);
       } catch (error) {
         console.error('Failed to fetch activity:', error);
+        setActivities([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadActivity();
-  }, []);
+  }, [account?.account_id]);
+
+  if (accountLoading) {
+    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>Loading account...</div>;
+  }
+
+  if (!account?.account_id) {
+    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>No account selected.</div>;
+  }
 
   if (loading) {
     return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>Loading recent activity...</div>;
