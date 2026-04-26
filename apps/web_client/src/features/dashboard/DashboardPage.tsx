@@ -121,13 +121,7 @@ export const DashboardPage = () => {
         </div>
       }
       movers={<BiggestMovers onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} />}
-      stats={
-        <>
-          {MOCK_STATS.map((stat) => (
-            <StatCard key={stat.label} {...stat} />
-          ))}
-        </>
-      }
+      stats={<AccountStatsGrid />}
       chart={<PerformanceChart />}
       activity={
         <div style={{ padding: 20, textAlign: 'left', color: '#ffffff', display: 'flex', flexDirection: 'column', width: '-webkit-fill-available', backdropFilter:'blur(1px)'}}>
@@ -153,11 +147,10 @@ export const DashboardPage = () => {
             </button>
             <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
           </div>
-          <>
-            {rData.slice(0, 5).map((activity) => (
-              <RecentActivity key={activity.id} {...activity} onClick={() => navigate('/ledger')} />
-            ))}
-        </>
+          
+          {/* This single smart component replaces the entire rData map! */}
+          <RecentActivityFeed onClick={() => navigate('/ledger')}/>
+          
         </div>
       }
       

@@ -25,6 +25,7 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
 
   // Your +/- logic, expanded to include Dividends and Deposits
   const isPositiveImpact = uiType === 'Sell' || uiType === 'Deposit' || uiType === 'Dividend';
+  
   return (
     <div className={styles.card}>
       <div className={styles.icon}>
@@ -61,7 +62,14 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
 // ==========================================
 // 2. THE PARENT FEED (Exports to your Dashboard)
 // ==========================================
-export const RecentActivityFeed = () => {
+
+// 1. Define the props interface to include onClick
+export interface RecentActivityFeedProps {
+  onClick?: () => void;
+}
+
+// 2. Destructure onClick in the component parameters
+export const RecentActivityFeed = ({ onClick }: RecentActivityFeedProps) => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -89,7 +97,12 @@ export const RecentActivityFeed = () => {
   }
 
   return (
-    <div className={styles.feedContainer}>
+    // 3. Attach onClick here, and optionally add a pointer cursor so users know it's clickable
+    <div 
+      className={styles.feedContainer} 
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+    >
       {activities.map((item) => (
         <ActivityCard key={item.id} item={item} />
       ))}
