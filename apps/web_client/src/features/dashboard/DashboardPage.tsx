@@ -10,6 +10,7 @@ import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeader
 import { LedgerHeaderNavButton } from '@/features/ledger/LedgerHeaderNavButon';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
+import { useAuth, useAccount } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { SearchBar } from './components/SearchBar';
 import { TickerSearch } from './components/TickerSearch';
@@ -26,7 +27,9 @@ import { fetchHoldings, Holding } from './api/dashboardApi'; // Adjust path to y
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const { dark, toggleDark } = useTheme();
+  const { account, isLoading: accountLoading } = useAccount();
   var emptyTable: Holding[] = [];
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -39,15 +42,24 @@ export const DashboardPage = () => {
   // Fetch holdings via our API instead of PapaParse!
   useEffect(() => {
     const loadHoldings = async () => {
+      if (!account?.account_id) {
+        sethData([]);
+        return;
+      }
+
       try {
-        const data = await fetchHoldings();
+        const data = await fetchHoldings(String(account.account_id));
         sethData(data);
       } catch (error) {
         console.error('Error fetching holdings:', error);
+        sethData([]);
       }
     };
-    loadHoldings();
-  }, []);
+
+    if (!accountLoading) {
+      loadHoldings();
+    }
+  }, [account?.account_id, accountLoading]);
 
   // Filter holdings based on search bar
   const filteredHoldings = useMemo(() => {

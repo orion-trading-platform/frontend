@@ -1,6 +1,19 @@
 // api.ts
 
-const BASE_URL = 'http://localhost:8000'; // Update this if your local port is different
+const BASE_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000'; // Update this if your local port is different
+
+const apiFetch = async <T>(path: string): Promise<T> => {
+  const response = await fetch(`${BASE_URL}${path}`);
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '');
+    throw new Error(
+      `API request failed: ${response.status} ${response.statusText} ${errorText}`
+    );
+  }
+
+  return response.json();
+};
 
 // 1. INTERFACES
 export interface LedgerSummary {
@@ -21,46 +34,34 @@ export interface GraphDataPoint {
 const getFormattedDate = (date: Date) => date.toISOString().split('T')[0];
 
 // 2. THE BASE FETCHER (The one you provided, slightly enhanced for mock graphs)
-export const fetchLedgerSummary = async (startDate: string, endDate: string): Promise<LedgerSummary> => {
+export const fetchLedgerSummary = async (
+  accountId: string,
+  startDate: string,
+  endDate: string
+): Promise<LedgerSummary> => {
   // ==========================================
   // MOCK DATA MODE - Use this while developing
   // ==========================================
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Adding a slight randomizer so the graph isn't a flat line
-      const randomFluctuation = (Math.random() * 10000) - 5000; 
-
-      resolve({
-        accountValue: 125000.50 + randomFluctuation,
-        buyingPower: 45000.00,
-        cashBalance: 15000.25,
-        netPL: 5500.75 + randomFluctuation,
-        realizedPL: 2300.00,
-        unrealizedPL: 3200.75
-      });
-    }, 100); // Lowered fake delay to 100ms so 12 calls resolve quickly
-  });
 
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  /*
   const queryParams = new URLSearchParams({
-    account_id: '1',
+    account_id: accountId,
     startDate: startDate,
     endDate: endDate,
   });
-  const response = await fetch(`${BASE_URL}/api/ledger/summary?${queryParams}`);
-  if (!response.ok) throw new Error('Failed to fetch');
-  return response.json();
-  */
+
+  return apiFetch<LedgerSummary>(`/api/ledger/summary?${queryParams}`);
 };
 
 // 3. CURRENT SNAPSHOT FETCHER (Composition)
 // Grabs exactly today's data for your dashboard's main number cards
-export const fetchCurrentSnapshot = async (): Promise<LedgerSummary> => {
+export const fetchCurrentSnapshot = async (
+  accountId: string
+): Promise<LedgerSummary> => {
   const today = getFormattedDate(new Date());
-  return fetchLedgerSummary(today, today);
+  return fetchLedgerSummary(accountId, today, today);
 };
 
 
@@ -93,55 +94,31 @@ export interface LedgerHistoryResponse {
   history: LedgerHistoryItem[];
 }
 
-export const fetchLedgerHistory = async (startDate: string, endDate: string): Promise<LedgerHistoryResponse> => {
+export const fetchLedgerHistory = async (
+  accountId: string,
+  startDate: string,
+  endDate: string
+): Promise<LedgerHistoryResponse> => {
   // ==========================================
   // MOCK DATA MODE 
   // ==========================================
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Generate a quick fake array of history items based on the dates
-      const mockHistory: LedgerHistoryItem[] = [];
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      let current = new Date(start);
-
-      while (current <= end) {
-        mockHistory.push({
-          date: current.toISOString().split('T')[0],
-          netPL: 2500 + Math.random() * 200,
-          realizedPL: 2472.72,
-          unrealizedPL: 1800 + Math.random() * 50,
-          cashBalance: 44476.19,
-          accountValue: 98000 + (Math.random() * 2000), // Wobbly account value for the graph
-          buyingPower: 18684.10
-        });
-        current.setDate(current.getDate() + 1);
-      }
-
-      resolve({
-        accountId: "1",
-        history: mockHistory
-      });
-    }, 200);
-  });
 
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  /*
   const queryParams = new URLSearchParams({
-    account_id: '1', // Hardcoded as requested
+    account_id: accountId,
     startDate: startDate,
     endDate: endDate
   });
-  
-  const response = await fetch(`${BASE_URL}/api/ledger/history?${queryParams}`);
-  if (!response.ok) throw new Error('Failed to fetch ledger history');
-  return response.json();
-  */
+
+  return apiFetch<LedgerHistoryResponse>(`/api/ledger/history?${queryParams}`);
 };
 
-export const fetchGraphData = async (days: number = 30): Promise<GraphDataPoint[]> => {
+export const fetchGraphData = async (
+  accountId: string,
+  days: number = 30
+): Promise<GraphDataPoint[]> => {
   const end = new Date();
   const start = new Date();
   start.setDate(end.getDate() - days);
@@ -149,7 +126,7 @@ export const fetchGraphData = async (days: number = 30): Promise<GraphDataPoint[
   const startDateStr = getFormattedDate(start);
   const endDateStr = getFormattedDate(end);
 
-  const response = await fetchLedgerHistory(startDateStr, endDateStr);
+  const response = await fetchLedgerHistory(accountId, startDateStr, endDateStr);
   
   // Map the backend's heavy response into a lightweight array for your graph
   return response.history.map(item => ({
@@ -187,44 +164,24 @@ export interface ActivityPage {
 }
 
 export const fetchLedgerActivity = async (
+  accountId: string,
   startDate: string,
   endDate: string,
   page: number = 1,
   pageSize: number = 100
 ): Promise<ActivityPage> => {
   // MOCK DATA MODE
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        page: page,
-        pageSize: pageSize,
-        totalItems: 5,
-        totalPages: 1,
-        items: [
-          { id: 'act_1', timestamp: new Date().toISOString(), type: 'TRADE', status: 'COMPLETED', fee: 0, symbol: 'NVDA', quantity: 10, price: 462.80, amount: -4628.00 },
-          { id: 'act_2', timestamp: new Date(Date.now() - 86400000).toISOString(), type: 'TRANSFER', subtype: 'DEPOSIT', status: 'COMPLETED', fee: 0, amount: 5000.00, notes: 'ACH Deposit from Chase' },
-          { id: 'act_3', timestamp: new Date(Date.now() - 172800000).toISOString(), type: 'TRADE', status: 'COMPLETED', fee: 0.50, symbol: 'AAPL', quantity: -5, price: 178.92, amount: 894.60 },
-          { id: 'act_4', timestamp: new Date(Date.now() - 259200000).toISOString(), type: 'DIVIDEND', status: 'COMPLETED', fee: 0, symbol: 'MSFT', amount: 35.50 },
-          { id: 'act_5', timestamp: new Date(Date.now() - 345600000).toISOString(), type: 'TRADE', status: 'COMPLETED', fee: 0, symbol: 'TSLA', quantity: 20, price: 231.40, amount: -4628.00 }
-        ].slice(0, pageSize) 
-      });
-    }, 300);
-  });
 
   // REAL API MODE
-  /*
   const queryParams = new URLSearchParams({
-    account_id: '1', 
+    account_id: accountId, 
     startDate: startDate,
     endDate: endDate,
     page: page.toString(),
     pageSize: pageSize.toString()
   });
-  
-  const response = await fetch(`${BASE_URL}/api/ledger/activity?${queryParams}`);
-  if (!response.ok) throw new Error('Failed to fetch activity');
-  return response.json();
-  */
+
+  return apiFetch<ActivityPage>(`/api/ledger/activity?${queryParams}`);
 };
 
 
@@ -233,46 +190,28 @@ export const fetchMarketSnapshots = async (limit: number = 7, sortByChange: bool
   // ==========================================
   // MOCK DATA MODE
   // ==========================================
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        total: 500, // Fake total market size
-        snapshots: [
-          { ticker_symbol: 'NVDA', price: '462.80', daily_change_pct: '4.52', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'TSLA', price: '231.40', daily_change_pct: '3.85', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'AMD', price: '112.50', daily_change_pct: '2.91', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'AAPL', price: '178.92', daily_change_pct: '1.24', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'MSFT', price: '332.15', daily_change_pct: '-0.85', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'META', price: '485.30', daily_change_pct: '-1.45', last_updated: new Date().toISOString() },
-          { ticker_symbol: 'AMZN', price: '134.20', daily_change_pct: '-2.10', last_updated: new Date().toISOString() },
-        ].slice(0, limit)
-      });
-    }, 200);
-  });
 
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  /*
   const queryParams = new URLSearchParams({
     limit: limit.toString(),
     offset: '0',
     sort_by_change: sortByChange.toString()
   });
-  
-  const response = await fetch(`${BASE_URL}/api/snapshots?${queryParams}`);
-  if (!response.ok) throw new Error('Failed to fetch market snapshots');
-  return response.json();
-  */
+
+  return apiFetch<MarketSnapshotList>(`/api/snapshots?${queryParams}`);
 };
 
 // Activity Helper (Composition)
-export const fetchRecentActivity = async (): Promise<ActivityItem[]> => {
+export const fetchRecentActivity = async (
+  accountId: string
+): Promise<ActivityItem[]> => {
   const today = getFormattedDate(new Date());
   const year2000 = '2000-01-01'; // Safe start date to grab all history
 
   // Get just page 1, size 5
-  const activityPage = await fetchLedgerActivity(year2000, today, 1, 5);
+  const activityPage = await fetchLedgerActivity(accountId, year2000, today, 1, 5);
   return activityPage.items;
 };
 
@@ -354,34 +293,19 @@ export interface Holding {
 }
 
 // 1. The "Raw" Fetcher (Exactly matching the backend schema)
-export const fetchRawHoldings = async (accountId: string = '1'): Promise<PortfolioRead> => {
+export const fetchRawHoldings = async (accountId: string): Promise<PortfolioRead> => {
   // MOCK MODE
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        account_id: accountId,
-        holdings: [
-          { ticker: 'AAPL', cost_basis: 150.00, quantity: 50 },
-          { ticker: 'MSFT', cost_basis: 290.00, quantity: 30 },
-          { ticker: 'NVDA', cost_basis: 120.50, quantity: 15 },
-          { ticker: 'TSLA', cost_basis: 250.00, quantity: 20 },
-        ]
-      });
-    }, 200);
-  });
 
   // REAL API MODE
-  /*
-  const response = await fetch(`${BASE_URL}/api/holdings/${accountId}`);
-  if (!response.ok) throw new Error('Failed to fetch raw holdings');
-  return response.json();
-  */
+  return apiFetch<PortfolioRead>(`/api/holdings/${accountId}`);
 };
 
 // 2. The "Enriched" Fetcher (What your React component actually calls)
-export const fetchHoldings = async (): Promise<Holding[]> => {
+export const fetchHoldings = async (
+  accountId: string
+): Promise<Holding[]> => {
   // Step 1: Get the barebones portfolio data
-  const portfolio = await fetchRawHoldings('1');
+  const portfolio = await fetchRawHoldings(accountId);
 
   // Step 2: Get the live market snapshots
   const marketData = await fetchMarketSnapshots(500, false); 
@@ -425,31 +349,20 @@ export interface AccountStats {
   totalYield: number;
 }
 
-export const fetchCashBalance = async (accountId: string = '1'): Promise<number> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(15000.25);
-    }, 150);
-  });
-
-  /*
-  const response = await fetch(`${BASE_URL}/accounts/${accountId}/balance`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch account balance');
-  }
-
-  const data: BalanceRead = await response.json();
+export const fetchCashBalance = async (accountId: string): Promise<number> => {
+  const data = await apiFetch<BalanceRead>(`/api/accounts/${accountId}/balance`);
   return parseFloat(data.balance);
-  */
 };
 
 // 2. The Composition Function (No Mocks!)
-export const fetchAccountStats = async (): Promise<AccountStats> => {
+export const fetchAccountStats = async (
+  accountId: string
+): Promise<AccountStats> => {
   // Execute our API calls in parallel so the UI loads faster
   const [cashBalance, graphData, holdings] = await Promise.all([
-    fetchCashBalance(),
-    fetchGraphData(1), // Assuming 1 day to get today's start/current value
-    fetchHoldings()
+    fetchCashBalance(accountId),
+    fetchGraphData(accountId, 1), // Assuming 1 day to get today's start/current value
+    fetchHoldings(accountId)
   ]);
 
   // --- DO THE MATH ---
