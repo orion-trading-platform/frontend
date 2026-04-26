@@ -18,7 +18,7 @@ const iconMap: Record<string, string> = {
   Yield: graphIcon,
 };
 
-export const StatCard = ({ label, value, change, isPositive, icon, hideChange }: StatCardProps) => {
+export const StatCard = ({ label, value, change, isPositive, icon }: StatCardProps) => {
   return (
     <div className={styles.card}>
       <div className={styles.iconBox}>
@@ -31,13 +31,11 @@ export const StatCard = ({ label, value, change, isPositive, icon, hideChange }:
       <div className={styles.content}>
         <div className={styles.headerRow}>
           <span className={styles.label}>{label}</span>
-          {!hideChange ? (
-            <span className={`${styles.badge} ${isPositive ? styles.green : styles.red}`}>
-              {change}
-            </span>
-          ) : null}
+          <span className={`${styles.badge} ${isPositive ? styles.green : styles.red}`}>
+            {change}
+          </span>
         </div>
-        <div className={`${styles.value} ${styles.valueBalance}`}>{value}</div>
+        <div className={styles.value}>{value}</div>
       </div>
     </div>
   );

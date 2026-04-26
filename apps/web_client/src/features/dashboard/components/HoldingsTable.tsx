@@ -3,6 +3,7 @@ import styles from './HoldingsTable.module.css';
 
 export interface HoldingsTableProps {
   holdings: Holding[];
+  publicOnly?: boolean;
   onSelect?: (ticker: string) => void;
 }
 
@@ -23,7 +24,7 @@ export const HoldingsTable = ({ holdings, publicOnly, onSelect }: HoldingsTableP
           <tr>
             <th className={styles.th}>Ticker</th>
             <th className={styles.th}>Current Price</th>
-            <th className={styles.th}>Cost Basis</th>
+            {!publicOnly && <th className={styles.th}>Cost Basis</th>}
             <th className={styles.th}>Change Daily</th>
             {/* Kept publicOnly checks for Quantity and Total Return! */}
             {!publicOnly && <th className={styles.th}>Quantity</th>}

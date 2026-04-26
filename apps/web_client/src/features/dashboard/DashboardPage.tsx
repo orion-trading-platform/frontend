@@ -1,14 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useTheme } from '@/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { MdLogout, MdDarkMode, MdLightMode } from 'react-icons/md';
-import { FaUserAlt } from 'react-icons/fa';
-import { useAccount } from '@/features/auth';
-import { WalletHeaderNavButton } from '@/features/wallet/components/WalletHeaderNavButton';
-import { LedgerHeaderNavButton } from '../ledger/LedgerHeaderNavButon';
-import { accountBalanceToNumber, formatUsdCash } from '@/features/wallet/utils/accountCash';
 import ProfileModal from '../auth/modals/ProfileModal';
 import LogoutConfirmationModal from '../auth/modals/LogoutConfirmationModal';
+import { useAuth } from '../auth';
 import { DashboardGrid } from './layouts/DashboardGrid';
 import { SearchBar } from './components/SearchBar';
 import { TickerSearch } from './components/TickerSearch';
@@ -25,9 +20,13 @@ import { fetchHoldings, Holding } from './api/dashboardApi'; // Adjust path to y
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { dark, toggleDark } = useTheme();
-  const { account, isLoading: accountsLoading } = useAccount();
+  const { currentUser } = useAuth();
   var emptyTable: Holding[] = [];
+
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+  }, [dark]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,14 +64,15 @@ export const DashboardPage = () => {
     <LogoutConfirmationModal isOpen={logoutOpen} onClose={() => setLogoutOpen(false)} />
     <DashboardGrid
       header={
-        <Header
-          left={
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+
+          {/* LEFT SECTION: Brand */}
+          <div style={{ paddingLeft: '25px' }}>
             <button
               onClick={() => navigate('/dashboard')}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'white', fontSize: '22px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: '"Noto Sans", Roboto, sans-serif' }}
             >
-              <img src={logoWhite} alt="" style={{ height: '47px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
-              <img src={orionTextWhite} alt="Orion" style={{ height: '29px', width: 'auto' }} className="brightness-0 dark:brightness-100" />
+              ORION
             </button>
           </div>
 
