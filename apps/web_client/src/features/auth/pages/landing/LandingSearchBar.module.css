@@ -11,7 +11,10 @@
 
 .wrapper:focus-within {
   border-color: rgba(91, 106, 212, 0.55);
-  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.12);
+}
+
+.input:focus-visible {
+  outline: none;
 }
 
 .icon {
@@ -40,7 +43,6 @@
 
 :global(.dark) .wrapper:focus-within {
   border-color: rgba(91, 106, 212, 0.70);
-  box-shadow: 0 0 0 3px rgba(91, 106, 212, 0.15);
 }
 
 :global(.dark) .icon {
