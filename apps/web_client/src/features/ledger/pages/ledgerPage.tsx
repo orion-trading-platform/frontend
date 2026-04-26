@@ -576,7 +576,7 @@ export default function LedgerPage() {
         }
         right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '240px', flexShrink: 0 }}>
+            <div style={{ width: '720px', flexShrink: 0 }}>
               <TickerSearch value={tickerQuery} onChange={setTickerQuery} onSelect={(sym) => navigate(`/trade?symbol=${sym}`)} placeholder="Search for stocks..." />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>

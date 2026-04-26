@@ -119,7 +119,7 @@ export function OrderingPage() {
         }
         right={
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ width: '240px', flexShrink: 0 }}>
+            <div style={{ width: '720px', flexShrink: 0 }}>
               <TickerSearch
                 value={tickerQuery}
                 onChange={setTickerQuery}
