@@ -292,9 +292,7 @@ export const fetchRawHoldings = async (accountId: string): Promise<PortfolioRead
   // MOCK MODE
 
   // REAL API MODE
-  return apiFetch<PortfolioRead>('/holdings', {
-    account_id: accountId
-  });
+  return apiFetch<PortfolioRead>(`/holdings/${accountId}`);
 };
 
 // 2. The "Enriched" Fetcher (What your React component actually calls)
