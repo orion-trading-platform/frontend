@@ -191,7 +191,7 @@ export const fetchMarketSnapshots = async (limit: number = 7, sortByChange: bool
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  return apiFetch<MarketSnapshotList>('/api/snapshots', {
+  return apiFetch<MarketSnapshotList>('/snapshots', {
     limit: limit,
     offset: 0,
     sort_by_change: sortByChange.toString()
@@ -292,7 +292,7 @@ export const fetchRawHoldings = async (accountId: string): Promise<PortfolioRead
   // MOCK MODE
 
   // REAL API MODE
-  return apiFetch<PortfolioRead>('/api/holdings', {
+  return apiFetch<PortfolioRead>('/holdings', {
     account_id: accountId
   });
 };
