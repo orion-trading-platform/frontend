@@ -21,37 +21,46 @@
 }
 
 .item {
-  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0.01), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.03), rgba(193, 164, 255, 0.08), rgba(229, 218, 255, 0.15));
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(61, 177, 255, 0.01),
+   rgba(99, 143, 255, 0.02), rgba(150, 194, 255, 0.05), rgba(0, 30, 255, 0.08), rgba(76, 0, 255, 0.15));
   backdrop-filter: blur(20px);
   display: flex;
   align-items: left;
+  justify-content: left;
   flex-direction: column;
   padding: 12px 12px;
+  padding-left: 50px;
   border-radius: 8px;
-  border: 1px solid rgba(229, 218, 255, 0.15);
+  border: 1px solid rgba(77, 151, 255, 0.15);
   width: -webkit-fill-available;
-  box-shadow: inset -1px 1px 2px -1px rgba(229, 218, 255, 0.25)
+  box-shadow: inset -1px 1px 2px -1px rgba(0, 4, 235, 0.25)
 }
 
 .item:hover{
-  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0), rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.01), rgba(193, 164, 255, 0.05), rgba(229, 218, 255, 0.1));
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(661, 177, 255, 0.05),
+   rgba(99, 143, 255, 0.07), rgba(150, 194, 255, 0.08), rgba(0, 30, 255, 0.12), rgba(76, 0, 255, 0.2));
   backdrop-filter: blur(20px);
 }
 
 
 .symbol {
+  text-align: left;
+  align-items: left;
+  justify-content: left;
   font-weight: 700;
   font-size: 20px;
   color: #0d0d14;
 }
 
 .price {
+  text-align: left;
   font-size: 13px;
   color: rgba(13, 13, 20, 0.65);
 }
 
 
 .change {
+  text-align: left;
   font-size: 13px;
   font-weight: 600;
 }
@@ -62,6 +71,29 @@
 
 .down {
   color: #bc5151;
+}
+
+:global(.dark) .item {
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0.01), rgba(238, 231, 255, 0.02), 
+  rgba(193, 164, 255, 0.05), rgba(193, 164, 255, 0.09), rgba(229, 218, 255, 0.16));
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  flex-direction: column;
+  padding: 12px 12px;
+  padding-left: 50px;
+  border-radius: 8px;
+  border: 1px solid rgba(229, 218, 255, 0.15);
+  box-shadow: 0 0 14px rgba(91, 106, 212, 0.09), inset -1px 1px 2px -1px rgba(229, 218, 255, 0.28);
+  width: -webkit-fill-available;
+}
+
+:global(.dark) .item:hover{
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0.03), rgba(238, 231, 255, 0.05), 
+  rgba(193, 164, 255, 0.08), rgba(193, 164, 255, 0.12), rgba(229, 218, 255, 0.2));
+  border: 1px solid rgba(229, 218, 255, 0.2);
+  box-shadow: 0 0 20px rgba(91, 106, 212, 0.14), inset -1px 1px 2px -1px rgba(229, 218, 255, 0.32);
 }
 
 :global(.dark) .symbol {

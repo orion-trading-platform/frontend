@@ -100,19 +100,19 @@ export const RecentActivityFeed = ({ onClick }: RecentActivityFeedProps) => {
   }, [account?.account_id]);
 
   if (accountLoading) {
-    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>Loading account...</div>;
+    return <div style={{ padding: '20px', color: '#636a7ab7' }}>Loading account...</div>;
   }
 
   if (!account?.account_id) {
-    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>No account selected.</div>;
+    return <div style={{ padding: '20px', color: '#636a7ab7' }}>No account selected.</div>;
   }
 
   if (loading) {
-    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>Loading recent activity...</div>;
+    return <div style={{ padding: '20px', color: '#636a7ab7' }}>Loading recent activity...</div>;
   }
 
   if (activities.length === 0) {
-    return <div style={{ padding: '20px', color: '#bcc8e1b7' }}>No recent activity.</div>;
+    return <div style={{ padding: '20px', color: '#636a7ab7' }}>No recent activity.</div>;
   }
 
   return (

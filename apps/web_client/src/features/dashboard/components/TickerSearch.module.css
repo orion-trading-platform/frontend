@@ -3,8 +3,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #1c273b;
-  border: 1px solid #e5e7eb78;
+  background: #f5f4fa;
+  box-shadow: inset 0px 0px 4px 1px  #9f8dcf2c;
   border-radius: 8px;
   padding: 10px 14px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;

@@ -137,7 +137,9 @@
   background-image: url(recent4.png);
   border-radius: 40px;
   color: #c2c5cd;
-  box-shadow: inset 0px 0px 50px -1px #0d1426, inset 0px 0px 40px -1px #0d1426, inset 0px 0px 30px -1px #0d1426, inset 0px 0px 20px -1px #0d1426, inset 0px 0px 10px -1px #0d1426, inset 0px 0px 50px -1px #0d1426;
+  box-shadow: inset 0px 0px 50px -1px #0D0D14, inset 0px 0px 40px -1px #0D0D14, 
+  inset 0px 0px 30px -1px #0D0D14, inset 0px 0px 20px -1px #0D0D14, 
+  inset 0px 0px 10px -1px #0D0D14, inset 0px 0px 50px -1px #0D0D14;
 
   /* Stick to the height of the main content */
   height: 100%; 

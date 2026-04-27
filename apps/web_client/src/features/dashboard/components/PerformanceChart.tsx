@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from '@/features/auth';
+import { useTheme } from '@/ThemeContext';
 import {
   LineChart,
   Line,
@@ -33,6 +34,7 @@ export const PerformanceChart = () => {
   const [timeline, setTimeline] = useState<Timeline>('week');
   const [data, setData] = useState<GraphDataPoint[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { dark, toggleDark } = useTheme();
 
   // Fetch new graph data whenever the user clicks a different timeline tab
   useEffect(() => {
@@ -78,7 +80,7 @@ export const PerformanceChart = () => {
   return (
     <div style={{ width: '95%', height: 350, padding: '10px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
-        <h3 style={{ margin: 0, color: '#e3e5e4' }}>Performance History</h3>
+        <h3 style={{ margin: 0, color: dark ? '#e3e5e4' : '#0d0d14'  }}>Performance History</h3>
         <div style={{ display: 'flex', gap: 4 }}>
           {(Object.keys(TIMELINE_LABELS) as Timeline[]).map((key) => (
             <button
@@ -101,17 +103,17 @@ export const PerformanceChart = () => {
           </div>
         ) : (
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb70" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#7c77a170" />
             <XAxis
               dataKey="date" // Mapped to the 'date' property from GraphDataPoint
-              tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
+              tick={{ fontSize: 12, fill: dark? '#e1d9ed' : '#2d2d57'  }}
               tickLine={false}
               axisLine={false}
               dy={10}
               interval="preserveStartEnd"
             />
             <YAxis
-              tick={{ fontSize: 12, fill: '#bcc8e1b7' }}
+              tick={{ fontSize: 12, fill: dark? '#e1d9ed' : '#2d2d57'  }}
               tickLine={false}
               axisLine={false}
               // Formats the Y axis ticks to have a $ sign and commas (e.g. $125,000)
