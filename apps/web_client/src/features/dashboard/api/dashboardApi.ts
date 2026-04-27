@@ -353,41 +353,28 @@ export const fetchCashBalance = async (accountId: string): Promise<number> => {
 
 // 2. The Composition Function (No Mocks!)
 export const fetchAccountStats = async (
-  accountId: string
+  accountId: string,
+  cashBalance: number
 ): Promise<AccountStats> => {
-  // Execute our API calls in parallel so the UI loads faster
-  const [cashBalance, graphData, holdings] = await Promise.all([
-    fetchCashBalance(accountId),
-    fetchGraphData(accountId, 1), // Assuming 1 day to get today's start/current value
-    fetchHoldings(accountId)
-  ]);
+  const today = getFormattedDate(new Date());
 
-  // --- DO THE MATH ---
+  const summary = await fetchLedgerSummary(accountId, today, today);
 
-  // Portfolio Value: The most recent point on our graph
-  const currentPortfolioValue = graphData.length > 0 ? graphData[graphData.length - 1].value : 0;
-  
-  // Day Change: Current Value minus the first point on today's graph
-  const startOfDayValue = graphData.length > 0 ? graphData[0].value : currentPortfolioValue;
-  const dayChangeAmt = currentPortfolioValue - startOfDayValue;
-  const dayChangePct = startOfDayValue > 0 ? (dayChangeAmt / startOfDayValue) * 100 : 0;
+  const netPL = summary.netPL || 0;
+  const unrealizedPL = summary.unrealizedPL || 0;
 
-  // Total Yield: Calculate Total Return across all holdings vs Total Cost
-  let totalCostBasis = 0;
-  let totalReturn = 0;
+  // Mirrors the ledger page logic: account value = cash + unrealized P/L
+  const portfolioValue = cashBalance + unrealizedPL;
 
-  holdings.forEach(h => {
-    totalCostBasis += (h.costBasis * h.quantity);
-    totalReturn += h.totalReturn; 
-  });
-
-  const totalYield = totalCostBasis > 0 ? (totalReturn / totalCostBasis) * 100 : 0;
+  const dayChangeAmt = netPL;
+  const dayChangePct = portfolioValue > 0 ? (dayChangeAmt / portfolioValue) * 100 : 0;
+  const totalYield = portfolioValue > 0 ? (netPL / portfolioValue) * 100 : 0;
 
   return {
-    portfolioValue: currentPortfolioValue,
+    portfolioValue: parseFloat(portfolioValue.toFixed(2)),
     dayChangeAmt: parseFloat(dayChangeAmt.toFixed(2)),
     dayChangePct: parseFloat(dayChangePct.toFixed(2)),
-    buyingPower: cashBalance, // Directly from your new endpoint
+    buyingPower: cashBalance,
     totalYield: parseFloat(totalYield.toFixed(2)),
   };
 };

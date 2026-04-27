@@ -19,7 +19,11 @@ export const AccountStatsGrid = () => {
 
       try {
         setLoading(true);
-        const data = await fetchAccountStats(String(account.account_id));
+        const cashBalance = parseFloat(account.balance);
+        const data = await fetchAccountStats(
+          String(account.account_id),
+          Number.isFinite(cashBalance) ? cashBalance : 0
+        );
         setStats(data);
       } catch (error) {
         console.error('Failed to fetch account stats:', error);
