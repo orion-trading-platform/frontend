@@ -606,8 +606,9 @@ export default function LedgerPage() {
 
       <div className="mx-auto max-w-6xl px-4 py-10">
         <button
-          onClick={() => navigate('/dashboard')}
-          style={{ background: 'none', border: 'none', color: '#4b5563', fontSize: '14px', cursor: 'pointer', padding: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '4px' }}
+          type="button"
+          onClick={() => navigate("/ledger")}
+          className="mb-6 border-0 bg-transparent p-0 text-sm text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200"
         >
           ← Return to home
         </button>
