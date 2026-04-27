@@ -10,7 +10,8 @@
 }
 
 .card:hover{
-    background-image: radial-gradient(farthest-corner at 45% 60%,rgba(110, 144, 152, 0.075), rgba(176, 216, 228, 0.09), rgba(198, 170, 255, 0.11), rgba(228, 205, 255, 0.125), rgba(175, 255, 244, 0.25));
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(61, 177, 255, 0.01),
+   rgba(99, 143, 255, 0.02), rgba(150, 194, 255, 0.05), rgba(0, 30, 255, 0.08), rgba(76, 0, 255, 0.15));
 }
 
 .icon{
@@ -80,6 +81,11 @@
     border: 1px solid #46474a54;
     height: min-content;
     color: #4d4f54;
+}
+
+:global(.dark) .card:hover{
+  background-image: radial-gradient(farthest-corner at 45% 60%,rgba(238, 231, 255, 0.01), rgba(238, 231, 255, 0.02), 
+  rgba(193, 164, 255, 0.05), rgba(193, 164, 255, 0.09), rgba(229, 218, 255, 0.16));
 }
 
 :global(.dark) .label {
