@@ -2,8 +2,19 @@
 
 import api from '@/features/auth/api';
 
-const apiFetch = async <T>(path: string): Promise<T> => {
-  const response = await api.get<T>(path);
+const apiFetch = async <T>(
+  path: string,
+  params: Record<string, string | number | undefined | null> = {}
+): Promise<T> => {
+  const filteredParams: Record<string, string | number> = {};
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      filteredParams[key] = typeof value === 'number' ? value : String(value);
+    }
+  });
+
+  const response = await api.get<T>(path, { params: filteredParams });
   return response.data;
 };
 
@@ -38,13 +49,11 @@ export const fetchLedgerSummary = async (
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  const queryParams = new URLSearchParams({
+  return apiFetch<LedgerSummary>('/api/ledger/summary', {
     account_id: accountId,
     startDate: startDate,
     endDate: endDate,
   });
-
-  return apiFetch<LedgerSummary>(`/api/ledger/summary?${queryParams}`);
 };
 
 // 3. CURRENT SNAPSHOT FETCHER (Composition)
@@ -98,13 +107,11 @@ export const fetchLedgerHistory = async (
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  const queryParams = new URLSearchParams({
+  return apiFetch<LedgerHistoryResponse>('/api/ledger/history', {
     account_id: accountId,
     startDate: startDate,
     endDate: endDate
   });
-
-  return apiFetch<LedgerHistoryResponse>(`/api/ledger/history?${queryParams}`);
 };
 
 export const fetchGraphData = async (
@@ -165,15 +172,13 @@ export const fetchLedgerActivity = async (
   // MOCK DATA MODE
 
   // REAL API MODE
-  const queryParams = new URLSearchParams({
+  return apiFetch<ActivityPage>('/api/ledger/activity', {
     account_id: accountId, 
     startDate: startDate,
     endDate: endDate,
-    page: page.toString(),
-    pageSize: pageSize.toString()
+    page: page,
+    pageSize: pageSize
   });
-
-  return apiFetch<ActivityPage>(`/api/ledger/activity?${queryParams}`);
 };
 
 
@@ -186,13 +191,11 @@ export const fetchMarketSnapshots = async (limit: number = 7, sortByChange: bool
   // ==========================================
   // REAL API MODE - Uncomment when ready
   // ==========================================
-  const queryParams = new URLSearchParams({
-    limit: limit.toString(),
-    offset: '0',
+  return apiFetch<MarketSnapshotList>('/api/snapshots', {
+    limit: limit,
+    offset: 0,
     sort_by_change: sortByChange.toString()
   });
-
-  return apiFetch<MarketSnapshotList>(`/api/snapshots?${queryParams}`);
 };
 
 // Activity Helper (Composition)
@@ -289,7 +292,9 @@ export const fetchRawHoldings = async (accountId: string): Promise<PortfolioRead
   // MOCK MODE
 
   // REAL API MODE
-  return apiFetch<PortfolioRead>(`/api/holdings/${accountId}`);
+  return apiFetch<PortfolioRead>('/api/holdings', {
+    account_id: accountId
+  });
 };
 
 // 2. The "Enriched" Fetcher (What your React component actually calls)
