@@ -120,7 +120,7 @@ export const DashboardPage = () => {
               onClick={() => navigate('/ledger')}
               style={{
                 marginBlock: '5px',
-                color: '#000000',
+                color: dark ? '#F8FAFC' : '#0d0d14',
                 background: 'none',
                 border: 'none',
                 padding: 0,
@@ -134,7 +134,7 @@ export const DashboardPage = () => {
             >
               Recent Activity
             </button>
-            <p style={{marginBlock: '3px', color: '#696969'}}>Your recent transactions.</p>
+            <p style={{marginBlock: '3px', color:dark ? '#99a6b2' : '#484856'}}>Your recent transactions.</p>
           </div>
           
           {/* This single smart component replaces the entire rData map! */}

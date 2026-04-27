@@ -1,18 +1,10 @@
 // api.ts
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000'; // Update this if your local port is different
+import api from '@/features/auth/api';
 
 const apiFetch = async <T>(path: string): Promise<T> => {
-  const response = await fetch(`${BASE_URL}${path}`);
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    throw new Error(
-      `API request failed: ${response.status} ${response.statusText} ${errorText}`
-    );
-  }
-
-  return response.json();
+  const response = await api.get<T>(path);
+  return response.data;
 };
 
 // 1. INTERFACES

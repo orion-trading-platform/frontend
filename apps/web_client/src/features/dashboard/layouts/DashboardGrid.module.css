@@ -3,7 +3,7 @@
   height: auto; /* Full screen height */
   padding: 0px;
   box-sizing: border-box;
-  background-color: 	#0d1426; /* Light gray background */
+  background-color: 	#F8FAFC; /* Light gray background */
   gap: 20px;
   font-family: "Noto Sans", Roboto;
   width:100%;
@@ -57,7 +57,7 @@
 }
 
 .accountSummaryBox {
-  background: #0d1426;
+  background: transparent;
   border-radius: 12px;
   padding: 20px;
   /* border: 1px solid #BCCCDC; */
@@ -71,7 +71,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #c2c5cd;
+  color: #0d0d14;
   text-align: left;
 }
 
@@ -82,8 +82,8 @@
   flex-direction: column;
   background-image: url(recent4.png);
   border-radius: 40px;
-  color: #c2c5cd;
-  box-shadow: inset 0px 0px 50px -1px #0d1426, inset 0px 0px 40px -1px #0d1426, inset 0px 0px 30px -1px #0d1426, inset 0px 0px 20px -1px #0d1426, inset 0px 0px 10px -1px #0d1426, inset 0px 0px 50px -1px #0d1426;
+  color: #0d0d14;
+  box-shadow: inset 0px 0px 50px -1px #F8FAFC, inset 0px 0px 40px -1px #F8FAFC, inset 0px 0px 30px -1px #F8FAFC, inset 0px 0px 20px -1px #F8FAFC, inset 0px 0px 10px -1px #F8FAFC, inset 0px 0px 50px -1px #F8FAFC;
 
   /* Stick to the height of the main content */
   height: 100%; 
@@ -103,7 +103,7 @@
 
 .holdingsSection {
   grid-area: holdings;
-  background: #0d1426;
+  background: transparent;
   margin-left: 24px;
   margin-right: 24px;
   padding-right: 24px;
@@ -120,6 +120,30 @@
 :global(.dark) .container {
   background-color: #0D0D14;
 }
+
+:global(.dark) .accountSummaryTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #c2c5cd;
+  text-align: left;
+}
+
+:global(.dark) .sidebarArea {
+  grid-area: sidebar;
+  display:flex;
+  margin-right: 24px;
+  flex-direction: column;
+  background-image: url(recent4.png);
+  border-radius: 40px;
+  color: #c2c5cd;
+  box-shadow: inset 0px 0px 50px -1px #0d1426, inset 0px 0px 40px -1px #0d1426, inset 0px 0px 30px -1px #0d1426, inset 0px 0px 20px -1px #0d1426, inset 0px 0px 10px -1px #0d1426, inset 0px 0px 50px -1px #0d1426;
+
+  /* Stick to the height of the main content */
+  height: 100%; 
+  overflow-y: auto;
+}
+
 
 /* MOBILE LAYOUT: Stack everything vertically if screen is small */
 @media (max-width: 1024px) {
