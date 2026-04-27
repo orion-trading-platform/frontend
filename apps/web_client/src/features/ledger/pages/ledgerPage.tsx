@@ -607,7 +607,7 @@ export default function LedgerPage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <button
           type="button"
-          onClick={() => navigate("/ledger")}
+          onClick={() => navigate("/dashboard")}
           className="mb-6 border-0 bg-transparent p-0 text-sm text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200"
         >
           ← Return to home
