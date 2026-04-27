@@ -42,7 +42,7 @@
 }
 
 .label {
-  color: #c2c5cd;
+  color: #0d0d14;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -53,7 +53,7 @@
 .value {
   font-size: 24px;
   font-weight: 700;
-  color: #c2c5cd;
+  color: #0d0d14;
 }
 
 .valueBalance {
@@ -78,6 +78,48 @@
 }
 
 .red {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+
+:global(.dark) .label {
+  color: #c2c5cd;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+:global(.dark) .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #c2c5cd;
+}
+
+:global(.dark) .valueBalance {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Badges */
+:global(.dark) .badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+:global(.dark) .green {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+:global(.dark) .red {
   background-color: #fee2e2;
   color: #991b1b;
 }
