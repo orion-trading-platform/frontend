@@ -539,7 +539,7 @@ export default function LedgerPage() {
   const summaryCards = [
     { title: "Net P/L", value: summary ? formatMoney(summary.netPL) : "--" },
     { title: "Realized P/L", value: summary ? formatMoney(summary.realizedPL) : "--" },
-    { title: "Unrealized P/L (pending)", value: summary ? formatMoney(summary.unrealizedPL) : "--" },
+    { title: "Unrealized P/L", value: summary ? formatMoney(summary.unrealizedPL) : "--" },
     { title: "Cash Balance", value: summary ? formatMoney(summary.cashBalance) : "--" },
   ];
 
