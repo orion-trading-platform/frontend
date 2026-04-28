@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { Spinner } from 'ui-kit';
-import Logo from '@/assets/logo-white.svg';
 import { useNavigate } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import LoginRightColumn from './LoginRightColumn';
@@ -120,11 +119,6 @@ const ResetPassword: React.FC = () => {
           {/* Background blobs */}
           <div aria-hidden="true" className="blob1 absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[100px] pointer-events-none" />
           <div aria-hidden="true" className="blob2 absolute -bottom-16 -right-16 w-[440px] h-[440px] rounded-full bg-emerald-500/15 blur-[110px] pointer-events-none" />
-
-          {/* Logo */}
-          <div className="absolute top-6 left-7">
-            <img src={Logo} alt="Orion" className="h-[18px] w-auto" />
-          </div>
 
           {/* Form */}
           <div className="relative z-10 w-full max-w-[380px]">
