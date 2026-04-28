@@ -133,6 +133,12 @@ const LoginLeftColumn: React.FC = () => {
         }
         .blob1 { animation: blobFloat1 20s ease-in-out infinite; will-change: transform; }
         .blob2 { animation: blobFloat2 25s ease-in-out infinite; will-change: transform; }
+        .g-recaptcha > div,
+        .rc-anchor-light {
+          background: transparent !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
       `}</style>
 
       {isLoading && <Spinner overlay />}
