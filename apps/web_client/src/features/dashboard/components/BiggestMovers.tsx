@@ -1,17 +1,65 @@
-import { MoverItem, MOCK_BIGGEST_MOVERS } from '../data/biggestMoversData';
+import { useEffect, useState } from 'react';
+import { fetchHeaderBigMovers, MoverItem } from '../api/dashboardApi'; 
+import { subscribeToStream } from '@/features/ordering/api/stream'; // adjust path if needed
 import styles from './BiggestMovers.module.css';
 
 interface BiggestMoversProps {
-  movers?: MoverItem[];
   onSelect?: (symbol: string) => void;
 }
 
-export const BiggestMovers = ({ movers = MOCK_BIGGEST_MOVERS, onSelect }: BiggestMoversProps) => {
+export const BiggestMovers = ({ onSelect }: BiggestMoversProps) => {
+  const [movers, setMovers] = useState<MoverItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const loadMovers = async () => {
+      try {
+        const data = await fetchHeaderBigMovers();
+        setMovers(data);
+      } catch (error) {
+        console.error('Failed to fetch big movers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMovers();
+  }, []);
+
+  useEffect(() => {
+    if (movers.length === 0) return;
+
+    const symbols = movers.map((m) => m.symbol);
+
+    const unsubscribe = subscribeToStream(symbols, (update) => {
+      setMovers((prev) =>
+        prev.map((m) =>
+          m.symbol === update.symbol
+            ? { ...m, price: update.price }
+            : m
+        )
+      );
+    });
+
+    return unsubscribe;
+  }, [movers.map((m) => m.symbol).join(',')]);
+
+  if (loading) {
+    return (
+      <div className={styles.wrapper}>
+        <div className={styles.list}>
+          <span>Loading market data...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.list}>
         {movers.map((m) => {
           const isPositive = m.changePercent >= 0;
+
           return (
             <button
               key={m.symbol}
