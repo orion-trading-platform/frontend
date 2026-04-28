@@ -110,7 +110,7 @@ function TabButton({ active, label, onClick }: { active: boolean; label: string;
       onClick={onClick}
       className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
         active
-          ? "bg-[#5B6AD4] text-black"
+          ? "bg-[#5B6AD4] text-slate-200"
           : "bg-white dark:bg-[#0f1520] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[rgba(148,163,184,0.14)] hover:bg-slate-50 dark:hover:bg-[#121b2a]"
       }`}
     >
@@ -632,7 +632,7 @@ export default function LedgerPage() {
             <button
               onClick={() => window.print()}
               aria-label="Print page"
-              className="rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
+              className="rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-slate-200 hover:opacity-90"
             >
               Print
             </button>
@@ -715,7 +715,7 @@ export default function LedgerPage() {
                   fetchActivity();
                 }}
                 aria-label="Refresh data"
-                className="w-full rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-black hover:opacity-90"
+                className="w-full rounded-xl bg-[#5B6AD4] px-4 py-2 text-sm font-semibold text-slate-200 hover:opacity-90"
               >
                 Refresh
               </button>
