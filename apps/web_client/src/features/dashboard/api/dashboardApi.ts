@@ -1,6 +1,8 @@
 // api.ts
 
 import api from '@/features/auth/api';
+import { getStockSnapshot } from "@/features/ordering/api/stocks";
+import { subscribeToStream } from "@/features/ordering/api/stream";
 
 const apiFetch = async <T>(
   path: string,
@@ -126,6 +128,15 @@ export const fetchGraphData = async (
   const endDateStr = getFormattedDate(end);
 
   const response = await fetchLedgerHistory(accountId, startDateStr, endDateStr);
+
+  console.log("fetchGraphData ledger history response:", {
+    accountId,
+    days,
+    startDateStr,
+    endDateStr,
+    response,
+    historyLength: response.history?.length,
+  });
   
   // Map the backend's heavy response into a lightweight array for your graph
   return response.history.map(item => ({
@@ -235,32 +246,32 @@ let cachedMovers: MoverItem[] | null = null;
 let lastMoversFetchTime = 0;
 const CACHE_TTL = 60 * 1000; // 60 seconds
 
+const DEMO_MOVER_SYMBOLS = ["AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA"];
+
 export const fetchHeaderBigMovers = async (): Promise<MoverItem[]> => {
   const now = Date.now();
 
-  // 1. Return cached data if it's fresh
-  if (cachedMovers && (now - lastMoversFetchTime < CACHE_TTL)) {
+  if (cachedMovers && now - lastMoversFetchTime < CACHE_TTL) {
     return cachedMovers;
   }
 
-  // 2. Fetch the top 7 dynamically from the new endpoint
-  const snapshotData = await fetchMarketSnapshots(7, true);
+  const freshMovers: MoverItem[] = await Promise.all(
+    DEMO_MOVER_SYMBOLS.map(async (symbol) => {
+      const snap = await getStockSnapshot(symbol);
 
-  // 3. Map the backend schema to your React component's exact needs
-  const freshMovers: MoverItem[] = snapshotData.snapshots.map(snap => ({
-    symbol: snap.ticker_symbol,
-    price: parseFloat(snap.price),
-    // If daily_change_pct is null for some reason, default to 0
-    changePercent: snap.daily_change_pct ? parseFloat(snap.daily_change_pct) : 0 
-  }));
+      return {
+        symbol: snap.symbol,
+        price: snap.price > 0 ? snap.price : snap.open,
+        changePercent: snap.changePercent,
+      };
+    })
+  );
 
-  // 4. Save to cache
   cachedMovers = freshMovers;
   lastMoversFetchTime = now;
 
   return freshMovers;
 };
-
 // ==========================================
 // HOLDINGS / POSITIONS
 // ==========================================
@@ -356,17 +367,25 @@ export const fetchAccountStats = async (
 ): Promise<AccountStats> => {
   const today = getFormattedDate(new Date());
 
-  const summary = await fetchLedgerSummary(accountId, today, today);
+  const [summary, holdings] = await Promise.all([
+    fetchLedgerSummary(accountId, today, today),
+    fetchHoldings(accountId),
+  ]);
+
+  const totalHoldingsMarketValue = holdings.reduce((sum, holding) => {
+    return sum + holding.quantity * holding.currentPrice;
+  }, 0);
 
   const netPL = summary.netPL || 0;
-  const unrealizedPL = summary.unrealizedPL || 0;
 
-  // Mirrors the ledger page logic: account value = cash + unrealized P/L
-  const portfolioValue = cashBalance + unrealizedPL;
+  const portfolioValue = cashBalance + totalHoldingsMarketValue;
 
   const dayChangeAmt = netPL;
-  const dayChangePct = portfolioValue > 0 ? (dayChangeAmt / portfolioValue) * 100 : 0;
-  const totalYield = portfolioValue > 0 ? (netPL / portfolioValue) * 100 : 0;
+  const dayChangePct =
+    portfolioValue > 0 ? (dayChangeAmt / portfolioValue) * 100 : 0;
+
+  const totalYield =
+    portfolioValue > 0 ? (netPL / portfolioValue) * 100 : 0;
 
   return {
     portfolioValue: parseFloat(portfolioValue.toFixed(2)),

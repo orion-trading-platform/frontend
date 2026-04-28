@@ -7,35 +7,40 @@ import styles from './RecentActivity.module.css';
 // 1. THE INDIVIDUAL ROW / CARD
 // ==========================================
 const ActivityCard = ({ item }: { item: ActivityItem }) => {
-  // Translate backend schema to your UI logic
+  const type = item.type?.toUpperCase();
+
   let uiType = 'Unknown';
-  if (item.type === 'TRADE') {
-    uiType = (item.quantity && item.quantity > 0) ? 'Buy' : 'Sell';
-  } else if (item.type === 'TRANSFER') {
-    uiType = item.subtype === 'DEPOSIT' ? 'Deposit' : 'Withdrawal';
-  } else if (item.type === 'DIVIDEND') {
-    uiType = 'Dividend';
+
+  if (type === 'TRADE') {
+    uiType = item.quantity && item.quantity > 0 ? 'Buy' : 'Sell';
+  } else if (type === 'DEPOSIT') {
+    uiType = 'Deposit';
+  } else if (type === 'WITHDRAWAL') {
+    uiType = 'Withdrawal';
+  } else if (type === 'REJECTED') {
+    uiType = 'Rejected';
   }
 
-  // Format the text
+  const iconName = uiType === 'Rejected' ? 'Pulse' : uiType;
+
   const tickerStr = item.symbol ? ` ${item.symbol}` : '';
   const dateStr = new Date(item.timestamp).toLocaleDateString(undefined, { 
     month: 'short', day: 'numeric', year: 'numeric' 
   }); 
   const amountAbs = item.amount ? Math.abs(item.amount).toFixed(2) : '0.00';
 
-  // Your +/- logic, expanded to include Dividends and Deposits
-  const isPositiveImpact = uiType === 'Sell' || uiType === 'Deposit' || uiType === 'Dividend';
+  const isPositiveImpact = uiType === 'Sell' || uiType === 'Deposit';
   
   return (
     <div className={styles.card}>
       <div className={styles.icon}>
         <img 
-          src={`/src/features/dashboard/components/icons/${uiType}Icon.png`} 
+          src={`/src/features/dashboard/components/icons/${iconName}Icon.png`} 
           alt={`${uiType} Icon`} 
           style={{ width: '36px', height: '36px', borderRadius: '12px' }}
-          // Fallback just in case an icon is missing from your folder
-          onError={(e) => e.currentTarget.src = '/src/features/dashboard/components/icons/DefaultIcon.png'}
+          onError={(e) => {
+            e.currentTarget.src = '/src/features/dashboard/components/icons/DefaultIcon.png';
+          }}
         />
       </div>
       <div className={styles.content}>
@@ -44,7 +49,7 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
             {uiType}{tickerStr}
           </span>
           <span className={`${styles.value} ${isPositiveImpact ? styles.valuePos : styles.valueNeg}`}>
-            {isPositiveImpact ? "+ " : "- "}${amountAbs}
+            {isPositiveImpact ? '+ ' : '- '}${amountAbs}
           </span>
         </div>
         <div className={styles.caption}>
@@ -59,7 +64,6 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
     </div>
   );
 };
-
 // ==========================================
 // 2. THE PARENT FEED (Exports to your Dashboard)
 // ==========================================
