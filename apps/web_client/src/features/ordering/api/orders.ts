@@ -37,6 +37,15 @@ export async function placeOrder(order: OrderRequest): Promise<OrderResponse> {
   return res.data as OrderResponse;
 }
 
+export async function getOwnedShares(
+  accountId: string,
+  symbol: string
+): Promise<number> {
+  const res = await api.get(`/holdings/${accountId}/${symbol}`);
+  const quantity = Number.parseFloat(String(res.data?.quantity ?? 0));
+  return Number.isFinite(quantity) && quantity > 0 ? quantity : 0;
+}
+
 export async function cancelOrder(
   ticker: string,
   timestamp: number

@@ -161,7 +161,7 @@ export function OrderingPage() {
         >
           ← Return to home
         </button>
-        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5">
+        <div className="mb-6 rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
               <svg className="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,39 +169,39 @@ export function OrderingPage() {
               </svg>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm text-gray-500">Cash in Wallet</div>
-              <div className="break-words text-2xl font-bold" title={cashLabel}>
+              <div className="text-sm text-gray-500 dark:text-slate-400">Cash in Wallet</div>
+              <div className="break-words text-2xl font-bold text-gray-900 dark:text-slate-100" title={cashLabel}>
                 {cashLabel}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mb-6 rounded-xl border border-gray-200 bg-white p-6">
+        <div className="mb-6 rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
           <div className="mb-4 flex items-start justify-between">
             <div>
               <div className="mb-2 flex items-center gap-3">
-                <h2 className="text-2xl font-bold">{snapshot.symbol}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">{snapshot.symbol}</h2>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold">${currentPrice.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-gray-900 dark:text-slate-100">${currentPrice.toFixed(2)}</span>
                 <span className={`text-lg font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
                   {isPositive ? "+" : ""}${snapshot.change.toFixed(2)} ({isPositive ? "+" : ""}{snapshot.changePercent.toFixed(2)}%)
                 </span>
               </div>
             </div>
-            <div className="text-right text-sm text-gray-500">
+            <div className="text-right text-sm text-gray-500 dark:text-slate-400">
               <div>{snapshot.marketStatus}</div>
               <div>{snapshot.lastUpdated}</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-5 gap-4 border-t border-gray-200 pt-4">
+          <dl className="grid grid-cols-5 gap-4 border-t border-gray-200 dark:border-[rgba(148,163,184,0.10)] pt-4">
             <StatItem label="Open" value={`$${snapshot.open.toFixed(2)}`} />
             <StatItem label="High" value={`$${snapshot.high.toFixed(2)}`} />
             <StatItem label="Low" value={`$${snapshot.low.toFixed(2)}`} />
             <StatItem label="Volume" value={snapshot.volume} />
-          </div>
+          </dl>
         </div>
 
         <div className="grid grid-cols-3 gap-6">
@@ -228,8 +228,8 @@ export function OrderingPage() {
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="text-sm text-gray-500">{label}</div>
-      <div className="font-semibold">{value}</div>
+      <dt className="text-sm text-gray-500 dark:text-slate-400">{label}</dt>
+      <dd className="font-semibold text-gray-900 dark:text-slate-100">{value}</dd>
     </div>
   );
 }

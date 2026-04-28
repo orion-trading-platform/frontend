@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { OrderConfirmation } from "./OrderConfirmation";
-import { placeOrder, type OrderResponse } from "../api/orders";
+import { getOwnedShares, placeOrder, type OrderResponse } from "../api/orders";
 
 interface OrderPanelProps {
   symbol: string;
@@ -24,27 +24,88 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResponse | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [ownedShares, setOwnedShares] = useState<number>(0);
+  const [isLoadingOwnedShares, setIsLoadingOwnedShares] = useState(false);
+  const [lastSubmittedPrice, setLastSubmittedPrice] = useState<number | null>(null);
 
-  const shares = Number.parseFloat(quantity) || 0;
+  const shares = Number.parseFloat(quantity);
+  const normalizedShares = Number.isFinite(shares) ? shares : 0;
   const effectivePrice =
-    orderType === "market" ? currentPrice : Number.parseFloat(limitPrice) || currentPrice;
-  const totalAmount = shares * effectivePrice;
+    orderType === "market" ? currentPrice : Number.parseFloat(limitPrice) || 0;
+  const totalAmount = normalizedShares * effectivePrice;
   const estimatedCost = totalAmount + totalAmount * 0.0001;
 
+  useEffect(() => {
+    if (!accountId || !symbol) {
+      setOwnedShares(0);
+      return;
+    }
+    let cancelled = false;
+    setIsLoadingOwnedShares(true);
+    getOwnedShares(accountId, symbol)
+      .then((qty) => {
+        if (!cancelled) setOwnedShares(qty);
+      })
+      .catch(() => {
+        if (!cancelled) setOwnedShares(0);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingOwnedShares(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId, symbol]);
+
+  const isPositiveIntegerShares = Number.isInteger(normalizedShares) && normalizedShares > 0;
+  const hasValidPrice = orderType === "market" ? currentPrice > 0 : effectivePrice > 0;
   const canAfford = orderSide === "buy" ? estimatedCost <= buyingPower : true;
-  const maxShares = orderSide === "buy" ? Math.floor(buyingPower / currentPrice) : 0;
+  const hasEnoughShares = orderSide === "sell" ? normalizedShares <= ownedShares : true;
+  const maxShares = orderSide === "buy" ? Math.floor(buyingPower / currentPrice) : Math.floor(ownedShares);
+  const submitDisabled =
+    !isPositiveIntegerShares ||
+    !hasValidPrice ||
+    !canAfford ||
+    !hasEnoughShares ||
+    (orderSide === "sell" && isLoadingOwnedShares);
+
+  const validationMessage = useMemo(() => {
+    if (!isPositiveIntegerShares) {
+      return "Enter a valid share quantity greater than 0.";
+    }
+    if (!hasValidPrice) {
+      return "Enter a valid price greater than $0.00.";
+    }
+    if (orderSide === "buy" && !canAfford) {
+      return "Insufficient funds for this order.";
+    }
+    if (orderSide === "sell" && !hasEnoughShares) {
+      return "You do not have enough shares to sell.";
+    }
+    return null;
+  }, [isPositiveIntegerShares, hasValidPrice, orderSide, canAfford, hasEnoughShares]);
+  const shouldShowValidation =
+    quantity.trim().length > 0 || (orderType === "limit" && limitPrice.trim().length > 0);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (shares <= 0) return;
+    if (!isPositiveIntegerShares) return;
+    if (!hasValidPrice) return;
     if (!canAfford) return;
-    if (orderType === "limit" && !limitPrice) return;
+    if (!hasEnoughShares) {
+      setOrderError("You do not have enough shares to sell.");
+      return;
+    }
     setOrderResult(null);
     setOrderError(null);
     setShowConfirmation(true);
   };
 
   const handleConfirmOrder = async () => {
+    if (submitDisabled) {
+      if (validationMessage) setOrderError(validationMessage);
+      return;
+    }
     setIsSubmitting(true);
     setOrderError(null);
     try {
@@ -54,9 +115,10 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
         accountId,
         side: orderSide.toUpperCase() as "BUY" | "SELL",
         type: orderType.toUpperCase() as "MARKET" | "LIMIT",
-        qty: shares,
-        limit_price: limitPrice ? Number.parseFloat(limitPrice) : undefined,
+        qty: normalizedShares,
+        limit_price: orderType === "limit" ? effectivePrice : undefined,
       });
+      setLastSubmittedPrice(effectivePrice);
       setOrderResult(result);
       onOrderPlaced(result);
       setShowConfirmation(false);
@@ -72,11 +134,11 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
 
   return (
     <>
-      <div className="rounded-xl border border-gray-200 bg-white p-6">
-        <h3 className="mb-4 text-lg font-bold">Place Order</h3>
+      <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
+        <h3 className="mb-4 text-lg font-bold dark:text-slate-100">Place Order</h3>
 
         {orderError && (
-          <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400">
             {orderError}
           </div>
         )}
@@ -85,15 +147,19 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
           <div
             className={`mb-4 rounded-lg p-3 text-sm ${
               orderResult.status === "filled"
-                ? "bg-green-50 text-green-800"
-                : "bg-blue-50 text-blue-800"
+                ? "bg-green-50 dark:bg-green-500/10 text-green-800 dark:text-green-400"
+                : "bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400"
             }`}
           >
             <div className="font-semibold">
               Order {orderResult.status === "filled" ? "Filled" : "Pending"}
             </div>
             <div className="mt-0.5 text-xs opacity-75">
-              {orderResult.orderId} · {orderResult.qty} shares @ ${orderResult.executedPrice.toFixed(2)}
+              {orderResult.orderId} · {orderResult.qty} shares @ $
+              {(orderResult.executedPrice > 0
+                ? orderResult.executedPrice
+                : (lastSubmittedPrice ?? effectivePrice)
+              ).toFixed(2)}
             </div>
           </div>
         )}
@@ -106,7 +172,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
               className={`rounded-lg px-4 py-3 font-medium transition-colors ${
                 orderSide === "buy"
                   ? "bg-green-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  : "bg-gray-100 dark:bg-[rgba(148,163,184,0.08)] text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-[rgba(148,163,184,0.12)]"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -120,7 +186,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
               className={`rounded-lg px-4 py-3 font-medium transition-colors ${
                 orderSide === "sell"
                   ? "bg-red-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  : "bg-gray-100 dark:bg-[rgba(148,163,184,0.08)] text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-[rgba(148,163,184,0.12)]"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
@@ -131,37 +197,37 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">Order Type</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">Order Type</label>
             <select
               value={orderType}
               onChange={(event) => setOrderType(event.target.value as OrderType)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-[rgba(148,163,184,0.15)] bg-white dark:bg-[#0b111b] text-gray-900 dark:text-slate-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="market">Market Order</option>
               <option value="limit">Limit Order</option>
             </select>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
               {orderType === "market" && "Execute immediately at current market price"}
               {orderType === "limit" && "Execute only at specified price or better"}
             </p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">
               Quantity (Shares)
             </label>
             <input
               type="number"
-              min="0"
+                min="1"
               step="1"
               value={quantity}
               onChange={(event) => setQuantity(event.target.value)}
               placeholder="0"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 dark:border-[rgba(148,163,184,0.15)] bg-white dark:bg-[#0b111b] text-gray-900 dark:text-slate-100 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {orderSide === "buy" && maxShares > 0 && (
+            {maxShares > 0 && (
               <div className="mt-1 flex items-center justify-between">
-                <p className="text-xs text-gray-500">Max: {maxShares} shares</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">Max: {maxShares} shares</p>
                 <button
                   type="button"
                   onClick={() => setQuantity(maxShares.toString())}
@@ -175,50 +241,50 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
 
           {orderType === "limit" && (
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">Limit Price</label>
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-slate-300">Limit Price</label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-gray-500">$</span>
+                <span className="absolute left-3 top-2 text-gray-500 dark:text-slate-400">$</span>
                 <input
                   type="number"
-                  min="0"
+                  min="0.01"
                   step="0.01"
                   value={limitPrice}
                   onChange={(event) => setLimitPrice(event.target.value)}
                   placeholder={currentPrice.toFixed(2)}
-                  className="w-full rounded-lg border border-gray-300 py-2 pl-7 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-[rgba(148,163,184,0.15)] bg-white dark:bg-[#0b111b] text-gray-900 dark:text-slate-100 py-2 pl-7 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
           )}
 
-          <div className="space-y-2 rounded-lg bg-gray-50 p-4">
+          <div className="space-y-2 rounded-lg bg-gray-50 dark:bg-[rgba(148,163,184,0.05)] p-4">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Share Price</span>
-              <span className="font-semibold">${currentPrice.toFixed(2)}</span>
+              <span className="text-gray-600 dark:text-slate-400">Share Price</span>
+              <span className="font-semibold dark:text-slate-100">${currentPrice.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Quantity</span>
-              <span className="font-semibold">{shares} shares</span>
+              <span className="text-gray-600 dark:text-slate-400">Quantity</span>
+              <span className="font-semibold dark:text-slate-100">{normalizedShares} shares</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-semibold">${totalAmount.toFixed(2)}</span>
+              <span className="text-gray-600 dark:text-slate-400">Subtotal</span>
+              <span className="font-semibold dark:text-slate-100">${totalAmount.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Est. Commission</span>
-              <span className="font-semibold">${(estimatedCost - totalAmount).toFixed(2)}</span>
+              <span className="text-gray-600 dark:text-slate-400">Est. Commission</span>
+              <span className="font-semibold dark:text-slate-100">${(estimatedCost - totalAmount).toFixed(2)}</span>
             </div>
-            <div className="flex items-center justify-between border-t border-gray-200 pt-2">
-              <span className="font-semibold">Total</span>
-              <span className="text-lg font-bold">${estimatedCost.toFixed(2)}</span>
+            <div className="flex items-center justify-between border-t border-gray-200 dark:border-[rgba(148,163,184,0.10)] pt-2">
+              <span className="font-semibold dark:text-slate-100">Total</span>
+              <span className="text-lg font-bold dark:text-slate-100">${estimatedCost.toFixed(2)}</span>
             </div>
           </div>
 
           {orderSide === "buy" && (
             <div className="flex items-start gap-2 text-sm">
-              <Info className="mt-0.5 size-4 text-gray-400" />
+              <Info className="mt-0.5 size-4 text-gray-400 dark:text-slate-500" />
               <div>
-                <div className="text-gray-600">Available Buying Power</div>
+                <div className="text-gray-600 dark:text-slate-400">Available Buying Power</div>
                 <div className={`font-semibold ${canAfford ? "text-green-500" : "text-red-500"}`}>
                   ${buyingPower.toFixed(2)}
                   {!canAfford && " - Insufficient funds"}
@@ -226,14 +292,30 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
               </div>
             </div>
           )}
+          {orderSide === "sell" && (
+            <div className="flex items-start gap-2 text-sm">
+              <Info className="mt-0.5 size-4 text-gray-400 dark:text-slate-500" />
+              <div>
+                <div className="text-gray-600 dark:text-slate-400">Shares Owned ({symbol})</div>
+                <div className="font-semibold text-gray-800 dark:text-slate-100">
+                  {isLoadingOwnedShares ? "Loading..." : ownedShares.toFixed(0)}
+                </div>
+              </div>
+            </div>
+          )}
+          {validationMessage && shouldShowValidation && (
+            <div className="rounded-lg bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400">
+              {validationMessage}
+            </div>
+          )}
 
           <button
             type="submit"
-            disabled={shares <= 0 || !canAfford}
+            disabled={submitDisabled}
             className={`w-full rounded-lg px-4 py-3 font-medium text-white transition-colors disabled:cursor-not-allowed ${
               orderSide === "buy"
-                ? "bg-green-500 hover:bg-green-600 disabled:bg-gray-300"
-                : "bg-red-500 hover:bg-red-600 disabled:bg-gray-300"
+                ? "bg-green-500 hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-slate-700"
+                : "bg-red-500 hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-slate-700"
             }`}
           >
             Review {orderSide === "buy" ? "Buy" : "Sell"} Order
@@ -246,7 +328,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
           orderSide={orderSide}
           orderType={orderType}
           symbol={symbol}
-          quantity={shares}
+          quantity={normalizedShares}
           price={effectivePrice}
           totalAmount={estimatedCost}
           isSubmitting={isSubmitting}
