@@ -442,7 +442,7 @@ export default function LedgerPage() {
         ...summary,
         cashBalance: balanceNum,
         // Total performance = banked + what is still fluctuating
-        netPL: (summary.realizedPL || 0) + (summary.unrealizedPL || 0),
+        netPL: (summary.realizedPL || 0),
         // Total value = Cash on hand + value of open positions
         accountValue: balanceNum + (summary.unrealizedPL || 0)
       };
