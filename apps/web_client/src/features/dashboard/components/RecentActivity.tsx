@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useAccount } from '@/features/auth';
-import { fetchRecentActivity, ActivityItem } from '../api/dashboardApi'; // Adjust path
+import { fetchRecentActivity, ActivityItem } from '../api/dashboardApi';
 import styles from './RecentActivity.module.css';
+
+import BuyIcon from './icons/BuyIcon.png';
+import SellIcon from './icons/SellIcon.png';
+import DepositIcon from './icons/DepositIcon.png';
+import DividendIcon from './icons/DividendIcon.png';
+import TradeIcon from './icons/TradeIcon.png';
+import PulseIcon from './icons/PulseIcon.png';
+import CashIcon from './icons/CashIcon.png';
 
 // ==========================================
 // 1. THE INDIVIDUAL ROW / CARD
@@ -21,41 +29,55 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
     uiType = 'Rejected';
   }
 
-  const iconName = uiType === 'Rejected' ? 'Pulse' : uiType;
+ const iconMap: Record<string, string> = {
+    Buy: BuyIcon,
+    Sell: SellIcon,
+    Deposit: DepositIcon,
+    Withdrawal: CashIcon,
+    Rejected: PulseIcon,
+    Trade: TradeIcon,
+    Dividend: DividendIcon,
+    Unknown: CashIcon,
+  };
+
+  const iconSrc = iconMap[uiType] ?? CashIcon;
 
   const tickerStr = item.symbol ? ` ${item.symbol}` : '';
-  const dateStr = new Date(item.timestamp).toLocaleDateString(undefined, { 
-    month: 'short', day: 'numeric', year: 'numeric' 
-  }); 
-  const amountAbs = item.amount ? Math.abs(item.amount).toFixed(2) : '0.00';
+  const dateStr = new Date(item.timestamp).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
+  const amountAbs = item.amount ? Math.abs(item.amount).toFixed(2) : '0.00';
   const isPositiveImpact = uiType === 'Sell' || uiType === 'Deposit';
-  
+
   return (
     <div className={styles.card}>
       <div className={styles.icon}>
-        <img 
-          src={`/src/features/dashboard/components/icons/${iconName}Icon.png`} 
-          alt={`${uiType} Icon`} 
+        <img
+          src={iconSrc}
+          alt={`${uiType} Icon`}
           style={{ width: '36px', height: '36px', borderRadius: '12px' }}
-          onError={(e) => {
-            e.currentTarget.src = '/src/features/dashboard/components/icons/DefaultIcon.png';
-          }}
         />
       </div>
+
       <div className={styles.content}>
         <div className={styles.headerRow}>
           <span className={styles.label}>
             {uiType}{tickerStr}
           </span>
+
           <span className={`${styles.value} ${isPositiveImpact ? styles.valuePos : styles.valueNeg}`}>
             {isPositiveImpact ? '+ ' : '- '}${amountAbs}
           </span>
         </div>
+
         <div className={styles.caption}>
           <div className={styles.time}>
             {dateStr}
           </div>
+
           <div className={styles.status}>
             {item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}
           </div>
@@ -64,16 +86,14 @@ const ActivityCard = ({ item }: { item: ActivityItem }) => {
     </div>
   );
 };
+
 // ==========================================
 // 2. THE PARENT FEED (Exports to your Dashboard)
 // ==========================================
-
-// 1. Define the props interface to include onClick
 export interface RecentActivityFeedProps {
   onClick?: () => void;
 }
 
-// 2. Destructure onClick in the component parameters
 export const RecentActivityFeed = ({ onClick }: RecentActivityFeedProps) => {
   const { account, isLoading: accountLoading } = useAccount();
 
@@ -120,9 +140,8 @@ export const RecentActivityFeed = ({ onClick }: RecentActivityFeedProps) => {
   }
 
   return (
-    // 3. Attach onClick here, and optionally add a pointer cursor so users know it's clickable
-    <div 
-      className={styles.feedContainer} 
+    <div
+      className={styles.feedContainer}
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
     >
