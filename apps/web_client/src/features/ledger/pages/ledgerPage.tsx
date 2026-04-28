@@ -875,10 +875,9 @@ export default function LedgerPage() {
             </div>
           </div>
         </Panel>
-
         <div className="mt-6 text-xs text-slate-400 dark:text-slate-500">
-          Clicking any row opens a details drawer (calls{" "}
-          <code className="rounded bg-slate-100 dark:bg-[#0f1520] px-1 py-[2px] text-slate-700 dark:text-slate-200">/api/ledger/activity/:id</code>)
+          Clicking any row opens a details drawer (
+          <code className="rounded bg-slate-100 dark:bg-[#0f1520] px-1 py-[2px] text-slate-700 dark:text-slate-200"></code>)
         </div>
       </div>
     </div>
