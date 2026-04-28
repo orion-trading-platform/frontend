@@ -169,7 +169,7 @@ export function OrderingPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm text-gray-500">Cash in Wallet</div>
-              <div className="break-words text-2xl font-bold" title={cashLabel}>
+              <div className="break-words text-2xl font-bold text-gray-900" title={cashLabel}>
                 {cashLabel}
               </div>
             </div>
@@ -180,10 +180,10 @@ export function OrderingPage() {
           <div className="mb-4 flex items-start justify-between">
             <div>
               <div className="mb-2 flex items-center gap-3">
-                <h2 className="text-2xl font-bold">{snapshot.symbol}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{snapshot.symbol}</h2>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold">${currentPrice.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-gray-900">${currentPrice.toFixed(2)}</span>
                 <span className={`text-lg font-medium ${isPositive ? "text-green-500" : "text-red-500"}`}>
                   {isPositive ? "+" : ""}${snapshot.change.toFixed(2)} ({isPositive ? "+" : ""}{snapshot.changePercent.toFixed(2)}%)
                 </span>
@@ -228,7 +228,7 @@ function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div className="text-sm text-gray-500">{label}</div>
-      <div className="font-semibold">{value}</div>
+      <div className="font-semibold text-gray-900">{value}</div>
     </div>
   );
 }
