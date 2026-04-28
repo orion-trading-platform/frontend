@@ -25,7 +25,7 @@ export const HoldingsTable = ({ holdings, publicOnly, onSelect }: HoldingsTableP
             <th className={styles.th}>Ticker</th>
             <th className={styles.th}>Current Price</th>
             {!publicOnly && <th className={styles.th}>Cost Basis</th>}
-            <th className={styles.th}>Change Daily</th>
+            <th className={styles.th}>Change Daily %</th>
             {/* Kept publicOnly checks for Quantity and Total Return! */}
             {!publicOnly && <th className={styles.th}>Quantity</th>}
             {!publicOnly && <th className={styles.th}>Total Return</th>}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bar, ComposedChart, ErrorBar, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTheme } from '@/ThemeContext';
 import { getStockBars } from "../api/stocks";
 
 // Maps UI button labels to API timeframe param and how many days back to fetch
@@ -102,6 +103,7 @@ function CandlestickTooltipContent({
 }
 
 export function StockChart({ symbol }: StockChartProps) {
+  const { dark } = useTheme();
   const [timeframe, setTimeframe] = useState("1D");
   const [chartFormat, setChartFormat] = useState<ChartFormat>("line");
   const [bars, setBars] = useState<OHLCBar[]>([]);
@@ -153,12 +155,15 @@ export function StockChart({ symbol }: StockChartProps) {
 
   const yDomain = chartFormat === "line" ? ["dataMin - 1", "dataMax + 1"] : candlestickYDomain;
 
+  const axisTickFill = dark ? "#94a3b8" : "#6b7280";
+  const axisLineStroke = dark ? "rgba(148,163,184,0.15)" : "#e5e7eb";
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6">
+    <div className="rounded-xl border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-white dark:bg-[#0f1520] p-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-lg font-bold">Price Chart</h3>
+        <h3 className="text-lg font-bold dark:text-slate-100">Price Chart</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
+          <div className="flex rounded-lg border border-gray-200 dark:border-[rgba(148,163,184,0.10)] bg-gray-50 dark:bg-[#0b111b] p-0.5">
             {(["line", "candlestick"] as const).map((format) => (
               <button
                 key={format}
@@ -166,8 +171,8 @@ export function StockChart({ symbol }: StockChartProps) {
                 onClick={() => setChartFormat(format)}
                 className={`rounded-md px-3 py-1.5 text-sm font-medium capitalize transition-colors ${
                   chartFormat === format
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900"
+                    ? "bg-white dark:bg-[#0f1520] text-gray-900 dark:text-slate-100 shadow-sm"
+                    : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100"
                 }`}
               >
                 {format === "line" ? "Line" : "Candlestick"}
@@ -181,7 +186,7 @@ export function StockChart({ symbol }: StockChartProps) {
                 type="button"
                 onClick={() => setTimeframe(tf)}
                 className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
-                  timeframe === tf ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-100"
+                  timeframe === tf ? "bg-blue-600 text-white" : "text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-[rgba(148,163,184,0.08)]"
                 }`}
               >
                 {tf}
@@ -192,11 +197,11 @@ export function StockChart({ symbol }: StockChartProps) {
       </div>
 
       {isLoading ? (
-        <div className="flex h-[300px] items-center justify-center text-gray-400">Loading...</div>
+        <div className="flex h-[300px] items-center justify-center text-gray-400 dark:text-slate-500">Loading...</div>
       ) : bars.length === 0 ? (
         <div
           role="status"
-          className="flex h-[300px] items-center justify-center px-4 text-center text-gray-500"
+          className="flex h-[300px] items-center justify-center px-4 text-center text-gray-500 dark:text-slate-400"
         >
           No data available for the selected timeframe.
         </div>
@@ -220,18 +225,18 @@ export function StockChart({ symbol }: StockChartProps) {
                 }
                 return formatStockAxisTick(Number(v), timeframe);
               }}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: axisTickFill }}
               tickLine={false}
-              axisLine={{ stroke: "#e5e7eb" }}
+              axisLine={{ stroke: axisLineStroke }}
               padding={{ left: 0, right: 0 }}
             />
             <YAxis
               type="number"
               domain={yDomain}
               allowDataOverflow={chartFormat === "candlestick"}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
+              tick={{ fontSize: 12, fill: axisTickFill }}
               tickLine={false}
-              axisLine={{ stroke: "#e5e7eb" }}
+              axisLine={{ stroke: axisLineStroke }}
               tickFormatter={(value) => `$${value}`}
             />
             {chartFormat === "line" ? (
