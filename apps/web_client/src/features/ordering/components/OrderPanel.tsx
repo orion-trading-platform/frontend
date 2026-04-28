@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { OrderConfirmation } from "./OrderConfirmation";
-import { placeOrder, type OrderResponse } from "../api/orders";
+import { getOwnedShares, placeOrder, type OrderResponse } from "../api/orders";
 
 interface OrderPanelProps {
   symbol: string;
@@ -24,27 +24,88 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState<OrderResponse | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
+  const [ownedShares, setOwnedShares] = useState<number>(0);
+  const [isLoadingOwnedShares, setIsLoadingOwnedShares] = useState(false);
+  const [lastSubmittedPrice, setLastSubmittedPrice] = useState<number | null>(null);
 
-  const shares = Number.parseFloat(quantity) || 0;
+  const shares = Number.parseFloat(quantity);
+  const normalizedShares = Number.isFinite(shares) ? shares : 0;
   const effectivePrice =
-    orderType === "market" ? currentPrice : Number.parseFloat(limitPrice) || currentPrice;
-  const totalAmount = shares * effectivePrice;
+    orderType === "market" ? currentPrice : Number.parseFloat(limitPrice) || 0;
+  const totalAmount = normalizedShares * effectivePrice;
   const estimatedCost = totalAmount + totalAmount * 0.0001;
 
+  useEffect(() => {
+    if (!accountId || !symbol) {
+      setOwnedShares(0);
+      return;
+    }
+    let cancelled = false;
+    setIsLoadingOwnedShares(true);
+    getOwnedShares(accountId, symbol)
+      .then((qty) => {
+        if (!cancelled) setOwnedShares(qty);
+      })
+      .catch(() => {
+        if (!cancelled) setOwnedShares(0);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingOwnedShares(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId, symbol]);
+
+  const isPositiveIntegerShares = Number.isInteger(normalizedShares) && normalizedShares > 0;
+  const hasValidPrice = orderType === "market" ? currentPrice > 0 : effectivePrice > 0;
   const canAfford = orderSide === "buy" ? estimatedCost <= buyingPower : true;
-  const maxShares = orderSide === "buy" ? Math.floor(buyingPower / currentPrice) : 0;
+  const hasEnoughShares = orderSide === "sell" ? normalizedShares <= ownedShares : true;
+  const maxShares = orderSide === "buy" ? Math.floor(buyingPower / currentPrice) : Math.floor(ownedShares);
+  const submitDisabled =
+    !isPositiveIntegerShares ||
+    !hasValidPrice ||
+    !canAfford ||
+    !hasEnoughShares ||
+    (orderSide === "sell" && isLoadingOwnedShares);
+
+  const validationMessage = useMemo(() => {
+    if (!isPositiveIntegerShares) {
+      return "Enter a valid share quantity greater than 0.";
+    }
+    if (!hasValidPrice) {
+      return "Enter a valid price greater than $0.00.";
+    }
+    if (orderSide === "buy" && !canAfford) {
+      return "Insufficient funds for this order.";
+    }
+    if (orderSide === "sell" && !hasEnoughShares) {
+      return "You do not have enough shares to sell.";
+    }
+    return null;
+  }, [isPositiveIntegerShares, hasValidPrice, orderSide, canAfford, hasEnoughShares]);
+  const shouldShowValidation =
+    quantity.trim().length > 0 || (orderType === "limit" && limitPrice.trim().length > 0);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (shares <= 0) return;
+    if (!isPositiveIntegerShares) return;
+    if (!hasValidPrice) return;
     if (!canAfford) return;
-    if (orderType === "limit" && !limitPrice) return;
+    if (!hasEnoughShares) {
+      setOrderError("You do not have enough shares to sell.");
+      return;
+    }
     setOrderResult(null);
     setOrderError(null);
     setShowConfirmation(true);
   };
 
   const handleConfirmOrder = async () => {
+    if (submitDisabled) {
+      if (validationMessage) setOrderError(validationMessage);
+      return;
+    }
     setIsSubmitting(true);
     setOrderError(null);
     try {
@@ -54,9 +115,10 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
         accountId,
         side: orderSide.toUpperCase() as "BUY" | "SELL",
         type: orderType.toUpperCase() as "MARKET" | "LIMIT",
-        qty: shares,
-        limit_price: limitPrice ? Number.parseFloat(limitPrice) : undefined,
+        qty: normalizedShares,
+        limit_price: orderType === "limit" ? effectivePrice : undefined,
       });
+      setLastSubmittedPrice(effectivePrice);
       setOrderResult(result);
       onOrderPlaced(result);
       setShowConfirmation(false);
@@ -93,7 +155,11 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
               Order {orderResult.status === "filled" ? "Filled" : "Pending"}
             </div>
             <div className="mt-0.5 text-xs opacity-75">
-              {orderResult.orderId} · {orderResult.qty} shares @ ${orderResult.executedPrice.toFixed(2)}
+              {orderResult.orderId} · {orderResult.qty} shares @ $
+              {(orderResult.executedPrice > 0
+                ? orderResult.executedPrice
+                : (lastSubmittedPrice ?? effectivePrice)
+              ).toFixed(2)}
             </div>
           </div>
         )}
@@ -152,14 +218,14 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
             </label>
             <input
               type="number"
-              min="0"
+                min="1"
               step="1"
               value={quantity}
               onChange={(event) => setQuantity(event.target.value)}
               placeholder="0"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {orderSide === "buy" && maxShares > 0 && (
+            {maxShares > 0 && (
               <div className="mt-1 flex items-center justify-between">
                 <p className="text-xs text-gray-500">Max: {maxShares} shares</p>
                 <button
@@ -180,7 +246,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
                 <span className="absolute left-3 top-2 text-gray-500">$</span>
                 <input
                   type="number"
-                  min="0"
+                  min="0.01"
                   step="0.01"
                   value={limitPrice}
                   onChange={(event) => setLimitPrice(event.target.value)}
@@ -198,7 +264,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Quantity</span>
-              <span className="font-semibold">{shares} shares</span>
+              <span className="font-semibold">{normalizedShares} shares</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Subtotal</span>
@@ -226,10 +292,26 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
               </div>
             </div>
           )}
+          {orderSide === "sell" && (
+            <div className="flex items-start gap-2 text-sm">
+              <Info className="mt-0.5 size-4 text-gray-400" />
+              <div>
+                <div className="text-gray-600">Shares Owned ({symbol})</div>
+                <div className="font-semibold text-gray-800">
+                  {isLoadingOwnedShares ? "Loading..." : ownedShares.toFixed(0)}
+                </div>
+              </div>
+            </div>
+          )}
+          {validationMessage && shouldShowValidation && (
+            <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+              {validationMessage}
+            </div>
+          )}
 
           <button
             type="submit"
-            disabled={shares <= 0 || !canAfford}
+            disabled={submitDisabled}
             className={`w-full rounded-lg px-4 py-3 font-medium text-white transition-colors disabled:cursor-not-allowed ${
               orderSide === "buy"
                 ? "bg-green-500 hover:bg-green-600 disabled:bg-gray-300"
@@ -246,7 +328,7 @@ export function OrderPanel({ symbol, currentPrice, buyingPower, userId, accountI
           orderSide={orderSide}
           orderType={orderType}
           symbol={symbol}
-          quantity={shares}
+          quantity={normalizedShares}
           price={effectivePrice}
           totalAmount={estimatedCost}
           isSubmitting={isSubmitting}
