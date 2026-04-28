@@ -15,6 +15,7 @@ import { subscribeToStream } from "./api/stream";
 import type { OrderResponse } from "./api/orders";
 import { useAuth, useAccount } from "../auth";
 import { accountBalanceToNumber, formatUsdCash } from "@/features/wallet/utils/accountCash";
+import { emitAccountsRefresh } from "../auth/accountsRefresh";
 import logoWhite from '@/assets/logo-white.svg';
 import orionTextWhite from '@/assets/orion-text-white.svg';
 import { Header } from 'ui-kit';
@@ -73,7 +74,7 @@ export function OrderingPage() {
   }, [symbol]);
 
   const handleOrderPlaced = (_result: OrderResponse) => {
-    // balance is now driven by useAccount — no manual update needed
+    emitAccountsRefresh();
   };
 
   // Subscribe to live price updates via SSE
