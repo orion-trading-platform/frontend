@@ -52,9 +52,13 @@ export const AccountStatsGrid = () => {
 
   // Formatting the raw data for the Dumb components
   const isDayPositive = stats.dayChangeAmt >= 0;
-  const dayChangeFormatted = `${isDayPositive ? '+' : ''}$${Math.abs(stats.dayChangeAmt).toLocaleString(undefined, { minimumFractionDigits: 2 })} (${stats.dayChangePct}%)`;
+  //const dayChangeFormatted = `${isDayPositive ? '+' : ''}$${Math.abs(stats.dayChangeAmt).toLocaleString(undefined, { minimumFractionDigits: 2 })} (${stats.dayChangePct}%)`;
+  const compactDayAmt = Math.abs(stats.dayChangeAmt).toLocaleString(undefined, {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  });
 
-  const isYieldPositive = stats.totalYield >= 0;
+  const dayChangeFormatted = `${isDayPositive ? '+' : '-'}${Math.abs(stats.dayChangePct)}%|$${compactDayAmt}`;  const isYieldPositive = stats.totalYield >= 0;
   const yieldFormatted = `${isYieldPositive ? '+' : ''}${stats.totalYield}%`;
 
   return (
@@ -68,7 +72,7 @@ export const AccountStatsGrid = () => {
     >
       <div style={{ flex: '0 1 31%', minWidth: 0 }}>
         <StatCard
-          label="Portfolio Value"
+          label="Account Value"
           value={`$${stats.portfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
           change={dayChangeFormatted}
           isPositive={isDayPositive}
