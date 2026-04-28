@@ -18,8 +18,8 @@ export const LandingBiggestMovers = ({ onSelect }: LandingBiggestMoversProps) =>
 
   if (loading) {
     return (
-      <div className={styles.wrapper}>
-        <div className={styles.list}>
+      <div className={styles.wrapper} tabIndex={-1}>
+        <div className={styles.list} tabIndex={-1}>
           <span>Loading market data...</span>
         </div>
       </div>
@@ -27,8 +27,8 @@ export const LandingBiggestMovers = ({ onSelect }: LandingBiggestMoversProps) =>
   }
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.list}>
+    <div className={styles.wrapper} tabIndex={-1}>
+      <div className={styles.list} tabIndex={-1}>
         {movers.map((m) => {
           const isPositive = m.changePercent >= 0;
           return (
