@@ -43,7 +43,7 @@ export const HoldingsTable = ({ holdings, publicOnly, onSelect }: HoldingsTableP
               {!publicOnly && <td className={styles.td}>{h.quantity}</td>}
               {!publicOnly && (
                 <td className={`${styles.td} ${h.totalReturn >= 0 ? styles.positive : styles.negative}`}>
-                  {h.totalReturn >= 0 ? '+' : ''}${Math.abs(h.totalReturn).toFixed(2)}
+                  {h.totalReturn >= 0 ? '+' : '-'}${Math.abs(h.totalReturn).toFixed(2)}
                 </td>
               )}
             </tr>

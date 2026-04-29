@@ -72,7 +72,7 @@ export const AccountStatsGrid = () => {
     >
       <div style={{ flex: '0 1 31%', minWidth: 0 }}>
         <StatCard
-          label="Account Value"
+          label="Portfolio"
           value={`$${stats.portfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
           change={dayChangeFormatted}
           isPositive={isDayPositive}
