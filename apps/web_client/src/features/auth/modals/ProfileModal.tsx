@@ -14,14 +14,13 @@ interface ProfileModalProps {
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { changePassword, setPassword } = useAuthActions();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
 
   const [setPassNewPassword, setSetPassNewPassword] = useState('');
@@ -40,7 +39,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     setNewPassword('');
     setConfirmPassword('');
     setPasswordError('');
-    setPasswordMessage('');
     setSetPassNewPassword('');
     setSetPassError('');
     setSetPassMessage('');
@@ -69,15 +67,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
   const handleChangePassword = async () => {
     setPasswordError('');
-    setPasswordMessage('');
     if (!currentPassword) { setPasswordError('Current password is required.'); return; }
     if (newPassword.length < 8) { setPasswordError('New password must be at least 8 characters.'); return; }
     if (newPassword !== confirmPassword) { setPasswordError('Passwords do not match.'); return; }
     setChangingPassword(true);
     try {
       await changePassword(currentPassword, newPassword);
-      setPasswordMessage('Password changed successfully.');
-      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+      await logout();
+      navigate('/login', { replace: true, state: { reason: 'password_changed' } });
     } catch {
       setPasswordError('Failed to change password. Check your current password and try again.');
     } finally {
@@ -181,9 +178,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             </div>
             {passwordError && (
               <p className="mt-2 mb-0 text-[13px] text-red-600" role="alert">{passwordError}</p>
-            )}
-            {passwordMessage && (
-              <p className="mt-2 mb-0 text-[13px] text-green-600" role="status">{passwordMessage}</p>
             )}
             <Button
               variant="primary"

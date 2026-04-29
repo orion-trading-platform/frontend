@@ -11,7 +11,9 @@ const LoginLeftColumn: React.FC = () => {
   const location = useLocation();
   const { login: authLogin, register: authRegister, loginWithGoogle } = useAuthActions();
 
-  const sessionExpired = (location.state as { reason?: string } | null)?.reason === 'session_expired';
+  const reason = (location.state as { reason?: string } | null)?.reason;
+  const sessionExpired = reason === 'session_expired';
+  const passwordChanged = reason === 'password_changed';
 
   const [isSignUpMode, setIsSignUpMode] = useState(() => {
     const stateMode = (location.state as { mode?: string } | null)?.mode;
@@ -189,6 +191,11 @@ const LoginLeftColumn: React.FC = () => {
           {sessionExpired && !successMessage && !errorMessage && (
             <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm">
               Your session expired. Please sign in again.
+            </div>
+          )}
+          {passwordChanged && !successMessage && !errorMessage && (
+            <div role="alert" className="mb-5 px-4 py-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm">
+              Password changed. Please sign in with your new password.
             </div>
           )}
           {successMessage && (
