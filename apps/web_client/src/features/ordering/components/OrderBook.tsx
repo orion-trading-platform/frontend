@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from '@/ThemeContext';
 import { getStockQuote } from "../api/stocks";
-import { subscribeToStream } from "../api/stream";
 
 interface Quote {
   symbol: string;
@@ -25,29 +24,7 @@ export function OrderBook({ symbol }: OrderBookProps) {
   const [quote, setQuote] = useState<Quote | null>(null);
 
   useEffect(() => {
-    let active = true;
-
-    getStockQuote(symbol).then((initialQuote) => {
-      if (active) setQuote(initialQuote);
-    });
-
-    const unsubscribe = subscribeToStream([symbol], (update) => {
-      if (update.symbol !== symbol) return;
-      if (update.bidPrice == null || update.askPrice == null) return;
-
-      setQuote({
-        symbol,
-        bidPrice: update.bidPrice,
-        bidSize: update.bidSize ?? 0,
-        askPrice: update.askPrice,
-        askSize: update.askSize ?? 0,
-      });
-    });
-
-    return () => {
-      active = false;
-      unsubscribe();
-    };
+    getStockQuote(symbol).then(setQuote);
   }, [symbol]);
 
   const spread = quote ? (quote.askPrice - quote.bidPrice).toFixed(2) : "—";

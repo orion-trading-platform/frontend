@@ -2,10 +2,6 @@ export interface PriceUpdate {
   symbol: string;
   price: number;
   timestamp: string;
-  bidPrice?: number;
-  bidSize?: number;
-  askPrice?: number;
-  askSize?: number;
 }
 
 /**
@@ -24,18 +20,6 @@ type AlpacaStreamEvent = {
 
 type AlpacaSnapshot = {
   price?: number;
-  quote?: { bp?: number; bs?: number; ap?: number; as?: number };
-  latestQuote?: { bp?: number; bs?: number; ap?: number; as?: number };
-  latest_quote?: {
-    bid_price?: number;
-    bid_size?: number;
-    ask_price?: number;
-    ask_size?: number;
-    bp?: number;
-    bs?: number;
-    ap?: number;
-    as?: number;
-  };
   latestTrade?: { p?: number };
   latest_trade?: { price?: number; p?: number };
   minuteBar?: { c?: number };
@@ -45,13 +29,6 @@ type AlpacaSnapshot = {
   prevDailyBar?: { c?: number };
   previous_daily_bar?: { close?: number; c?: number };
   [k: string]: unknown;
-};
-
-type QuoteTop = {
-  bidPrice: number;
-  bidSize: number;
-  askPrice: number;
-  askSize: number;
 };
 
 function coerceTimestampToIso(ts: unknown): string {
@@ -86,28 +63,6 @@ function pickPrice(s: AlpacaSnapshot | undefined): number | null {
   return null;
 }
 
-function pickTopQuote(s: AlpacaSnapshot | undefined): QuoteTop | null {
-  if (!s) return null;
-
-  const bidPrice =
-    s.latest_quote?.bid_price ?? s.latest_quote?.bp ?? s.latestQuote?.bp ?? s.quote?.bp;
-  const askPrice =
-    s.latest_quote?.ask_price ?? s.latest_quote?.ap ?? s.latestQuote?.ap ?? s.quote?.ap;
-  const bidSize =
-    s.latest_quote?.bid_size ?? s.latest_quote?.bs ?? s.latestQuote?.bs ?? s.quote?.bs ?? 0;
-  const askSize =
-    s.latest_quote?.ask_size ?? s.latest_quote?.as ?? s.latestQuote?.as ?? s.quote?.as ?? 0;
-
-  if (typeof bidPrice !== "number" || typeof askPrice !== "number") return null;
-
-  return {
-    bidPrice,
-    askPrice,
-    bidSize: typeof bidSize === "number" ? bidSize : 0,
-    askSize: typeof askSize === "number" ? askSize : 0,
-  };
-}
-
 const MARKET_DATA_URL =
   import.meta.env.VITE_MARKET_DATA_URL ?? "http://localhost:8001";
 
@@ -126,24 +81,9 @@ export function subscribeToStream(
       const snapshots = payload.snapshots ?? {};
 
       for (const sym of normalized) {
-        const snapshot = snapshots[sym];
-        const quote = pickTopQuote(snapshot);
-        const parsedPrice = pickPrice(snapshot);
-        const derivedPrice =
-          parsedPrice ??
-          (quote ? (quote.bidPrice + quote.askPrice) / 2 : null);
-
-        if (derivedPrice == null) continue;
-
-        onUpdate({
-          symbol: sym,
-          price: derivedPrice,
-          timestamp: tsIso,
-          bidPrice: quote?.bidPrice,
-          bidSize: quote?.bidSize,
-          askPrice: quote?.askPrice,
-          askSize: quote?.askSize,
-        });
+        const price = pickPrice(snapshots[sym]);
+        if (price == null) continue;
+        onUpdate({ symbol: sym, price, timestamp: tsIso });
       }
     } catch {
       // Ignore malformed stream payloads; keep connection alive.
