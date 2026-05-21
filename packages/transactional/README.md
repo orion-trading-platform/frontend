@@ -111,8 +111,8 @@ Each backend keeps its own copy because Go's `//go:embed` cannot reference paths
 
 | Destination | Used by |
 |---|---|
-| `413-database-system/api/emails/` | Python (read at runtime via `pathlib`) |
-| `413-database-system/api-go/handlers/emails/` | Go (embedded into binary at compile time) |
+| `database-system/api/emails/` | Python (read at runtime via `pathlib`) |
+| `database-system/api-go/handlers/emails/` | Go (embedded into binary at compile time) |
 
 Both files are identical — update both whenever a template changes.
 

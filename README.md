@@ -1,95 +1,151 @@
-## COMP 413 S26 Frontend
+# Orion Frontend
 
-### Project Structure
+React/TypeScript frontend for the Orion paper-trading platform. This app presents the user-facing trading experience: landing and authentication flows, portfolio dashboard, stock search, order entry, wallet, profile management, and ledger/history views.
 
-We use a **Monorepo** structure. Code is split between `apps` (websites) and `packages` (shared tools).
+Orion was built for Rice COMP 413 as a distributed software construction project. The frontend's main role is to integrate independently developed backend services into one coherent product experience.
+
+## Feature overview
+
+- **Landing and brand experience:** responsive public landing page, market preview cards, product messaging, and Orion visual assets.
+- **Authentication:** email/password registration and login, Google OAuth, reCAPTCHA, refresh-token session restore, password reset, profile modal, password changes, account deletion, and protected routes.
+- **Dashboard:** Mag 7 market snapshot cards, account summary cards, performance chart, recent activity, holdings table, ticker search, theme toggle, wallet/ledger/profile navigation.
+- **Ordering:** stock search, URL-synced symbols, live price updates from the market data API, historical stock charts, order book visualization, order-entry validation, review modal, and submit/cancel calls to the trading engine.
+- **Wallet:** account cash display and deposit flow backed by the database/account API and ledger transaction records.
+- **Ledger:** account history and P&L view with summary cards, activity filters, detail rows, export/print affordances, and backend-backed ledger queries.
+- **Transactional emails:** React Email templates exported to HTML and copied into the database service's Python and Go email directories.
+
+## Repository structure
 
 ```text
-root/
+frontend/
 ├── apps/
-│   ├── web_client/          <-- 🚨 MOST WORK HAPPENS HERE
-│   │   ├── src/
-│   │   │   ├── features/    <-- 📂 YOUR TEAM LIVES HERE, BRANCH OUT AND CREATE A FOLDER
-│   │   │   │   ├── auth/       (Team A)
-│   │   │   │   ├── dashboard/  (Team B)
-│   │   │   │   ├── ledger/     (Team C)
-│   │   │   │   └── ordering/   (Team D)
-│   │   │   └── assets/      <-- Images and other assets (SVGs, etc.)
-│   │   └── public/          <-- Pages allow us to combine features
-│   
-│
-├── packages/                <-- SHARED CODE (Do not duplicate!)
-│   ├── ui-kit/              <-- Generic Buttons, Inputs, Cards
-│   ├── ts-config/           <-- Shared Interfaces (User, Stock, Trade)
-│   ├── styles/              <-- Global CSS variables & colors
-│   └── transactional/       <-- Email templates (react-email) → export HTML → 413-database-system repo
+│   └── web_client/                 # Vite React app
+│       ├── src/
+│       │   ├── features/
+│       │   │   ├── auth/           # auth context, login/signup/reset/profile flows, API clients
+│       │   │   ├── dashboard/      # dashboard cards, charts, holdings, activity, search
+│       │   │   ├── ledger/         # account history and P&L screens
+│       │   │   ├── ordering/       # stock page, chart, order book, order panel, order API calls
+│       │   │   └── wallet/         # account cash and deposit flow
+│       │   ├── assets/             # logos, landing art, SVGs
+│       │   └── App.tsx             # routes and protected-route wiring
+│       └── public/                 # static assets and sample data
+├── packages/
+│   ├── styles/                     # shared CSS reset/tokens
+│   ├── transactional/              # React Email templates and exported HTML
+│   ├── ts-config/                  # shared TypeScript config
+│   └── ui-kit/                     # shared UI primitives
+├── Dockerfile                      # production build served by nginx
+└── nginx.conf
 ```
 
-### Developer Guide
+## Local development
 
-Follow these steps to get started on developing:
+### Prerequisites
 
-### Installation
+- Node.js 20+
+- npm
+- Running backend services for full functionality:
+  - `database-system` on `http://localhost:8000`
+  - `market-data-api` on `http://localhost:8001`
+  - `trading-engine` on `http://localhost:8002`
 
-1. Find or create a directory to store the code and CD into it from your terminal
+### Setup
 
-   ```bash
-   cd your/directory/filepath
-   ```
+```bash
+git clone https://github.com/orion-trading-platform/frontend.git
+cd frontend
+npm install
+cp apps/web_client/.env.example apps/web_client/.env
+```
 
-2. Clone this repository
+Update `apps/web_client/.env` as needed:
 
-   ```bash
-   git clone https://github.com/COMP413-S26/comp413frontend.git
-   ```
+```bash
+VITE_BACKEND_URL=http://localhost:8000
+VITE_MARKET_DATA_URL=http://localhost:8001
+VITE_TRADING_ENGINE_URL=http://localhost:8002
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id
+VITE_RECAPTCHA_SITE_KEY=your-recaptcha-site-key
+VITE_PORT=5173
+```
 
-**Note:** If prompted for credentials, you may need to use a [GitHub Personal Access Token (classic)](https://github.com/settings/tokens) as your password.
+Start the dev server from the repo root:
 
-3. CD into the repo root and install all dependencies
+```bash
+npm run dev -w web-client
+```
 
-   ```bash
-   cd comp413frontend
-   npm install
-   ```
+Or from the app directory:
 
-   This installs all dependencies for every workspace: `apps/web_client`, `packages/transactional`, `packages/ui-kit`, etc. A single `node_modules/` and `package-lock.json` are created at the root.
+```bash
+cd apps/web_client
+npm run dev
+```
 
-4. CD into the web app
+Open `http://localhost:5173`.
 
-   ```bash
-   cd apps/web_client
-   ```
+## Scripts
 
-5. Set up environment variables
+```bash
+npm install                    # install all workspaces
+npm run dev -w web-client      # start Vite dev server
+npm run build -w web-client    # type-check and build production assets
+npm run preview -w web-client  # preview the production build locally
+npm run dev -w transactional   # preview email templates
+npm run export -w transactional # export email templates to static HTML
+```
 
-   ```bash
-   cp .env.example .env
-   ```
+## Backend integration
 
-  - Edit `.env` and fill in any required values
+The app uses three service clients:
 
-6. Start the development server
+| Client | Environment variable | Local default | Used for |
+| --- | --- | --- | --- |
+| `api` | `VITE_BACKEND_URL` | `http://localhost:8000` | Auth, accounts, holdings, wallet, ledger, transactions, account data. |
+| `marketApi` | `VITE_MARKET_DATA_URL` | `http://localhost:8001` | Stock search, snapshots, quotes, bars, S&P 500/Mag 7 data, SSE streams. |
+| `tradingApi` | `VITE_TRADING_ENGINE_URL` | `http://localhost:8002` | Order submission and cancellation. |
 
-   ```bash
-   npm run dev
-   ```
+`features/auth/api.ts` attaches access tokens to authenticated database/trading requests and handles access-token refresh on recoverable `401` responses. The ordering feature has dedicated wrappers in `features/ordering/api/` so UI components do not call backend endpoints directly.
 
-   Alternatively, you can start from the repo root:
+## Build and deployment
 
-   ```bash
-   npm run dev -w web_client
-   ```
+The `Dockerfile` builds the Vite app and serves the generated `dist/` directory with nginx on port `8080`.
 
-7. Open your browser and navigate to [http://localhost:5173](http://localhost:5173) (or your configured port)
+```bash
+docker build \
+  --build-arg VITE_BACKEND_URL=https://api.example.com \
+  --build-arg VITE_MARKET_DATA_URL=https://data.example.com \
+  --build-arg VITE_TRADING_ENGINE_URL=https://engine.example.com \
+  --build-arg VITE_GOOGLE_CLIENT_ID=your-client-id \
+  --build-arg VITE_RECAPTCHA_SITE_KEY=your-site-key \
+  -t orion-frontend .
 
-### Contributing
+docker run -p 8080:8080 orion-frontend
+```
 
-In order to contribute, you can make edits on your own development branch. To do so, create a new branch from your command line:
+The GitHub Actions workflow in `.github/workflows/deploy-frontend.yml` builds the image, pushes it to Artifact Registry, and deploys to Cloud Run using Workload Identity Federation.
 
-   ```bash
-   git checkout -b my-new-branch
-   ```
+## Email template workflow
 
-From here, all your changes should be pushed to this branch, and not main.
+Source templates live in `packages/transactional/emails/`. After editing:
 
-When you are done working on your feature, submit a pull request through GitHub where it can be peer reviewed and tested before it is merged with main.
+```bash
+npm run export -w transactional
+```
+
+Then copy the generated HTML from `packages/transactional/out/` into both backend email directories:
+
+```text
+database-system/api/emails/
+database-system/api-go/handlers/emails/
+```
+
+The Go backend embeds its copy at compile time, while the Python backend reads its copy at runtime.
+
+## Notes for contributors
+
+- Keep feature code inside the relevant `src/features/*` directory and expose shared APIs through each feature's index file.
+- Prefer the shared auth/account hooks over duplicating token or account lookup logic.
+- Do not commit `.env` files or API secrets.
+- The production build output `apps/web_client/dist/` is generated by CI/Docker. If it is already tracked in Git, remove it with `git rm -r --cached apps/web_client/dist` and commit the removal.
